@@ -1,0 +1,60 @@
+BIOINFO PROJECT
+The Three Musketeers (A.R.E.)
+
+Table	Idea
+Prism		Group pairs treatment- cell lines by positive and negative impact on cell growth
+•	Concrete: make groups according to which values are above/below 0
+•	Additional step: Make subgrouping by setting thresholds of impact on growth e.g.: strongly/medium/weakly positive, strongly/medium/weakly negative
+•	See if there are changes in trends for cell growth for different concentrations: for example, one drug could have a negative impact for a low concentration and a positive impact for a high concentration or the other way around
+•	Make subclassifications for the drug concentrations e.g.: Cell line ACH001 treatment a concentration low, medium, high. CL ACH002 low, medium high etc. Set thresholds
+Prism.treat		See which are the treatments that have a positive impact and which ones have a negative impact on cell growth -> see for what diseases
+•	Concrete: $treatment_type(which i > 0 )
+•	Group them according to targets and disease area 
+•	Are there concrete treatment types which have an overall positive impact on cell growth? (one-sided T-test H1: mean value > 0)
+•	Are there concrete treatment types which have an overall negative impact on cell growth? (one-sided T-test H1: mean value < 0)
+•	Make differentiation: low/medium/high => which treatment types are most/least successful? Max,min values, distribution?
+Prism.cl		See for which type of cancer cell lines the treatments have positive/negative values
+•	Concrete: $disease_type(which i > 0)
+•	Are there any concrete cell types that are especially susceptible to treatments overall? Or especially unsusceptible?
+•	Which cancer cell lines are the most/least susceptible?
+•	What are the treatment types that work best/worst on liver cancer cells?
+•	Differentiation: low/medium/high -> max,min values , distribution?
+Prism.exp		Make classification low/medium/high
+	Compare with “prism” – values of cell growth
+Prism.cnv		Compare the copy number of genes with the “prism.exp” – classification low/medium/high
+Prism.snv		Correlation mutations - high copy number?
+•	Which mutations are found in genes with a high copy number
+•	Is there a significant difference between other mutations (two-sampled T-test) so that we can say that a particular mutation has a particular effect?
+	Correlation mutations – gene expression?
+•	Which mutations are found in genes with a high gene expression?
+•	Is there a significant difference between other mutations (two-sampled T-test) so that we can say that a particular mutation has a particular effect?
+	Correlation mutations -cell growth (impact of mutations on treatment effect)?
+•	Which mutations are found in the “treatment-cell type” pairs with positive/negative impact on cell growth?
+•	Is there a significant difference between other mutations (two-sampled T-test) so that we can say that a particular mutation has a particular effect?
+Prism.achilles		Group gene KOs– positive/negative impact on cell proliferation
+	Compare the effect of each gene KO with the effect of the drug related to that gene
+•	Take one gene – see the KO effect on cell proliferation – look for that gene in the targets section of the prism.treatment table – compare the cell growth rate with the cell proliferation rate – if they anti-correlate (because the proliferation is measured inversely -KO) then there is a strong correlation between the drug and the KO gene -> helpful for predicting effect of drugs
+•	Repeat for each gene
+•	AND/OR: make correlation for each pair – are there correlations between other genes and drugs?
+	PCA/Linear regression to identify which genes make up most of the variance of the cell growth dataset -> create model to predict drug effect on cell lines
+
+
+Results:
+1.	Groups (describing the large dataset):
+o	O Pairs “treatment type – cell line type” for which the impact on cell growth is positive
+o	O Pairs “treatment type – cell line type” for which the impact on cell growth is negative
+o	O Treatment types which have an overall positive impact on cell growth
+o	O Treatment types which have an overall negative impact on cell growth
+o	O Cancer cell lines that are generally susceptible to treatments
+o	O Cancer cell lines that are generally unsusceptible to treatments
+
+2.	Liver Cancer Cell Lines
+o	O Different treatment types and their effects on liver cancer cells -> max, min values, distribution
+
+3.	Interpretation questions
+o	OO Are the gene expression rates high because of more copy numbers?
+o	OO Do the gene expression rates influence the effects of certain drugs?
+o	OO What is the impact of mutations on gene expression?
+o	OO What is the impact of mutations on gene copy number?
+o	OO  What is the impact of mutations on the effect of drugs on cell growth?
+o	OO Can we predict the effect of a drug according to a correlation between the importance of a gene and a certain drug?
