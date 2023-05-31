@@ -1,0 +1,102 @@
+```{r}
+#zuerst die ccls ordnen, sodass bei prism und bei prism.achilles die gleiche reihenfolge der CCLs ist
+
+#schleife, sodasss alle medikamente einmal druchgeangen werden
+i=1
+for (i in 1:dim(prism[2])) 
+  (prism[,i])#durch alle meds iterieren
+
+#fist remove all NAs
+  i.remove = which(is.na(prism[,i]))
+  i.new.prism = prism[-i.remove,i]
+  #i.new.prism
+
+#schleife, sodasss alle knockouts pro med durchgegangen werden 
+  
+  for (g in 1:dim(prism.achilles)[2])
+  
+    (prism.achilles[,g])#alle knockouts for 
+    #die ccls raushauen, die NA haben (datacleaning)
+    g.remove = which(is.na(prism[,g]))
+    new.prism = prism[-g.remove,g]
+    g.new.prism
+    #correlation berechnen
+    cor(i.new.prism,g.new.prism, method = "spearman")
+    g = g+1
+    
+  i = i + 1
+    
+    
+# noich ein mechanismus nötig, der bei beiden spaltren die ccls removed
+# ein ende finden für g und i
+```
+
+```{r}
+#lets try it with apply
+
+lapply(prism, 2, lapply(
+  prism.achilles, 2, 
+)
+)
+#creatinng a function
+func_name <- function(variable){
+}
+```
+
+
+```{r}
+#data ordnen: die ordung der zeilen von prsim.achilles wird an die ordnung der zeilen von prism angepasst
+
+copy_achilles= prism.achilles
+
+order_actual_achilles=rownames(copy_achilles)
+order_target_achilles = rownames(prism)
+new_prsim.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+new_prsim.achilles
+```
+```{r}
+#data ordnen: die ordung der zeilen von prsim wird an die ordnung der zeilen von prism. achilles angepasst
+
+
+copy_prism = prism
+
+order_actual_prism=rownames(copy_prism)
+order_target_prism = rownames(prism.achilles)
+new_prsim= copy_prism[match(order_actual_achilles, order_target_achilles),]
+new_prsim
+```
+
+
+
+```{r}
+
+#removing all cell lines with missung values for one specific row
+#sum(is.na(prism[,1]))
+i.remove = which(is.na(prism[,1]))
+#i.remove
+new.prism1 = prism[-i.remove,1]
+new.prism1
+
+#remove CCLs with missing value for every row 
+i.remove = which(is.na(prism[,i]))
+#i.remove
+new.prism = prism[-i.remove,i]
+new.prism
+
+```
+
+
+
+
+```{r}
+x <- prism[,1]
+y <- prism[,2]
+#berechnen der correlation
+cor(x,y, method = "spearman")
+```
+```{r}
+#just checking if all CCls of the achilles dataset are represented in the prism dataset
+matching.CLL = rownames(prism) %in% rownames(prism.achilles)
+sum(matching.CLL)
+```
+
