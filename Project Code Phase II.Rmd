@@ -1,0 +1,199 @@
+---
+title: "PhaseII"
+output: html_document
+date: "2023-05-24"
+---
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+prism
+```
+```{r}
+liver_cancer_cell_lines
+```
+```{r}
+which(rownames(prism.exp) %in% liver_cancer_cell_lines[1] )
+```
+```{r}
+rownames(prism.exp)[467]
+```
+```{r}
+prism.exp[467,]
+```
+```{r}
+which(colnames(prism.exp) == "TP53")
+#prism.exp[,8010]
+prism.exp[467,8010]
+mean(prism.exp[,8010], na.rm=TRUE)
+```
+```{r}
+which(colnames(prism.exp) == "GAPDH") #housekeeping gene!
+#prism.exp[,8010]
+#prism.exp[467,8010]
+#BUB1B, CCNB1, CDK1, CDC25C, CCNA2
+```
+```{r}
+prism.exp[467,3878]
+```
+```{r}
+mean(prism.exp[,3878], na.rm=TRUE)
+```
+```{r}
+which(colnames(prism.exp) == "CDK1")
+```
+```{r}
+prism.exp[467,12537]
+mean(prism.exp[,12537], na.rm=TRUE)
+```
+```{r}
+which(new_prism.treat$target == "CCNA2")
+#This is the drug that targets the liver cancer relevant gene CCNA2
+#concentration?
+```
+```{r}
+#What's its name?
+rownames(new_prism.treat[5521,])
+```
+```{r}
+#in prism:
+which(colnames(prism) == "BRD-K40331046-305-01-5::0.00061034::HTS002")
+```
+```{r}
+prism[467, 5521]
+```
+```{r}
+prism[467, 5521:5528]
+```
+```{r}
+new_prism.treat[5521:5528,]
+```
+
+```{r}
+Probetabelle = data.frame(new_prism.treat$target[5521:5528], rownames(new_prism.treat[5521:5528]))
+```
+
+```{r}
+#now we've set the rownames of the prism.cl dataframe (a copy of it) to match the cell line identificators
+#rownames(copy_prism.cl) = prism.cl[,1]
+#copy_prism.cl
+copy_achilles = prism.achilles
+```
+```{r}
+order_actual_achilles = rownames (copy_achilles)
+order_target_achilles = rownames(prism)
+new_prism.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+new_prism.achilles
+```
+```{r}
+liver_cancer_cell_lines
+```
+```{r}
+#Which mutations do liver cancer cell lines have?
+#prism.snv$DepMap_ID[which(prism.snv$DepMap_ID == liver_cancer_cell_lines)]
+liver_cancer_cell_lines_mutations = prism.snv[which(prism.snv$DepMap_ID == liver_cancer_cell_lines),]
+
+```
+```{r}
+#length(unique(liver_cancer_cell_lines_mutations$DepMap_ID))
+#ok, they are 17, all good
+```
+```{r}
+#goal: see if the mutation show any effect on gene expression
+#1. count the total mutations for each cell line and compare with the expression scores
+
+liver_cancer_cell_lines_total_mutation_numbers=c()
+for (i in 1:length(liver_cancer_cell_lines))
+{
+
+ liver_cancer_cell_lines_total_mutation_numbers[i] =(length(which(liver_cancer_cell_lines_mutations == liver_cancer_cell_lines[i])))
+  
+}
+names(liver_cancer_cell_lines_total_mutation_numbers) = liver_cancer_cell_lines
+liver_cancer_cell_lines_total_mutation_numbers
+```
+
+```{r}
+#re-order prism.exp so that it matches the prism data frame order
+copy_prism.exp = prism.exp
+order_actual_exp = rownames (copy_prism.exp)
+order_target_exp = rownames(prism)
+new_prism.exp= copy_prism.exp[match(order_target_exp, order_actual_exp),]
+new_prism.exp
+```
+```{r}
+#2. Now let's get the gene expression rates for these liver cancer cell lines
+indeces_liver_cancer_cell_lines_in_new_prism.exp = c()
+for (i in 1:length(liver_cancer_cell_lines))
+{
+
+   indeces_liver_cancer_cell_lines_in_new_prism.exp[i] = which(rownames(new_prism.exp) == liver_cancer_cell_lines[i])
+  
+}
+liver_cancer_cell_lines_expression = new_prism.exp[indeces_liver_cancer_cell_lines_in_new_prism.exp,]
+liver_cancer_cell_lines_expression
+```
+
+```{r}
+#Let's see if there are genes which could bear mutations
+```
+
+```{r}
+#all mutations of the first liver cancer cell line
+liver_cancer_cell_lines_mutations[1:liver_cancer_cell_lines_total_mutation_numbers[1],]
+```
+```{r}
+#I want to plot each gene of the cell line against its expression score
+# x-axis = total mutation numbers
+# y-axis =gene expression score
+# points = genes
+
+
+#od lass einf 1 plot machen mit expression of jede mutation
+#x = liver_cancer_cell_lines_total_mutation_numbers#nein weil wir wollen eine mutation von einem gen in einer zelllinie
+x = liver_cancer_cell_lines_mutations[1:liver_cancer_cell_lines_total_mutation_numbers[1],]$Hugo_Symbol
+y = liver_cancer_cell_lines_expression[1,which(colnames(liver_cancer_cell_lines_expression)==x)]
+plot(x,y)
+```
+```{r}
+x = liver_cancer_cell_lines_mutations[1:liver_cancer_cell_lines_total_mutation_numbers[1],]$Hugo_Symbol
+#which(colnames(liver_cancer_cell_lines_expression)==x)
+x
+colnames(liver_cancer_cell_lines_expression)
+which(colnames(liver_cancer_cell_lines_expression)==x)
+```
+```{r}
+indecesblabla=c()
+for ( i in 1:length(x))
+{
+ indecesblabla[i] = which(colnames(liver_cancer_cell_lines_expression)==x[i])
+  
+}
+#get expression of those genes
+#plot against genes
+```
+
