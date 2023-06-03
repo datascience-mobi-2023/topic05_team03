@@ -34,13 +34,33 @@ for (i in 1:dim(prism[2]))
 ```{r}
 #lets try it with apply
 
-lapply(prism, 2, lapply(
-  prism.achilles, 2, 
-)
-)
-#creatinng a function
-func_name <- function(variable){
+lapply(prism, 2, function(x){
+  #fist remove all NAs
+  x.remove = which(is.na(x))
+  x.new.prism = x[-i.remove]
+ 
+   lapply(prism.achilles, 2, function(y){
+      #fist remove all NAs
+  y.remove = which(is.na(y))
+  y.new.prism = y[-i.remove]
+  cor(x,y, method = "spearman")
+   })#funktion, die über x und alle spalten von achilles corrm berechnet
+  
+  
 }
+)
+
+#creatinng a function
+achilles_it <- 
+```
+
+```{r}
+#so wir wollen testen, ob das überhaupt lappt SIIUUUUU
+v1 <- c(1,2,3,4,5,6,7)
+remove.d = which(v1 == 2)
+v2 = v1[-remove.d]
+v2
+
 ```
 
 
@@ -49,7 +69,7 @@ func_name <- function(variable){
 
 copy_achilles= prism.achilles
 
-order_actual_achilles=rownames(copy_achilles)
+order_actual_achilles= rownames(copy_achilles)
 order_target_achilles = rownames(prism)
 new_prsim.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
 new_prsim.achilles
