@@ -1,0 +1,498 @@
+---
+title: "Project53"
+output: html_document
+date: "2023-05-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+load("This PC/Local Disk(D:)/MoBi Facultate/Bioinfo/prism_datasets.rda")
+load("This PC/Local Disk(D:)/MoBi Facultate/Bioinfo/cellline_datasets.rda")
+```{r}
+load("D:/MoBi Facultate/Bioinfo/cellline_datasets.rda")
+load("D:/MoBi Facultate/Bioinfo/prism_datasets.rda")
+```
+```{r}
+prism
+```
+```{r}
+#These are the treatments for which the cell growth of the cell line ACH-000007 is positive
+indices = c(which(prism[1,]>0))
+#The names of the drugs are:
+prism[1,indices]
+drug_names = colnames( prism[1,indices])
+drug_names
+```
+
+```{r}
+#get the molecule names of the drugs we just found (positive cell growth)
+#see how to compare each element of drug names with the rownames of the table prsim.treat
+names_treatment_cl1_positive= intersect (drug_names, rownames(prism.treat))
+setdiff (rownames(prism.treat), names_treatment_cl1_positive)
+```
+
+```{r}
+b=colnames(prism[1,])[3]
+a= setdiff (rownames(prism.treat), names_treatment_cl1_positive)
+which( a %in% b)
+```
+```{r}
+name = prism[,5]
+name
+```
+```{r}
+names_treatment_cl1_positive
+```
+
+```{r}
+prism.treat[names_treatment_cl1_positive,5]
+prism.treat$name [prism.treat[names_treatment_cl1_positive]]
+```
+```{r}
+prism.treat[names_treatment_cl1_positive,1]
+```
+```{r}
+prism.treat[indices_names_treatment_cl1_positive,5] == prism.treat$name[indices_names_treatment_cl1_positive]
+```
+
+```{r}
+#get the indices of these names
+indices_names_treatment_cl1_positive = which(rownames(new_prism.treat) %in% names_treatment_cl1_positive)
+#prism.treat$name[indices_names_treatment_cl1_positive]
+new_prism.treat$name[indices_names_treatment_cl1_positive]
+```
+```{r}
+r = c(1,2,3)
+e = c(4,5,2)
+which( r %in% e) # should be 2
+which (e %in% r) # should be 3
+# => the names of the treatments with positive cell growth in the order in which they are listed in prism.treat and NOT in the order in which they appear in prism. Can we re-order prism.treat so that th eorder matches prism?
+```
+```{r}
+#tentative to arrange, trials
+vec = c("Eran", "Robert", "Artan", "Aaron")
+vec_target= c("Artan", "Robert", "Aaron", "Eran")
+# we want the elements of vec to be in the same order as they are in vec_target
+match(vec, vec_target)
+vec_new = vec[match(vec, vec_target)]
+vec_new
+
+match(vec_target, vec)
+vec_new2 = vec[match(vec_target, vec)]
+vec_new2
+```
+```{r}
+order_actual = rownames (prism.treat)
+order_target = colnames(prism)
+new_prism.treat= prism.treat[match(order_target, order_actual),]
+new_prism.treat
+#rownames_new_prism.treat= rownames(prism.treat)[match(order_actual, order_target)]
+#rownames_new_prism.treat
+```
+```{r}
+rownames (prism.treat)
+colnames(prism)
+```
+
+```{r}
+#1. for each drug molecule how many + and - and the overall effect
+#2. which are the most effective ones
+#3. which are the most effective ones for liver cancer -> see in literature what genes could be specific for liver cancer
+```
+
+```{r}
+drug_molecules=unique(new_prism.treat$name)
+drug_molecules[1]
+```
+```{r}
+drug_moa=unique(new_prism.treat$moa)
+drug_moa[1]
+```
+
+```{r}
+#now you have the names of the different categories. Let s see how many elements there are of each category
+```
+
+```{r}
+x=table(new_prism.treat$name)
+
+```
+```{r}
+which(table(new_prism.treat$name) == 8)
+```
+```{r}
+which(new_prism.treat$name == "1-azakenpaullone")
+```
+```{r}
+#for( i in (1:length(x)))
+#{s=sum(names(x[i]) == "8-bromo-cGMP")}
+#s
+sum(new_prism.treat$name=="8-bromo-cGMP")
+```
+
+```{r}
+length(x)
+length(drug_molecules)
+```
+```{r}
+#see how many + and -
+#r=which (new_prism.treat$name == "8-bromo-cGMP")
+j=1
+i_copy=1
+#molecule_type = matrix(,nrow = length(drug_molecules), ncol = 10)
+for(j in 1:length(drug_molecules)) #these are the rows of the matrix
+{
+for ( i in 1:) #these are the columns of the matrix
+{  molecule_type[j,i]= which(new_prism.treat$name == drug_molecules[j])[i]
+
+    #i_copy=i
+  
+}}
+molecule_type
+```
+```{r}
+for(j in 1:length(drug_molecules))
+print(which(new_prism.treat$name == drug_molecules[j]))
+
+```
+```{r}
+indeces_molecules = which(new_prism.treat$name == drug_molecules[1])
+indeces_molecules[3]
+```
+```{r}
+molecule_index=matrix(,nrow=length(drug_molecules),ncol=16)
+for(j in 1:length(drug_molecules))
+{  #print(which(new_prism.treat$name == drug_molecules[j])) #avem doar 8 sau 16 -> daca e multiplu de 8 atunci treci la aia urmatoare, max coloane = 16
+  for ( i in (1:8))
+  {molecule_index[j,i]=which(new_prism.treat$name == drug_molecules[j])[i]}
+if (length(which(new_prism.treat$name == drug_molecules[j]))<16)
+{next}
+  else
+  {
+    for ( i in (9:16))
+      molecule_index[j,i]=which(new_prism.treat$name == drug_molecules[j])[i]
+  }
+}
+molecule_index
+```
+```{r}
+moa_index=matrix(,nrow=length(drug_moa),ncol=16)
+for(j in 1:length(drug_moa))
+{  #print(which(new_prism.treat$name == drug_molecules[j])) #avem doar 8 sau 16 -> daca e multiplu de 8 atunci treci la aia urmatoare, max coloane = 16
+  for ( i in (1:8))
+  {moa_index[j,i]=which(new_prism.treat$moa == drug_moa[j])[i]}
+if (length(which(new_prism.treat$moa == drug_moa[j]))<16)
+{next}
+  else
+  {
+    for ( i in (9:16))
+      moa_index[j,i]=which(new_prism.treat$moa == drug_moa[j])[i]
+  }
+}
+moa_index
+```
+
+```{r}
+molecule_index #these are the positions of each molecule in treatment types
+#let's get their values
+```
+```{r}
+molecule_indeces_data_frame = as.data.frame(molecule_index)
+rownames(molecule_indeces_data_frame) = drug_molecules
+colnames(molecule_indeces_data_frame) = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+molecule_indeces_data_frame
+```
+```{r}
+moa_indeces_data_frame = as.data.frame(moa_index)
+#moa_indeces_data_frame[is.na(moa_indeces_data_frame)]=0
+
+rownames(moa_indeces_data_frame) = levels(drug_moa)[1:518]
+colnames(moa_indeces_data_frame) = c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+moa_indeces_data_frame
+```
+
+```{r}
+#Let's get their values
+molecule_values_data_frame = molecule_indeces_data_frame
+#new_prism.treat$name[molecule_indeces_data_frame]
+```
+```{r}
+moa_values_data_frame = moa_indeces_data_frame
+```
+
+```{r}
+#rownames(molecule_indeces_data_frame[1,])
+molecule_indeces_data_frame[1,1]
+name_drug_molecule = rownames(new_prism.treat[molecule_indeces_data_frame[1,1],])
+name_drug_molecule#$char(name_drug_molecule)
+mean(prism[,which(colnames(prism)==name_drug_molecule)],na.rm=TRUE)
+#this is the value for the first drug using 8-bromo-cGMP, this is the first value the data frame molecule_values_blabla should take
+```
+```{r}
+#1. we create counters for data frame
+for(j in 1:dim(molecule_values_data_frame)[1])
+{  
+  for ( i in (1:8))
+  {molecule_values_data_frame[j,i]=mean(prism[,which(colnames(prism)==rownames(new_prism.treat[molecule_indeces_data_frame[j,i],]))],na.rm=TRUE)   
+}
+  molecule_values_data_frame
+```
+```{r}
+molecule_indeces_data_frame[is.na(molecule_indeces_data_frame)]=0
+molecule_indeces_data_frame
+```
+
+```{r}
+for(j in 1:dim(molecule_values_data_frame)[1])
+{  
+  for ( i in (1:dim(molecule_indeces_data_frame)[2]))
+  {
+    molecule_values_data_frame[j,i] = mean(prism[,which(colnames(prism)==rownames(new_prism.treat[molecule_indeces_data_frame[j,i],]))],na.rm=TRUE)
+  }
+  }
+```
+```{r}
+#molecule_values_data_frame[is.na(molecule_values_data_frame)]=0
+molecule_values_data_frame
+```
+```{r}
+for(j in 1:dim(moa_values_data_frame)[1])
+{  
+  for ( i in (1:dim(moa_indeces_data_frame)[2]))
+  {
+    moa_values_data_frame[j,i] = mean(prism[,which(colnames(prism)==rownames(new_prism.treat[moa_indeces_data_frame[j,i],]))],na.rm=TRUE)
+  }
+  }
+```
+```{r}
+#molecule_values_data_frame[is.na(molecule_values_data_frame)]=0
+moa_values_data_frame
+```
+
+```{r}
+#Molecules.Scores = matrix(,nrow=length(drug_molecules), ncol=1)
+#for(r in (1:dim(molecule_values_data_frame)[1]))
+#{
+ # Molecules.Scores[r]=
+#}
+#Molecules.Scores
+Molecules.Scores = rowMeans(molecule_values_data_frame, na.rm=TRUE)
+Molecules.Scores=as.data.frame(Molecules.Scores)
+colnames(Molecules.Scores) = "Mean effect on cell growth"
+Molecules.Scores
+```
+```{r}
+Moa.Scores = rowMeans(moa_values_data_frame, na.rm=TRUE)
+Moa.Scores=as.data.frame(Moa.Scores)
+colnames(Moa.Scores) = "Mean effect on cell growth"
+Moa.Scores
+```
+
+```{r}
+#these are the treatments
+rownames(new_prism.treat[r,])
+
+```
+```{r}
+#which of these have +/- effect on cell growth?
+vector=c()
+for ( i in t)
+ vector.append=prism[1,t]
+vector
+```
+```{r}
+#g=prism[1,r]
+for ( i in r)
+  vector[i]=prism[1,r[i]]
+vector
+mean(vector)
+sum(vector)
+#do this for every molecule
+```
+```{r}
+threshold = -0.5
+mean_values_gene_proliferation = apply(prism.achilles, 2, mean)
+important_genes_prolif = which(mean_values_gene_proliferation < threshold)
+names(important_genes_prolif)
+```
+```{r}
+#see the treatments of each of these genes in order to check their score on cell growth in the prism table
+target_genes_indices = which(new_prism.treat$target %in% names(important_genes_prolif))
+target_genes = new_prism.treat$target[target_genes_indices]
+frequencies_of_target_genes = table(target_genes)
+our_target_genes = which(frequencies_of_target_genes > 0)
+our_target_genes
+#these are the relevant genes for cell proliferation that can be targeted by drugs. Let's see which drugs target these genes...
+```
+```{r}
+names(our_target_genes)
+#new_prism.treat$target
+indices_treatments = which(new_prism.treat$target %in% names(our_target_genes))
+indices_treatments
+```
+
+```{r}
+#new_prism.treat$target[indices_treatments]
+#x = new_prism.treat$target[indices_treatments]
+#x 
+rownames(new_prism.treat[indices_treatments,])
+### These are the drugs that target the important genes! Let's see their scores on cell growth!
+```
+```{r}
+drugs_targeting_important_genes = rownames(new_prism.treat[indices_treatments,])
+indices_drugs = which( colnames(prism) %in% drugs_targeting_important_genes )
+drugs_scores = prism[,indices_drugs]
+```
+```{r}
+#length(indices_drugs)
+drugs_scores
+```
+```{r}
+#Let's see the overall scores of each of these drugs
+y = apply(drugs_scores, 2, mean, na.rm=TRUE)
+length(y)
+#which( y < 0)
+length(which (y<0))
+292/624 * 100
+# => 46.8% (almost 50%) of the drugs targeting the important genes can be used to inhibit cell growth!!!
+#y
+important_drugs_dataframe=as.data.frame(y)
+colnames(important_drugs_dataframe)="Mean effect on cell growth"
+important_drugs_dataframe
+```
+```{r}
+#Now I want to check which drugs have a negative effect on the cell growth of liver cancer cell lines
+#let's order the prism.cl first so that it matches the prism table order:
+#order_actual = rownames (prism.cl)
+#order_target = rownames(prism)
+#new_prism.treat= prism.treat[match(order_target, order_actual),]
+#new_prism.treat
+
+```
+
+```{r}
+length(rownames(prism.cl))
+length(prism.cl[,1])
+copy_prism.cl = prism.cl
+```
+```{r}
+#now we've set the rownames of the prism.cl dataframe (a copy of it) to match the cell line identificators
+rownames(copy_prism.cl) = prism.cl[,1]
+copy_prism.cl
+
+```
+```{r}
+order_actual_cl = rownames (copy_prism.cl)
+order_target_cl = rownames(prism)
+new_prism.cl= copy_prism.cl[match(order_target_cl, order_actual_cl),]
+new_prism.cl
+```
+```{r}
+#Let's check which cell lines are marked by liver cancer
+liver_cancer_cl_indices = which(new_prism.cl$disease == "Liver Cancer")
+length(liver_cancer_cl_indices) #yes, 17 cell lines, this is true
+liver_cancer_cl_indices
+
+```
+```{r}
+rownames(new_prism.cl[liver_cancer_cl_indices,])
+liver_cancer_cell_lines = rownames(new_prism.cl[liver_cancer_cl_indices,])
+```
+```{r}
+which ( rownames(prism) %in% liver_cancer_cell_lines) == liver_cancer_cl_indices
+liver_cancer_cell_lines_scores = prism[liver_cancer_cl_indices,]
+apply(liver_cancer_cell_lines_scores, 1, mean, na.rm=TRUE)
+# Now let's describe a bit the dataset of liver cancer we have
+```
+
+```{r}
+length(which (apply(liver_cancer_cell_lines_scores, 1, mean, na.rm=TRUE) < 0))
+16/17 * 100
+# => 94.12% (almost 95%) of the liver cancer cell lines are particularly susceptible to drug treatment => this disease type is very responsive to drugs
+```
+```{r}
+#let's compare this with the whole prism dataset (see how susceptible the most cell lines are)
+apply(prism, 1, mean, na.rm=TRUE)
+
+```
+```{r}
+#However, the general susceptibility of the cell lines to the drugs is high enough, so this is not a discovery that is particular to the liver cancer cell lines
+
+
+length(which(apply(prism, 1, mean, na.rm=TRUE) < 0))
+dim(prism)
+#471/481 * 100
+length(which(apply(prism, 1, mean, na.rm=TRUE) < 0))/dim(prism)[1] *100
+```
+```{r}
+length(which(apply(prism, 2, mean, na.rm=TRUE) < 0))
+dim(prism)
+length(which(apply(prism, 2, mean, na.rm=TRUE) < 0))/dim(prism)[2] *100
+#3373/11168*100
+```
+```
+
+```{r}
+#Let's see which drugs have the strongest negative influence on liver cancer cell lines (and maybe which genes they target)
+#apply(liver_cancer_cell_lines_scores, 2, mean, na.rm=TRUE)
+threshold2 = -0.6
+length(which (apply(liver_cancer_cell_lines_scores, 2, mean, na.rm=TRUE)< threshold2))
+
+```
+```{r}
+# so 2242 of 11168 drugs have a significant negative impact on the cell growth of the liver cancer cells. Which genes do they target?
+important_drugs_liver_cancer = names(which (apply(liver_cancer_cell_lines_scores, 2, mean, na.rm=TRUE)< threshold2))
+important_drugs_liver_cancer
+```
+
+```{r}
+indeces_important_drugs_liver_cancer = which ( rownames(new_prism.treat) %in% important_drugs_liver_cancer)
+liver_cancer_genes = new_prism.treat$target[indeces_important_drugs_liver_cancer]
+unique(liver_cancer_genes)
+```
+
+```{r}
+class(liver_cancer_genes)
+table(liver_cancer_genes)
+```
+```{r}
+#which molecules / mechanisms of action are involved in the drugs with the strongest negative impact on cell growth?
+threshold=-0.5
+indeces_molecules_drugs = which(apply(prism,2,mean,na.rm=TRUE) < threshold )
+
+#rownames(new_prism.treat[indeces_molecules_drugs,]) == names(indeces_molecules_drugs)
+#new_prism.treat$name[indeces_molecules_drugs]
+#table(new_prism.treat$name[indeces_molecules_drugs])
+threshold3 = 5
+which(table(new_prism.treat$name[indeces_molecules_drugs])>threshold3)
+which(table(new_prism.treat$moa[indeces_molecules_drugs])>threshold3)
+#conc? indeces? stoert datensatz?
+```
+
+```{r}
+threshold3 = 50
+table(new_prism.treat$name)[which(table(new_prism.treat$name[indeces_molecules_drugs])>threshold3)]
+```
+
