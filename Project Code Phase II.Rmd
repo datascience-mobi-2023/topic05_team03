@@ -451,7 +451,226 @@ Giant cell tumor of bone (GCT) is a destructive neoplasm of uncertain etiology t
 #p63 regulates cell proliferation and cell cycle progression-associated genes in stromal cells of giant cell tumor of the bone
 Lau CP, Ng PK, Li MS, Tsui SK, Huang L, Kumta SM. p63 regulates cell proliferation and cell cycle progression‑associated genes in stromal cells of giant cell tumor of the bone. Int J Oncol. 2013 Feb;42(2):437-43. doi: 10.3892/ijo.2012.1727. Epub 2012 Dec 3. PMID: 23229819; PMCID: PMC3583652.
 
-====>
+====> How are these genes expressed in liver cancer?
+```{r}
+print("=====ACHILLES=======")
+mean(new_prism.achilles$SOX10[which(rownames(new_prism.achilles) %in% liver_cancer_cell_lines)], na.rm=TRUE)
+mean(new_prism.achilles$HNF1B[which(rownames(new_prism.achilles) %in% liver_cancer_cell_lines)], na.rm=TRUE)
+mean(new_prism.achilles$TP63[which(rownames(new_prism.achilles) %in% liver_cancer_cell_lines)], na.rm=TRUE)
+
+print("=====EXPRESSION=====")
+mean(liver_cancer_cell_lines_expression$SOX10)
+mean(liver_cancer_cell_lines_expression$HNF1B)
+mean(liver_cancer_cell_lines_expression$TP63)
+
+print("=====CORRELATION====")
+cor(new_prism.achilles_wona$SOX10[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)], new_prism.exp_wona$SOX10[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)])
+cor(new_prism.achilles_wona$HNF1B[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)], new_prism.exp_wona$HNF1B[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)])
+cor(new_prism.achilles_wona$TP63[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)], new_prism.exp_wona$TP63[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)])
+
+
+```
+```{r}
+#computing the correlation between two vectors of unequal length by complementing the missing values by the mean of the vactor's values
+x = new_prism.achilles_wona$SOX10[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)]
+y = new_prism.exp_wona$SOX10[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)]
+if ( length(x) != length(y))
+{
+  diff = abs(length(x)-length(y))
+  if(length(x)>length(y))
+  {
+    for (j in 1:diff)
+    {
+      y[length(y)+j] = mean(y, na.rm=TRUE)
+    }
+  }
+  else if(length(y)>length(x))
+  {
+    for (k in 1:diff)
+    {
+      x[length(x)+k] = mean(x, na.rm=TRUE)
+    }
+  }
+}
+cor(x,y)
+```
+```{r}
+print("=====ACHILLES=======")
+mean(new_prism.achilles$SOX10[which(rownames(new_prism.achilles) %in% liver_cancer_cell_lines)], na.rm=TRUE)
+mean(new_prism.achilles$HNF1B[which(rownames(new_prism.achilles) %in% liver_cancer_cell_lines)], na.rm=TRUE)
+mean(new_prism.achilles$TP63[which(rownames(new_prism.achilles) %in% liver_cancer_cell_lines)], na.rm=TRUE)
+
+print("=====EXPRESSION=====")
+mean(liver_cancer_cell_lines_expression$SOX10)
+mean(liver_cancer_cell_lines_expression$HNF1B)
+mean(liver_cancer_cell_lines_expression$TP63)
+
+print("=====CORRELATION====")
+x = new_prism.achilles_wona$SOX10[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)]
+y = new_prism.exp_wona$SOX10[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)]
+if ( length(x) != length(y))
+{
+  diff = abs(length(x)-length(y))
+  if(length(x)>length(y))
+  {
+    for (j in 1:diff)
+    {
+      y[length(y)+j] = mean(y, na.rm=TRUE)
+    }
+  }
+  else if(length(y)>length(x))
+  {
+    for (k in 1:diff)
+    {
+      x[length(x)+k] = mean(x, na.rm=TRUE)
+    }
+  }
+}
+cor(x,y)
+
+x = new_prism.achilles_wona$HNF1B[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)]
+y = new_prism.exp_wona$HNF1B[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)]
+if ( length(x) != length(y))
+{
+  diff = abs(length(x)-length(y))
+  if(length(x)>length(y))
+  {
+    for (j in 1:diff)
+    {
+      y[length(y)+j] = mean(y, na.rm=TRUE)
+    }
+  }
+  else if(length(y)>length(x))
+  {
+    for (k in 1:diff)
+    {
+      x[length(x)+k] = mean(x, na.rm=TRUE)
+    }
+  }
+}
+cor(x,y)
+
+x = new_prism.achilles_wona$TP63[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)]
+y = new_prism.exp_wona$TP63[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)]
+if ( length(x) != length(y))
+{
+  diff = abs(length(x)-length(y))
+  if(length(x)>length(y))
+  {
+    for (j in 1:diff)
+    {
+      y[length(y)+j] = mean(y, na.rm=TRUE)
+    }
+  }
+  else if(length(y)>length(x))
+  {
+    for (k in 1:diff)
+    {
+      x[length(x)+k] = mean(x, na.rm=TRUE)
+    }
+  }
+}
+cor(x,y)
+
+```
+
+
+```{r}
+#create df?
+#liver_cancer_cell_lines
+#new_prism.achilles$SOX10["ACH-000217"]
+#df=new_prism.achilles$SOX10[liver_cancer_cell_lines]
+#new_prism.achilles$SOX10
+which(rownames(prism.achilles)=="ACH-000217")
+prism.achilles$SOX10[54]
+which(rownames(new_prism.achilles) == "ACH-000217")
+new_prism.achilles$SOX10[77]
+new_prism.achilles$A1BG[1]
+```
+###Now let us see if there is any correlation between the copy numbers of a gene and its expression rate
+```{r}
+#First, let's order the prism.cnv dataframe so that it:
+#i) matches the prism dataset order in rows
+#ii) matches the achilles dataset in columns
+copy_prism.cnv = prism.cnv
+order_actual_cnv_rows = rownames (copy_prism.cnv)
+order_target_cnv_rows = rownames(prism)
+new_prism.cnv= copy_prism.cnv[match(order_target_cnv_rows, order_actual_cnv_rows),]
+new_prism.cnv
+
+#copy_prism.cnv = prism.cnv
+#order_actual_cnv_columns = colnames (copy_prism.cnv)
+#order_target_cnv_columns = colnames(prism.exp)
+#new_prism.cnv= copy_prism.cnv[match(order_target_cnv_columns, order_actual_cnv_columns),]
+#new_prism.cnv
+#column ordering doesn't work, nevermind. Ask Ana
+
+```
+```{r}
+#Now let's calcultate the correlation between the expression rates of the genes in all cell lines and their copy number variations!
+#First, let's see which genes are common to the 2 datasets:
+common_genes_cnv_exp=c()
+for (i in 1:length(colnames(new_prism.exp)))
+{
+  if(colnames(new_prism.exp)[i] %in% colnames(new_prism.cnv) == "TRUE")
+  {
+    common_genes_cnv_exp[i] = colnames(new_prism.exp)[i]
+  }
+}
+length(common_genes_cnv_exp)
+sum(is.na(common_genes_cnv_exp)) #okay perfect, so the genes which aren't common to both datasets have been set to NA
+#But where are 4 values? Ask Ana
+```
+```{r}
+#Let's remove these NAs from the common_genes vector:
+common_genes_cnv_exp_wona = common_genes_cnv_exp[complete.cases(common_genes_cnv_exp)]
+length(common_genes_cnv_exp_wona)
+```
+```{r}
+#Let's compute the correlation between the gene expression and their copy number variations just like we did it for the expression and KO achilles scores:
+cor_exp_cnv= c()
+for ( i in 1:length(common_genes_cnv_exp_wona))
+{
+  cor_exp_cnv[i] = cor(new_prism.exp[,common_genes_cnv_exp_wona[i]], new_prism.cnv[,common_genes_cnv_exp_wona[i]])
+}
+cor_exp_cnv
+#okay, we get NAs, let's see how we solve this problem...
+```
+
+```{r}
+#Let's remove the NAs:
+#For new_prism.cnv, because for new_prism.exp we already did it
+
+new_prism.cnv_wona=new_prism.cnv
+genes_cnv=colnames(new_prism.cnv)
+for (i in 1:length(genes_cnv))
+{
+  new_prism.cnv_wona[,genes_cnv[i]][which(is.na(new_prism.cnv[,genes_cnv[i]]))] = mean(new_prism.cnv[,genes_cnv[i]], na.rm=TRUE)
+}
+```
+
+```{r}
+#Let's try again to compute the correlation between exp and cnv:
+cor_exp_cnv= c()
+for ( i in 1:length(common_genes_cnv_exp_wona))
+{
+  cor_exp_cnv[i] = cor(new_prism.exp_wona[,common_genes_cnv_exp_wona[i]], new_prism.cnv_wona[,common_genes_cnv_exp_wona[i]])
+}
+cor_exp_cnv
+#okay great! Let's plot it
+#> length(cor_exp_cnv)
+#[1] 18559
+```
+
+```{r}
+plot(cor_exp_cnv, ylab="Achilles-Expression Correlation", xlab="Genes") + axis(1,at=1:length(common_genes_wona), labels=common_genes_wona, las=2)
+#how to set graph size so that labels fit on the screen at their respective places?
+ + abline(h = mean(cor_exp_cnv, na.rm=TRUE), col='red')
+#What does the error mean? Ask Ana
+```
+```{r}
+#HEATMAP? 
+```
 
 
 ```{r}
