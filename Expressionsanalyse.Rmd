@@ -1,0 +1,171 @@
+title: "Expressionsanalyse"
+output: html_document
+date: "2023-06-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+# We filter the liver cancer cell lines from the table:
+liver_cancer_cl_indices
+liver_cancer_cell_lines
+```
+
+
+
+```{r}
+# What are the highly expressed genes for liver cancer?
+# we should first set a threshold (>13) to find out the high expressed genes. We try to minimize the number of genes as much as we can to find out the most highly expressed genes.
+
+liver_genes_1 = colnames(new_prism.exp[which(new_prism.exp[77,]> 13)])
+liver_genes_2 = colnames(new_prism.exp[which(new_prism.exp[79,]> 13)])
+liver_genes_3 = colnames(new_prism.exp[which(new_prism.exp[121,]> 13)])
+liver_genes_4 = colnames(new_prism.exp[which(new_prism.exp[139,]> 13)])
+liver_genes_5 = colnames(new_prism.exp[which(new_prism.exp[151,]> 13)])
+liver_genes_6 = colnames(new_prism.exp[which(new_prism.exp[166,]> 13)])
+liver_genes_7 = colnames(new_prism.exp[which(new_prism.exp[192,]> 13)])
+liver_genes_8 = colnames(new_prism.exp[which(new_prism.exp[195,]> 13)])
+liver_genes_9 = colnames(new_prism.exp[which(new_prism.exp[198,]> 13)])
+liver_genes_10 = colnames(new_prism.exp[which(new_prism.exp[204,]> 13)])
+liver_genes_11 = colnames(new_prism.exp[which(new_prism.exp[221,]> 13)])
+liver_genes_12 = colnames(new_prism.exp[which(new_prism.exp[255,]> 13)])
+liver_genes_13 = colnames(new_prism.exp[which(new_prism.exp[258,]> 13)])
+liver_genes_14 = colnames(new_prism.exp[which(new_prism.exp[280,]> 13)])
+liver_genes_15 = colnames(new_prism.exp[which(new_prism.exp[311,]> 13)])
+liver_genes_16 = colnames(new_prism.exp[which(new_prism.exp[378,]> 13)])
+liver_genes_17 = colnames(new_prism.exp[which(new_prism.exp[480,]> 13)])
+
+
+liver_genes_1[which(liver_genes_1 %in% liver_genes_2)]
+liver_genes_2[which(liver_genes_2 %in% liver_genes_3)]
+liver_genes_3[which(liver_genes_3 %in% liver_genes_4)]
+
+
+for (x in liver_cancer_cl_indices)
+  print(colnames(new_prism.exp[which(new_prism.exp[x,]>5)]))
+```
+
+```{r}
+# which highly expressed genes are mostly common?
+
+liver_genes_total = c(liver_genes_3, liver_genes_4, liver_genes_5, liver_genes_6, liver_genes_7, liver_genes_8, liver_genes_9, liver_genes_10, liver_genes_11, liver_genes_12, liver_genes_13, liver_genes_14, liver_genes_15, liver_genes_16, liver_genes_17)
+
+summary(as.factor(liver_genes_total))
+names(sort(summary(as.factor(liver_genes_total))))
+liver_genes_vector = names(sort(summary(as.factor(liver_genes_total))))
+order(summary(as.factor(liver_genes_vector)))
+
+important_liver_genes = liver_genes_vector[11:17]
+important_liver_genes
+
+
+# let's look if the commonly high expressed genes in liver cancer are also highly expressed in other cancer cell lines or not.
+
+hist(new_prism.exp$MT.CO3)
+hist(new_prism.exp$MT.CO2)
+hist(new_prism.exp$MT.ATP8)
+hist(new_prism.exp$MT.ATP6)
+hist(new_prism.exp$MT.ND4L)
+hist(new_prism.exp$MT.CO1)
+hist(new_prism.exp$MT.ND4)
+
+mean(new_prism.exp$MT.CO3, na.rm = TRUE)
+
+
+matrix_gene_expression_important_liver_genes_all_cell_lines = cbind(new_prism.exp$MT.CO3, new_prism.exp$MT.CO2, new_prism.exp$MT.ATP8, new_prism.exp$MT.ATP6, new_prism.exp$MT.ND4L, new_prism.exp$MT.CO1, new_prism.exp$MT.ND4)
+colnames(matrix_gene_expression_important_liver_genes_all_cell_lines) <- c("MT.CO3", "MT.CO2", "MT.ATP8", "MT.ATP6", "MT.ND4L", "MT.CO1", "MT.ND4")
+rownames(matrix_gene_expression_important_liver_genes_all_cell_lines) <- c(new_prism.cl$DepMap_ID)
+
+matrix_gene_expression_important_liver_genes_all_cell_lines
+
+```
+
+
+```{r}
+x = liver_genes_1[which(liver_genes_1 %in% liver_genes_2)]
+for ( i in 1:length(liver_genes_vector)-1)
+{
+  s= liver_genes_vector[i]#[which (x %in% liver_genes_vector[i+1])]
+}
+s
+```
+
+
+```{r}
+## compute the variance for all genes across all samples
+topVar_all_genes = apply(new_prism.exp, 2, var, na.rm=T)
+summary(topVar_all_genes)
+
+# We now want to find the top 1% with the highest variance
+
+## what is the 99% quantile of the variance?
+q99_all_genes = quantile(topVar_all_genes, probs = 0.99, na.rm = T)
+q99_all_genes
+
+#So let us select all rows (genes) with a variance higher than `q99`:
+
+i.topvar_all_genes = which(topVar_all_genes >= q99_all_genes)
+i.topvar_all_genes
+
+## only select the genes with a variance in the top 1%
+new_prism.exp.topVar = new_prism.exp[,i.topvar_all_genes]
+dim(new_prism.exp.topVar)
+# Out of 19177 different genes 192 of them have a variance in the top 1%.
+
+cor.mat = cor(new_prism.exp.topVar, method="spearman")
+cor.mat
+
+library(pheatmap)
+pheatmap(cor.mat, show_rownames = FALSE, show_colnames = FALSE, na.rm = T)
+
+library(pheatmap)
+pheatmap::pheatmap(new_prism.exp.topVar,
+                   show_colnames = F,
+                   show_rownames = F)
+
+# Which genes are these?
+genes_with_topVar = colnames(new_prism.exp.topVar)
+genes_with_topVar
+
+```
+
+```{r}
+# are these genes highly expressed because of their gene copy numbers?
+
+# we can look for an example to start:
+# CD74 is a highly expressed gene. How about its copy number?
+
+hist(new_prism.cnv$CD74)
+mean(new_prism.cnv$CD74)
+
+for (x in genes_with_topVar)
+    print(mean(new_prism.cnv$x), na.rm = T)
+
+mean(new_prism.cnv$IL6)
+
+```
+```
+
+

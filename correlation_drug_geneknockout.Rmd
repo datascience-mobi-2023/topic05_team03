@@ -1,6 +1,15 @@
-```{r}
-#zuerst die ccls ordnen, sodass bei prism und bei prism.achilles die gleiche reihenfolge der CCLs ist
+Gelerntes
+na.rm überspringt nur die werte, es löscht sie nicht 
 
+
+
+```{r}
+
+#this chuck contains code that wont be used
+
+#zuerst die ccls ordnen, sodass bei prism und bei prism.achilles die gleiche reihenfolge der CCLs ist
+#versuchen zuerst die correlation herauszufinden und dann die nas rausnehmen 
+#die schnittmenge zwischen. prsim und achilles (350 geimeinsame gene )
 #schleife, sodasss alle medikamente einmal druchgeangen werden
 i=1
 for (i in 1:dim(prism[2])) 
@@ -34,45 +43,53 @@ for (i in 1:dim(prism[2]))
 ```{r}
 #lets try it with apply
 
-lapply(prism, 2, function(x){
-  #fist remove all NAs
-  x.remove = which(is.na(x))
-  x.new.prism = x[-i.remove]
- 
-   lapply(prism.achilles, 2, function(y){
+#first the order of the CCls of prism is matched with the order of prism.achilles
+copy_prism = prism
+
+order_actual_prism=rownames(copy_prism)
+order_target_prism = rownames(prism.achilles)
+new_prism= copy_prism[match(order_target_prism, order_target_prism),]
+#new_prism
+
+apply(new_prism[,1:3], 2, function(x){ #first loop iterates through all columns of prism
+  
+   apply(prism.achilles[,1:5], 2, function(y){#second loop iterates through all columns of prsim.achilles for each gene
       #fist remove all NAs
-  y.remove = which(is.na(y))
-  y.new.prism = y[-i.remove]
-  cor(x,y, method = "spearman")
-   })#funktion, die über x und alle spalten von achilles corrm berechnet
-  
-  
+    x.remove = which(is.na(x)) #detecting the postitions of the drugs scores with missing values
+    y.remove = which(is.na(y))#detecting the postitions of the gene knockout scores with missing values
+    y.new.prism = y[c(-y.remove, -x.remove)] #vector with CCls removed that had NA eitherr in y or x
+    x.new.prism = x[c(-y.remove, -x.remove)]#vector with CCls removed that had NA eitherr in y or x
+  cor(x.new.prism,y.new.prism, method = "spearman")
+  #plot(x.new.prism, y.new.prism)
+   }
+   )
 }
 )
-
-#creatinng a function
-achilles_it <- 
+ 
+# 
 ```
 
 ```{r}
 #so wir wollen testen, ob das überhaupt lappt SIIUUUUU
 v1 <- c(1,2,3,4,5,6,7)
 remove.d = which(v1 == 2)
+reomove.t = which(v1 == 3)
 v2 = v1[-remove.d]
 v2
-
+v3 = v1[c(-remove.d, -reomove.t)]
+v3
 ```
 
 
 ```{r}
 #data ordnen: die ordung der zeilen von prsim.achilles wird an die ordnung der zeilen von prism angepasst
 
-copy_achilles= prism.achilles
+#copy_achilles= prism.achilles
 
-order_actual_achilles= rownames(copy_achilles)
-order_target_achilles = rownames(prism)
-new_prsim.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
-new_prsim.achilles
+#order_actual_achilles= rownames(copy_achilles)
+#order_target_achilles = rownames(prism)
+#new_prsim.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+#new_prsim.achilles
 ```
 ```{r}
 #data ordnen: die ordung der zeilen von prsim wird an die ordnung der zeilen von prism. achilles angepasst
@@ -82,8 +99,8 @@ copy_prism = prism
 
 order_actual_prism=rownames(copy_prism)
 order_target_prism = rownames(prism.achilles)
-new_prsim= copy_prism[match(order_actual_achilles, order_target_achilles),]
-new_prsim
+new_prism= copy_prism[match(order_target_prism, order_target_prism),]
+new_prism
 ```
 
 
@@ -106,6 +123,9 @@ new.prism
 ```
 
 
+```{r}
+
+```
 
 
 ```{r}
@@ -118,5 +138,54 @@ cor(x,y, method = "spearman")
 #just checking if all CCls of the achilles dataset are represented in the prism dataset
 matching.CLL = rownames(prism) %in% rownames(prism.achilles)
 sum(matching.CLL)
+```
+
+```{r}
+length(apply(prism, 1, mean))
+```
+
+```{r}
+#test area
+h1 = c(1,2,3,2,3,NA)
+h2 = c(2,NA,2,4,3,5)
+h3 = c(2,4,NA,3,5,4)
+h4 = c(2,2,3,2,4,5)
+
+H <- data.frame(h1,h2,h3,h4)
+H
+
+cor(H, method = "spearman")
+```
+```{r}
+#just some tests
+
+x= prism[,2]
+y= prism[,80]
+
+
+    x.remove = which(is.na(x))
+    x.remove
+    y.remove = which(is.na(y))
+    y.remove
+    
+sum(is.na(x))
+sum(is.na(y))
+    y.new.prism = y[c(-y.remove, -x.remove)]#y is a vector of gene knockout scores without NAs for all CCLs
+    y.new.prism
+  x.new.prism = x[c(-y.remove, -x.remove)]
+  x.new.prism
+  cor(x.new.prism,y.new.prism, method = "spearman")
+   
+   
+
+
+```
+```{r}
+#testing if the "2" is reoved twice and NO IT IS NOT :)
+v1 <- c(1,2,3,4,5,6,7,8,9,10)
+rmv1 <- c(1,2)
+rmv2 <- c(2,3)
+
+v1[c(-rmv1, -rmv2)]
 ```
 
