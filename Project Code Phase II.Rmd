@@ -663,13 +663,16 @@ cor_exp_cnv
 ```
 
 ```{r}
-plot(cor_exp_cnv, ylab="Achilles-Expression Correlation", xlab="Genes") + axis(1,at=1:length(common_genes_wona), labels=common_genes_wona, las=2)
+plot(cor_exp_cnv, ylab="Cnv-Expression Correlation", xlab="Genes") + axis(1,at=1:length(common_genes_wona), labels=common_genes_wona, las=2)
 #how to set graph size so that labels fit on the screen at their respective places?
  + abline(h = mean(cor_exp_cnv, na.rm=TRUE), col='red')
 #What does the error mean? Ask Ana
 ```
 ```{r}
 #HEATMAP? 
+#heatmap(cor_exp_cnv)
+#ok so the argument of a heatmap must be a matrix
+#nvm Ana said she looks into that question because I wanted to correlate 2 vectors with each other. Let's see what else we can do
 ```
 
 
@@ -689,5 +692,24 @@ table(c(1,2,3,4,5), c(6,7,8,9,10))
 cor(table(c(1,2,3,4,5), c(6,7,8,9,10)))
 as.table(cor(c(1,2,3,4,5), c(6,7,8,9,10)))
 #so the first vector is the rows and the second vector is the columns
+```
+
+```{r}
+#ok, let's see what else we can do, let's categorize the mutations we have
+#prism.snv
+total_mutation_types = as.data.frame(table(factor(prism.snv$Variant_Classification)))
+```
+
+```{r}
+#These are all the mutations of the liver cancer cell lines
+#which(prism.snv$DepMap_ID %in% liver_cancer_cell_lines)
+#Let's see their variant classifications
+prism.snv$Variant_Classification[which(prism.snv$DepMap_ID %in% liver_cancer_cell_lines)]
+total_mutation_types_liver_cancer = as.data.frame(table(factor(prism.snv$Variant_Classification[which(prism.snv$DepMap_ID %in% liver_cancer_cell_lines)])))
+```
+
+```{r}
+barplot(table(factor(prism.snv$Variant_Classification)))
+barplot(table(factor(prism.snv$Variant_Classification[which(prism.snv$DepMap_ID %in% liver_cancer_cell_lines)])))
 ```
 
