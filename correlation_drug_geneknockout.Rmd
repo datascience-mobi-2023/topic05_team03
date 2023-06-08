@@ -51,7 +51,7 @@ order_target_prism = rownames(prism.achilles)
 new_prism= copy_prism[match(order_target_prism, order_target_prism),]
 #new_prism
 
-apply(new_prism[,1:3], 2, function(x){ #first loop iterates through all columns of prism
+cor_drug_gene <- apply(new_prism[,1:3], 2, function(x){ #first loop iterates through all columns of prism
   
    apply(prism.achilles[,1:5], 2, function(y){#second loop iterates through all columns of prsim.achilles for each gene
       #fist remove all NAs
@@ -68,6 +68,76 @@ apply(new_prism[,1:3], 2, function(x){ #first loop iterates through all columns 
  
 # 
 ```
+
+```{r}
+#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
+
+# first we want to extract the drug gene pairs that are highly correlated 
+
+T = 0.8 #setting a threshold
+
+copy_prism
+actual_prism = rownames(prism)
+target_prism = rownames(prism.exp)
+treatment_prism = copy_prism[match(actual_prism, target_prism),]
+
+apply(cor_drug_gene, function(p){ #p is one correlation value
+ 
+   if (p > T)#filtering correlations below threshold
+    treatment = colname(p) 
+    i=treatment_prism[,treatment] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
+    apply(prism.exp,2,function(k){#iterating through prism.exp
+      i_remove = which(is.na(i))#removing NAs from the prsim column, prism.exp doesnt have any NA
+      cleaned_i = i[-i_remove]
+      cleaned_k = k[-i_remove]
+      cor(cleaned_i, cleaned_k, method = "spearman")
+    }
+    )
+}
+)
+```
+
+```{r}
+#same point, but with gene fitness
+#lets find some biomarkers, that are linked with gene fitness of ccls
+#CCLs are the same in cnv and prism
+# first we want to extract the drug gene pairs that are highly correlated 
+
+T = 0.8 #setting a threshold
+
+rm <- which(rownames(prism.achilles) %in% rownames(prism.exp))
+prism_achilles_congruent = prism.achilles[rm,] #selceting the ccl in achilles screen that also exist in prism.cnv
+
+copy_prism.exp = copy(prism.exp)
+actual_prism.exp = rownames(prism.exp)
+target_prism.exp = rownames(prism_achilles_congruent)
+prism.achilles_clean = copy_prism.exp[match(actual_prism.cnv, target_prism.cnv),]
+
+apply(cor_drug_gene, function(p){ #p is one correlation value
+ 
+   if (p > T)#filtering correlations below threshold
+    gene_knockout = colname(p) 
+    w=prism.achilles_clean[,gene_knockout] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
+    apply(prism.exp,2,function(k){#iterating through prism.exp
+    w.remove = which(is.na(w))
+    w_clean = w[-w.remove]
+    k_clean = k[-w.remove] 
+      cor(w_clean, k_clean, method = "spearman")
+    }
+    )
+}
+)
+```
+
+```{r}
+#CORRELATION DRUG SENSITIVITY/ CNV
+
+copy_prism.cnv = copy(prism.cnv)
+actual_prism.cnv = rownames(prism.cnv)
+target_prism.cnv = rownames(prism_achilles_congruent)
+prism.achilles_clean = copy_prism.cnv[match(actual_prism.cnv, target_prism.cnv),]
+```
+
 
 ```{r}
 #so wir wollen testen, ob das überhaupt lappt SIIUUUUU
@@ -175,10 +245,10 @@ sum(is.na(y))
   x.new.prism = x[c(-y.remove, -x.remove)]
   x.new.prism
   cor(x.new.prism,y.new.prism, method = "spearman")
-   
-   
+```
 
 
+```{r}
 ```
 ```{r}
 #testing if the "2" is reoved twice and NO IT IS NOT :)
@@ -187,5 +257,23 @@ rmv1 <- c(1,2)
 rmv2 <- c(2,3)
 
 v1[c(-rmv1, -rmv2)]
+```
+```{r}
+#SPIELPLATZ
+sum(rownames(prism.achilles) %in% rownames(prism.exp))
+rm <- which(rownames(prism.achilles) %in% rownames(prism.exp))
+rownames(prism.achilles[rm,])
+
+
+```
+
+```{r}
+#SPIELPLATZ
+sum(is.na(prism.cnv))
+sum(rownames(prism.achilles) %in% rownames(prism.cnv))
+sum(rownames(prism) %in% rownames(prism.cnv))
+
+sum(rownames(prism.cnv) %in% rownames(prism.achilles))
+sum(rownames(prism.cnv) %in% rownames(prism))
 ```
 
