@@ -713,3 +713,148 @@ barplot(table(factor(prism.snv$Variant_Classification)))
 barplot(table(factor(prism.snv$Variant_Classification[which(prism.snv$DepMap_ID %in% liver_cancer_cell_lines)])))
 ```
 
+#The ultimate goal is to create a regression model to predict a drug's efficiency on a cell line. Therefore, we need to know what are the variables that have an impact on a drug's efficiency. These can be the concentration, the genes they target, the expression level of the genes, the mutations, the copy number variations etc.
+
+###Let's start with the gene expression
+##We want to calculate the correlation between the drug's efficiency on the cell lines and the expression of the genes that these drugs target. A strong anticorrelation would suggest that the higher the target genes are expressed, the better a drug would inhibit the growth of a cell line
+
+```{r}
+#Correlation expression target genes- drug efficiency
+#create a data frame with the drug names and their targets
+drugs_and_targets = data.frame(rownames(new_prism.treat), new_prism.treat$target)
+sum(is.na(drugs_and_targets))
+dim(drugs_and_targets)
+#so we have a total of 11168 rows, out of which 2264 are NA values. We should have a data frame with 8904 NA-free rows
+drugs_and_targets_wona = na.omit(drugs_and_targets)
+dim(drugs_and_targets_wona)[1]
+#Yes, we got it!
+colnames(drugs_and_targets_wona) = c("drug", "target.gene")
+
+```
+```{r}
+#Now we want to access the expression rate of the gene and the corresponding targeting drug name from this data frame and calculate their expression rates
+for (r in 1:dim(drugs_and_targets_wona)[1])
+{
+  cor(new_prism.exp[,drugs_and_targets_wona$target.gene], prism[,drugs_and_targets_wona$drug])
+}
+```
+
+```{r}
+# it's ok, this expression creates a data frame with the expression values of each targeted gene for each cell line
+test=new_prism.exp[,drugs_and_targets_wona$target.gene]
+# and this one seems to do the same for the durgs and the prism scores, but let's get rid of the NA values
+test2 = prism[,drugs_and_targets_wona$drug]
+sum(is.na(test))
+sum(is.na(test2))
+dim(test)
+dim(test2)
+#ok, they have the same dimensions, so just replacing the NAs should allow for a correlation
+#NOTE: comment on how the replacement of NAs by the mean of the data group influences the correlation values
+```
+```{r}
+expression_scores = test
+drugs_sensitivity_scores = test2
+#expression_scores[which(is.na(expressionscores))] = mean()
+
+trgt_genes=colnames(expression_scores)
+for (i in 1:length(trgt_genes))
+{
+  expression_scores[,trgt_genes[i]][which(is.na(expression_scores[,trgt_genes[i]]))] = mean(expression_scores[,trgt_genes[i]], na.rm=TRUE)
+}
+
+drugs=colnames(drugs_sensitivity_scores)
+for (j in 1:length(drugs))
+{
+  drugs_sensitivity_scores[,drugs[j]][which(is.na(drugs_sensitivity_scores[,drugs[j]]))] = mean(drugs_sensitivity_scores[,drugs[j]], na.rm=TRUE)
+}
+
+#we have a problem, the columns with same genes just show the same values - well that is ok because there is only ONE gene that can be targeted multiple times
+#but for drugs sensitivity no...
+```
+
+```{r}
+#Let's try now
+cor_exp_prism = c()
+for (r in 1:dim(drugs_and_targets_wona)[1])
+{
+  cor_exp_prism[r] = cor(expression_scores[,r],drugs_sensitivity_scores[,r])
+}
+```
+```{r}
+plot(cor_exp_prism) + abline(h = mean(cor_exp_prism, na.rm=TRUE), col='red')
+mean(cor_exp_prism, na.rm=TRUE)
+#okay, this can't be... let's remove the NA lines instead of setting them to the mean
+```
+
+```{r}
+expression_scores_na.rm = na.omit(test)
+#na.omit() only omits the rows, so the number of columns should remain the same
+drugs_sensitivity_scores_na.rm = na.omit(test2)
+#okay, here we have a problem because apparently every row had NAs...
+#the cor.test() function removes NAs and only accepts vectors as input! Perfect!!!
+```
+
+```{r}
+expression_scores_wna = test
+drugs_sensitivity_scores_wna = test2
+cor_exp_prism2 = c()
+
+for (r in 1:dim(drugs_and_targets_wona)[1])
+{
+  #cor_exp_prism[r] = cor.test(expression_scores_wna[,r], drugs_sensitivity_scores_wna[,r])$estimate
+  if(sum(is.na(drugs_sensitivity_scores_wna[,r])) == 481)
+    next
+  cor_exp_prism2[r] = cor.test(drugs_sensitivity_scores_wna[,r], expression_scores_wna[,r])$estimate
+}#okay so they have to be numeric vectors. Let's understand how this function works first...
+#okay, seems to have worked...
+```
+
+```{r}
+#Let's see...
+cor_exp_prism2
+cor_exp_prism2[633]
+#great, the missing values are set to NA and thus the indexation is conserved!
+```
+```{r}
+plot(cor_exp_prism2)
+mean(cor_exp_prism2, na.rm=TRUE)
+mean(cor_exp_prism, na.rm=TRUE)
+#ok it's a bit higher than with the mean replacing the NA values, but still low...
+```
+```{r}
+#is there anything relevant at all here?
+#which(abs(cor_exp_prism2) > 0.2 )
+#which(abs(cor_exp_prism2) > 0.3 )
+drugs_and_targets_wona[which(abs(cor_exp_prism2) > 0.2 ),]
+
+
+```
+
+
+```{r}
+#why is drugs_sensitivity_scores not a numeric vector???
+#clasa = c()
+#for( i in 1:dim(drugs_and_targets_wona)[1])
+#{
+#  clasa[i] = class(drugs_sensitivity_scores_wna[,i])
+#}
+#clasa == "numeric"
+# aaa we have some NA columns!
+sum(is.na(drugs_sensitivity_scores_wna[,633]))
+#yep, all of them are NAs...
+```
+
+
+```{r}
+cor.test(x=expression_scores_wna[,1], y=drugs_sensitivity_scores_wna[,1])
+names(cor.test(x=expression_scores_wna[,1], y=drugs_sensitivity_scores_wna[,1]))
+cor.test(x=expression_scores_wna[,1], y=drugs_sensitivity_scores_wna[,1])$estimate
+```
+```{r}
+#Okay so result:
+#These are the drugs and their target genes that show a somewhat relevant corelation ("is the drug more efficient when the target gene is over -expressed?")
+#22 total pairs, 11 are above 0.2, 11 are below.
+
+drugs_and_targets_wona[which(abs(cor_exp_prism2) > 0.2 ),]
+```
+
