@@ -858,3 +858,30 @@ cor.test(x=expression_scores_wna[,1], y=drugs_sensitivity_scores_wna[,1])$estima
 drugs_and_targets_wona[which(abs(cor_exp_prism2) > 0.2 ),]
 ```
 
+
+
+
+```{r}
+#Let's check the correlation between the expression of a gene and the sensitivity of the drugs
+cor_indivgen_prism = c()
+for( i in 1:length(colnames(new_prism.exp_wona)))
+{
+  for( j in 1:length(colnames(prism)))
+  {
+    cor_indivgen_prism[i] = cor(new_prism.exp_wona[,i], prism[,j])
+  }
+}
+cor_indivgen_prism
+```
+```{r}
+#the variation of the drug sensitivity
+plot(apply(prism,2,var,na.rm=TRUE))
+prism[,which(apply(prism,2,var,na.rm=TRUE)>3)]
+```
+
+```{r}
+#the variation of gene expression
+plot(apply(new_prism.exp,2,var,na.rm=TRUE))
+new_prism.exp[,which(apply(new_prism.exp,2,var,na.rm=TRUE)>10)]
+```
+
