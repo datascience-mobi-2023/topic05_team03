@@ -592,19 +592,20 @@ new_prism.achilles$A1BG[1]
 #First, let's order the prism.cnv dataframe so that it:
 #i) matches the prism dataset order in rows
 #ii) matches the achilles dataset in columns
-copy_prism.cnv = prism.cnv
-order_actual_cnv_rows = rownames (copy_prism.cnv)
-order_target_cnv_rows = rownames(prism)
-new_prism.cnv= copy_prism.cnv[match(order_target_cnv_rows, order_actual_cnv_rows),]
-new_prism.cnv
-
 #copy_prism.cnv = prism.cnv
-#order_actual_cnv_columns = colnames (copy_prism.cnv)
-#order_target_cnv_columns = colnames(prism.exp)
+#order_actual_cnv_rows = rownames (copy_prism.cnv)
+#order_target_cnv_rows = rownames(prism)
+#new_prism.cnv= copy_prism.cnv[match(order_target_cnv_rows, order_actual_cnv_rows),]
+#new_prism.cnv
+
+copy_prism.cnv = prism.cnv
+order_actual_cnv_columns = colnames (copy_prism.cnv)
+order_target_cnv_columns = colnames(prism.achilles)
 #new_prism.cnv= copy_prism.cnv[match(order_target_cnv_columns, order_actual_cnv_columns),]
 #new_prism.cnv
 #column ordering doesn't work, nevermind. Ask Ana
-
+new_prism.cnv = copy_prism.cnv[,intersect(order_actual_cnv_columns, order_target_cnv_columns)]
+new_prism.cnv
 ```
 ```{r}
 #Now let's calcultate the correlation between the expression rates of the genes in all cell lines and their copy number variations!
