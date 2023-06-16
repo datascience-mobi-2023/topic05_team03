@@ -283,6 +283,42 @@ apply(correlation_matrix,c(1,2), function(p){
 ```
 
 
+```{r}
+#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY CCCCCCCCCC
+
+high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
+
+
+correlation_highcor <- function(data, data2, correlation_matrix, T){
+copy_data = data
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_matched = copy_data[match(actual_data, target_data),]
+same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+data_organized = data_matched[same_rownames,]
+data2 = pre_data2[same_rownames,]
+
+
+
+
+apply(correlation_matrix,2, function(p){
+  
+    if (p > T){#filtering correlations below threshold
+      i=data_organized[,correlation_matrix[p]]
+      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
+        i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+       # print(correlation_data_data2)
+        })
+}#closes if 
+}#closes fun
+)
+}
+```
 
 
 
@@ -564,5 +600,55 @@ apply(cleanedpri,2, function(x){
   if(x>0.5){
     print(x)}})
 
+```
+```{r}
+#i want to reduce the dimensionslaity of the correlaion matrix to those columns that contain high correlationvalues, i just need the names of columns(drugs) with high correlation 
+
+#first create a vektor with the sum the vlues above a threshold
+
+threshold.machine <- function(x){
+  which
+  
+}
+
+
+apply(cor_drugs_genes, 2, )
+```
+
+```{r}
+correlations_above_threshold <- apply(cor_drugs_genes, 2, function(x){
+  sum(x>0.4)
+})
+
+#correlations_above_threshold
+#morethannull = correlations_above_threshold[isTRUE(correlations_above_threshold>0)]
+#morethannullcorrelations_above_threshold
+
+sum(correlations_above_threshold>0)
+which(correlations_above_threshold>0)
+sum(cor_drugs_genes>0.4)
+highly_correlated_drugs = correlations_above_threshold[which(correlations_above_threshold>0)]
+highly_correlated_drugs
+
+#hist(correlations_above_threshold, breaks = 400, xlim = range(c(0.5:5)), )
+
+```
+
+```{r}
+fef = c(1,2,3,4,5,6,7,8,9)
+fef2= c(1,2,3,4,5,6,7,8,9)
+fef3= c(4,5,4,3,5,6,45,4,4)
+feframe <- data.frame(fef, fef2, fef3)
+fuf <- apply(feframe, 2, function(x){
+  sum(x > 5)})
+fuf
+#hist(fuf, breaks = 30)
+sum(fuf>3)
+fef3>3
+
+```
+
+```{r}
+hist(apply(prism.exp, 2, mean), breaks= 200)
 ```
 
