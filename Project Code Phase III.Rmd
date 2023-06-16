@@ -27,3 +27,14 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+#Okay, let's get started into creating that prediction model we talked about...
+#Let's integrate all the knowledge we've gathered here:
+
+1.Cell lines with mutations of specific genes do play a role
+2.Copy number variation and expression are bound together
+3.Expression of target genes of drugs and sensibility to specific drugs?
+
+#Let's separate factors of drug sensitivity according to their contribution to general variation
+#PCA, clustering, linear regression
