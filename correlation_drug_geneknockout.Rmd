@@ -98,8 +98,8 @@ highvar <- function(dataframe, qx){
 #trying to make a more general code so i dont have to code everything separately
 
 #first the order of the CCls of prism is matched with the order of prism.achilles
-dataset1 = prism
-dataset2 = prism.achilles
+dataset1 = prism.achilles
+dataset2 = prism
 
 correlation <- function(dataset1, dataset2){
 
@@ -209,10 +209,10 @@ apply(correlation_matrix, function(p){ #p is one correlation value
 
 # first we want to extract the drug gene pairs that are highly correlated 
 
-T = 0.4 #setting a threshold
-data = prism       #prism or achilles
-pre_data2 = highvar(prism.exp, 0.95) #gene expression or cnv
-correlation_matrix = cor_drugs_genes
+#T = 0.4 #setting a threshold
+#data = prism       #prism or achilles
+#pre_data2 = highvar(prism.exp, 0.95) #gene expression or cnv
+#correlation_matrix = cor_drugs_genes
 
 #defining function
 
@@ -229,30 +229,105 @@ data2 = pre_data2[same_rownames,]
 for (m in (1:dim(correlation_matrix)[1])){
   for (n in (1:dim(correlation_matrix)[2])){
   
-    if (correlation_matrix[m, n]> T)#filtering correlations below threshold
+    if (correlation_matrix[m, n]> T){#filtering correlations below threshold
       i=data_organized[,n]
-      apply(data2 ,2,function(k){#iterating through prism.exp
+      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
+        i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+        print(correlation_data_data2)
+    #return(correlation_data_data2)
+      }
+      )
+      #print(correlation_data_data2)
+    }
+}
+}
+}
+```
+
+```{r}
+#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY BBBBBBBBBB
+
+
+correlation_highcor <- function(data, data2, correlation_matrix, T){
+copy_data = data
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_matched = copy_data[match(actual_data, target_data),]
+same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+data_organized = data_matched[same_rownames,]
+data2 = pre_data2[same_rownames,]
+
+
+apply(correlation_matrix,c(1,2), function(p){
+  
+    if (p > T){#filtering correlations below threshold
+      i=data_organized[,correlation_matrix[p]]
+      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
+        i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+       # print(correlation_data_data2)
+        })
+}#closes if 
+}#closes fun
+)
+}
+```
+
+
+
+
+
+```{r}
+highcor_prism_exp = correlation_highcor(prism, highvar(prism.exp, 0.998), cor_drugs_genes, 0.5)
+show(highcor_prism_exp)
+
+#ergebnis ist 
+#wert
+#wert
+#wert
+#NULL
+```
+
+
+```{r}
+# CODE OPTIMIZATION
+data2 = prism.exp
+
+apply(data2 ,2,function(k){#iterating through prism.exp
+        
+        i=prism[1:length(k),200]
         i_remove = which(is.na(i))
         k_remove = which(is.na(k))
         cleaned_i = i[c(-i_remove, -k_remove)]
         cleaned_k = k[c(-k_remove, -i_remove)]
         correlation_data_data2 <- cor(cleaned_i, cleaned_k, method = "spearman")
     
-    #return(correlation_data_data2)
-      }
-      )
-}
-}
-}
-```
-
-```{r}
-highcor_prism_exp = correlation_highcor(highvar(prism, 0.95), highvar(prism.exp, 0.95), cor_drugs_genes, 0.5)
-show(highcor_prism_exp)
+})
 ```
 
 
 ```{r}
+#CODEPOTIMIERUNG
+correlation_matrix = cor_drugs_genes
+for (m in (1:dim(correlation_matrix)[1])){
+  for (n in (1:dim(correlation_matrix)[2])){
+    if(correlation_matrix[m,n] > 0.4){
+      f = rownames(correlation_matrix)
+      g = colnames(correlation_matrix)
+      i = f[m]
+      j = f[n]
+      print(j)
+    }
+  }}
 ```
 
 
@@ -387,7 +462,7 @@ new.prism
 
 
 ```{r}
-
+pheatmap(cor_drugs_genes)
 ```
 
 
@@ -477,6 +552,17 @@ cor_
 prism.var = apply(prism, 2, var)
 q90 = quantile(prism.var, probs = 0.9)
 topvari = which(prism.var > q90)
+
+```
+
+
+```{r}
+z = 1:3
+remo = which(is.na(prism[z,]))
+cleanedpri = prism[z,][-remo]
+apply(cleanedpri,2, function(x){
+  if(x>0.5){
+    print(x)}})
 
 ```
 
