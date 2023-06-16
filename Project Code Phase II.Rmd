@@ -957,3 +957,10 @@ TTN codes for Titin (large protein, skeleton muscle, sarcomeres, heart etc), is 
 #This article is interesting because of the used methods!
 
 Shen J, Qi L, Zou Z, Du J, Kong W, Zhao L, Wei J, Lin L, Ren M, Liu B. Identification of a novel gene signature for the prediction of recurrence in HCC patients by machine learning of genome-wide databases. Sci Rep. 2020 Mar 10;10(1):4435. doi: 10.1038/s41598-020-61298-3. PMID: 32157118; PMCID: PMC7064516.
+
+
+
+```{r}
+#Are these mutations relevant in the context of drug sensitivity? Let's see...
+```
+
