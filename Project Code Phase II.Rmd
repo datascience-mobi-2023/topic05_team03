@@ -592,19 +592,20 @@ new_prism.achilles$A1BG[1]
 #First, let's order the prism.cnv dataframe so that it:
 #i) matches the prism dataset order in rows
 #ii) matches the achilles dataset in columns
-copy_prism.cnv = prism.cnv
-order_actual_cnv_rows = rownames (copy_prism.cnv)
-order_target_cnv_rows = rownames(prism)
-new_prism.cnv= copy_prism.cnv[match(order_target_cnv_rows, order_actual_cnv_rows),]
-new_prism.cnv
-
 #copy_prism.cnv = prism.cnv
-#order_actual_cnv_columns = colnames (copy_prism.cnv)
-#order_target_cnv_columns = colnames(prism.exp)
+#order_actual_cnv_rows = rownames (copy_prism.cnv)
+#order_target_cnv_rows = rownames(prism)
+#new_prism.cnv= copy_prism.cnv[match(order_target_cnv_rows, order_actual_cnv_rows),]
+#new_prism.cnv
+
+copy_prism.cnv = prism.cnv
+order_actual_cnv_columns = colnames (copy_prism.cnv)
+order_target_cnv_columns = colnames(prism.achilles)
 #new_prism.cnv= copy_prism.cnv[match(order_target_cnv_columns, order_actual_cnv_columns),]
 #new_prism.cnv
 #column ordering doesn't work, nevermind. Ask Ana
-
+new_prism.cnv = copy_prism.cnv[,intersect(order_actual_cnv_columns, order_target_cnv_columns)]
+new_prism.cnv
 ```
 ```{r}
 #Now let's calcultate the correlation between the expression rates of the genes in all cell lines and their copy number variations!
@@ -853,7 +854,7 @@ cor.test(x=expression_scores_wna[,1], y=drugs_sensitivity_scores_wna[,1])$estima
 ```{r}
 #Okay so result:
 #These are the drugs and their target genes that show a somewhat relevant corelation ("is the drug more efficient when the target gene is over -expressed?")
-#22 total pairs, 11 are above 0.2, 11 are below.
+#22 total pairs, 11 are above 0.2, 11 are below -0.2.
 
 drugs_and_targets_wona[which(abs(cor_exp_prism2) > 0.2 ),]
 ```
@@ -885,3 +886,123 @@ plot(apply(new_prism.exp,2,var,na.rm=TRUE))
 new_prism.exp[,which(apply(new_prism.exp,2,var,na.rm=TRUE)>10)]
 ```
 
+#What are the genes that hold the most mutations in the dataset? (Whihc genes are most frequently mutated?) And in liver cancer?
+#which cell line has the most mutations?
+#which gene is most frequently mutated across all cell lines?
+```{r}
+length(unique(prism.snv$DepMap_ID))
+#ok, so all cell lines have mutations
+length(table(prism.snv$DepMap_ID)[which(table(prism.snv$DepMap_ID)!=0)])
+
+```
+```{r}
+#which cell line has the most mutations?
+cl_most_mutations = as.data.frame(sort(table(prism.snv$DepMap_ID), decreasing = TRUE))
+cl_most_mutations
+
+```
+```{r}
+#which liver cancer cell lines have the most mutations?
+which(sort(table(liver_cancer_cell_lines_mutations$DepMap_ID), decreasing=TRUE)!=0)
+cl_liver_most_mutations = as.data.frame(sort(table(liver_cancer_cell_lines_mutations$DepMap_ID), decreasing=TRUE))
+#liver_cancer_cell_lines_mutations[which(sort(table(liver_cancer_cell_lines_mutations$DepMap_ID), decreasing=TRUE)!=0)]
+cl_liver_most_mutations
+```
+```{r}
+#length(prism.snv$Hugo_Symbol) this is 452695
+#length(unique(prism.snv$Hugo_Symbol)) this is 19318
+#so there must be 433377 repetitions
+#sort(table(unique(prism.snv$Hugo_Symbol)), decreasing = TRUE)
+#table(unique(prism.snv$Hugo_Symbol))
+#library('plyr')
+#xxd = count(unique(prism.snv$Hugo_Symbol))
+#length(xxd$freq)
+#of course the frequencies are 1 !!! You have to apply the table() function on the vector with repetitions, not on the unique one! :)))
+#table(prism.snv$Hugo_Symbol)
+#table(prism.snv$Hugo_Symbol)["TP53"]
+#Yessss! It works!
+#=> now we get the genes that are most mutated in the dataset:
+#mutated_genes = sort(table(prism.snv$Hugo_Symbol), decreasing = TRUE)
+#length(mutated_genes) this is 19541
+#sum(mutated_genes == 0) this is 223
+#19541 - 223 = 19318, which is the length of the unique(blablabla)
+#so we have to get rid of the genes with 0 values:
+mutated_genes = sort(table(prism.snv$Hugo_Symbol), decreasing = TRUE)[which(sort(table(prism.snv$Hugo_Symbol), decreasing = TRUE)!=0)]
+#length(mutated_genes) this is 19318
+#Yesss, it works!
+mutated_genes
+```
+```{r}
+# And now, we get the genes that are most mutated in our specific liver cancer data set:
+#sort(table(liver_cancer_cell_lines_mutations$Hugo_Symbol), decreasing = TRUE)
+#length(unique(liver_cancer_cell_lines_mutations$Hugo_Symbol)) this is 487
+#length(liver_cancer_cell_lines_mutations$Hugo_Symbol) this is 498
+#sum(table(liver_cancer_cell_lines_mutations$Hugo_Symbol)>1) this is 10
+liver_mutated_genes = sort(table(liver_cancer_cell_lines_mutations$Hugo_Symbol), decreasing=TRUE)[which(sort(table(liver_cancer_cell_lines_mutations$Hugo_Symbol), decreasing = TRUE)!=0)]
+liver_mutated_genes
+#length(liver_mutated_genes) this is 487
+```
+
+```{r}
+#Now let's visualize the data and plot the distributions of the mutations of the genes in each case we calculated:
+barplot(liver_mutated_genes)
+#plot(liver_mutated_genes)
+#hist(liver_mutated_genes)
+barplot(mutated_genes)
+#plot(mutated_genes)
+#hist(mutated_genes)
+```
+#The gene TTN appears to have a significant role in the transformation of these cells. Let's find out more about it...
+TTN codes for Titin (large protein, skeleton muscle, sarcomeres, heart etc), is often mutated in liver cancer 
+#This article is interesting because of the used methods!
+
+Shen J, Qi L, Zou Z, Du J, Kong W, Zhao L, Wei J, Lin L, Ren M, Liu B. Identification of a novel gene signature for the prediction of recurrence in HCC patients by machine learning of genome-wide databases. Sci Rep. 2020 Mar 10;10(1):4435. doi: 10.1038/s41598-020-61298-3. PMID: 32157118; PMCID: PMC7064516.
+
+
+
+```{r}
+#Are these mutations relevant in the context of drug sensitivity? Let's see...
+```
+```{r}
+#Ana's response to vector correlation:
+#computing the correlation between two vectors of unequal length by complementing the missing values by the mean of the vactor's values
+x = new_prism.achilles_wona$SOX10[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)]
+y = new_prism.exp_wona$SOX10[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)]
+if ( length(x) != length(y))
+{
+  diff = abs(length(x)-length(y))
+  if(length(x)>length(y))
+  {
+    for (j in 1:diff)
+    {
+      y[length(y)+j] = mean(y, na.rm=TRUE)
+    }
+  }
+  else if(length(y)>length(x))
+  {
+    for (k in 1:diff)
+    {
+      x[length(x)+k] = mean(x, na.rm=TRUE)
+    }
+  }
+}
+cor(x,y)
+```
+Hi Ana!
+The analysis which checks the correlation between the expression levels of specific target genes and the sensitivity of cell lines to drugs targeting that specific gene goes from line 719 to line 860. I wonder, why the overall correlation is very close to 0 and what can I do to show the actual connection between the two, as we discussed in our meeting on Wednesday (the idea was that by checking the correlation, I might miss another connection that is not expressed through the correlation). Could you please take a look at it when you find some moments?
+
+To access the object new_prism.treat, please run this:
+order_actual = rownames (prism.treat)
+order_target = colnames(prism)
+new_prism.treat= prism.treat[match(order_target, order_actual),]
+new_prism.treat
+
+To access the object new_prism.exp, please run this:
+copy_prism.exp = prism.exp
+order_actual_exp = rownames (copy_prism.exp)
+order_target_exp = rownames(prism)
+new_prism.exp= copy_prism.exp[match(order_target_exp, order_actual_exp),]
+new_prism.exp
+
+All the other variables are declared inside these lines. Thank you lots and have a nice week-end!
+Robert ;)
