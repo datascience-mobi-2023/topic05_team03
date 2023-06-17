@@ -1,6 +1,15 @@
-```{r}
-#zuerst die ccls ordnen, sodass bei prism und bei prism.achilles die gleiche reihenfolge der CCLs ist
+Gelerntes
+na.rm überspringt nur die werte, es löscht sie nicht 
 
+
+
+```{r}
+
+#this chuck contains code that wont be used
+
+#zuerst die ccls ordnen, sodass bei prism und bei prism.achilles die gleiche reihenfolge der CCLs ist
+#versuchen zuerst die correlation herauszufinden und dann die nas rausnehmen 
+#die schnittmenge zwischen. prsim und achilles (350 geimeinsame gene )
 #schleife, sodasss alle medikamente einmal druchgeangen werden
 i=1
 for (i in 1:dim(prism[2])) 
@@ -34,45 +43,517 @@ for (i in 1:dim(prism[2]))
 ```{r}
 #lets try it with apply
 
-lapply(prism, 2, function(x){
-  #fist remove all NAs
-  x.remove = which(is.na(x))
-  x.new.prism = x[-i.remove]
- 
-   lapply(prism.achilles, 2, function(y){
+#first the order of the CCls of prism is matched with the order of prism.achilles
+copy_prism = prism
+
+order_actual_prism=rownames(copy_prism)
+order_target_prism = rownames(prism.achilles)
+new_prism= copy_prism[match(order_target_prism, order_target_prism),]
+#new_prism
+
+cor_drug_gene <- apply(new_prism[,1:3], 2, function(x){ #first loop iterates through all columns of prism
+  
+   apply(prism.achilles[,1:5], 2, function(y){#second loop iterates through all columns of prsim.achilles for each gene
       #fist remove all NAs
-  y.remove = which(is.na(y))
-  y.new.prism = y[-i.remove]
-  cor(x,y, method = "spearman")
-   })#funktion, die über x und alle spalten von achilles corrm berechnet
-  
-  
+    x.remove = which(is.na(x)) #detecting the postitions of the drugs scores with missing values
+    y.remove = which(is.na(y))#detecting the postitions of the gene knockout scores with missing values
+    y.new.prism = y[c(-y.remove, -x.remove)] #vector with CCls removed that had NA eitherr in y or x
+    x.new.prism = x[c(-y.remove, -x.remove)]#vector with CCls removed that had NA eitherr in y or x
+  cor(x.new.prism,y.new.prism, method = "spearman")
+  #plot(x.new.prism, y.new.prism)
+   }
+   )
 }
 )
+cor_drug_gene
 
-#creatinng a function
-achilles_it <- 
+# 
 ```
+
+
+```{r}
+#reducing the dataset achilles by filtering the high variance genes
+
+#achilles.var = apply(prism.achilles, 2, var, na.rm = TRUE)
+#quantile(achilles.var, c(0.4,0.5,0.6), na.rm = TRUE)
+#hist(achilles.var)
+#q95 = quantile(achilles.var, 0.95, na.rm = TRUE)
+#names_highvar_genes = colnames(prism.achilles[which(achilles.var>q95)])
+#achilles.highvar = prism.achilles[,names_highvar_genes]
+
+#highvar <- function(dataframe, qx){
+ # dataframe.var = apply(dataframe, 2, var, na.rm = TRUE)
+ # quan = quantile(dataframe, probs =  qx, na.rm = TRUE)
+#  names_highvar = colnames(dataframe)[which(dataframe.var>quan)]
+ # dataframe[,names_highvar]
+}
+
+#dim(highvar(prism.exp, 0.9))
+```
+
+
+```{r}
+dataframe=prism.exp
+qx = 0.9
+ highvar <- function(dataframe, qx){ dataframe.var = apply(dataframe, 2, var, na.rm = TRUE)
+  quan = quantile(dataframe.var, probs =  qx, na.rm = TRUE)
+  names_highvar = colnames(dataframe)[which(dataframe.var>quan)]
+  dataframe[,names_highvar]
+}
+
+dim(highvar(prism.exp, 0.8))
+```
+
+
+```{r}
+#trying to make a more general code so i dont have to code everything separately
+
+#first the order of the CCls of prism is matched with the order of prism.achilles
+dataset1 = prism.achilles
+dataset2 = prism
+
+correlation <- function(dataset1, dataset2){
+
+copy_dataset1 = dataset1
+
+order_actual_dataset1 = rownames(copy_dataset1)
+order_target_dataset1 = rownames(dataset2)
+new_dataset1= copy_dataset1[match(order_target_dataset1, order_target_dataset1),]
+#new_prism
+
+
+cor_dataset1_dataset2 <- apply(new_dataset1, 2, function(x){ #first loop iterates through all columns of prism
+  
+   apply(dataset2, 2, function(y){#second loop iterates through all columns of prsim.achilles for each gene
+      #fist remove all NAs
+    x.remove = which(is.na(x)) #detecting the postitions of the drugs scores with missing values
+    y.remove = which(is.na(y))#detecting the postitions of the gene knockout scores with missing values
+    y_cleaned = y[c(-y.remove, -x.remove)] #vector with CCls removed that had NA eitherr in y or x
+    x_cleaned = x[c(-y.remove, -x.remove)]#vector with CCls removed that had NA eitherr in y or x
+  cor(x_cleaned,y_cleaned, method = "spearman")
+  
+   }
+   )
+}
+)
+}
+cor_dataset1_dataset2
+```
+```{r}
+prism.achilles.highvar = highvar(prism.achilles, 0.9)
+prism.highvar = highvar(prism, 0.9)
+cor_drugs_genes = correlation(prism.highvar, achilles.highvar)
+cor_drugs_genes
+```
+
+
+
+
+```{r}
+#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
+
+# first we want to extract the drug gene pairs that are highly correlated 
+
+T = 0.4 #setting a threshold
+
+copy_prism
+actual_prism = rownames(prism)
+target_prism = rownames(prism.exp)
+treatment_prism = copy_prism[match(actual_prism, target_prism),]
+
+apply(cor_drug_gene, function(p){ #p is one correlation value
+ 
+   if (p > T)#filtering correlations below threshold
+    treatment = colname(p) 
+    i=treatment_prism[,treatment] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
+    apply(prism.exp,2,function(k){#iterating through prism.exp
+      i_remove = which(is.na(i))#removing NAs 
+      cleaned_i = i[-i_remove]
+      cleaned_k = k[-i_remove]
+      cor(cleaned_i, cleaned_k, method = "spearman")
+    }
+    )
+}
+)
+```
+
+
+
+
+```{r}
+#AUTOMATISIERUNG 
+#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
+
+# first we want to extract the drug gene pairs that are highly correlated 
+
+T = 0.4 #setting a threshold
+data = prism       #prism or achilles
+data2 = highvar(prism.exp, 0.95) #gene expression or cnv
+correlation_matrix = cor_drugs_genes
+copy_data = data
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_organized = copy_data[match(actual_data, target_data),]
+
+apply(correlation_matrix, function(p){ #p is one correlation value
+ 
+   if (p > T)#filtering correlations below threshold
+    treatment = colname(p)
+    i=data_organized[,treatment] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
+    apply(data2 ,2,function(k){#iterating through prism.exp
+      i_remove = which(is.na(i))
+      k_remove = which(is.na(k))
+      cleaned_i = i[c(-i_remove, -k.remove)]
+      cleaned_k = k[c(-i_remove, -k.remove)]
+      cor(cleaned_i, cleaned_k, method = "spearman")
+    }
+    )
+}
+)
+```
+
+```{r}
+#apply(correlation_matrix,2,mean)
+#colnames(correlation_matrix)
+#AUTOMATISIERUNG 
+#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
+
+# first we want to extract the drug gene pairs that are highly correlated 
+
+#T = 0.4 #setting a threshold
+#data = prism       #prism or achilles
+#pre_data2 = highvar(prism.exp, 0.95) #gene expression or cnv
+#correlation_matrix = cor_drugs_genes
+
+#defining function
+
+correlation_highcor <- function(data, data2, correlation_matrix, T){
+copy_data = data
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_matched = copy_data[match(actual_data, target_data),]
+same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+data_organized = data_matched[same_rownames,]
+data2 = pre_data2[same_rownames,]
+
+
+for (m in (1:dim(correlation_matrix)[1])){
+  for (n in (1:dim(correlation_matrix)[2])){
+  
+    if (correlation_matrix[m, n]> T){#filtering correlations below threshold
+      i=data_organized[,n]
+      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
+        i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+        print(correlation_data_data2)
+    #return(correlation_data_data2)
+      }
+      )
+      #print(correlation_data_data2)
+    }
+}
+}
+}
+```
+
+```{r}
+#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY BBBBBBBBBB
+
+
+correlation_highcor <- function(data, data2, correlation_matrix, T){
+copy_data = data
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_matched = copy_data[match(actual_data, target_data),]
+same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+data_organized = data_matched[same_rownames,]
+data2 = pre_data2[same_rownames,]
+
+
+apply(correlation_matrix,c(1,2), function(p){
+  
+    if (p > T){#filtering correlations below threshold
+      i=data_organized[,correlation_matrix[p]]
+      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
+        i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+       # print(correlation_data_data2)
+        })
+}#closes if 
+}#closes fun
+)
+}
+```
+
+
+```{r}
+#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY CCCCCCCCCC
+
+high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
+
+
+correlation_highcor <- function(data, data2, correlation_matrix, T){
+copy_data = data
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_matched = copy_data[match(actual_data, target_data),]
+same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+data_organized = data_matched[same_rownames,]
+data2 = pre_data2[same_rownames,]
+
+
+
+
+apply(correlation_matrix,2, function(p){
+  
+    if (p > T){#filtering correlations below threshold
+      i=data_organized[,correlation_matrix[p]]
+      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
+        i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+       # print(correlation_data_data2)
+        })
+}#closes if 
+}#closes fun
+)
+}
+```
+
+```{r}
+#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY  AND THE COMPRIMIZED DATASET DDDDDDDDD
+
+#high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
+
+
+correlation_highcor <- function(data, pre_data2){
+copy_data = data[, highly_correlated_drugs]
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_matched = copy_data[match(actual_data, target_data),]
+same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+data_organized = data_matched[same_rownames,]
+data2 = pre_data2[same_rownames,]
+
+
+
+
+apply(data_organized,2, function(i){
+     # i=data_organized[,correlation_matrix[p]]
+      apply(data2 ,2,function(k){#iterating through prism.exp
+        #i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+       # print(correlation_data_data2)
+        })
+}#closes if 
+)
+}#closes fun
+```
+
+
+
+```{r}
+prism.exp.0.9 = highvar(prism.exp, 0.9)
+highcor_prism_exp = correlation_highcor(prism, prism.exp.0.9)
+dim(highcor_prism_exp)
+
+#ergebnis ist 
+#wert
+#wert
+#wert
+#NULL
+```
+
+```{r}
+#SOME DESCRIPTIVE STATISITCS ON THE CORREALTIONS BETWEEN PRISM.EXP AND PRISM
+q90prism = quantile(highcor_prism_exp, probs = 0.9)
+
+a = rownames(highcor_prism_exp)
+b = colnames(highcor_prism_exp)
+for (m in 1:dim(highcor_prism_exp)[1]){
+  for(n in 1:dim(highcor_prism_exp)[2]){
+    if(highcor_prism_exp[m,n] > q90prism){
+      ah = a[m]
+      bh = b[n]
+      ch = highcor_prism_exp[m,n]
+      
+      print(paste(ah, "coorelates with", bh, "->", ch))
+      
+    }
+    
+    
+  }
+}
+
+```
+
+
+
+
+
+```{r}
+highcor_prism_exp = correlation_highcor(prism, highvar(prism.exp, 0.998), cor_drugs_genes, 0.5)
+show(highcor_prism_exp)
+
+#ergebnis ist 
+#wert
+#wert
+#wert
+#NULL
+```
+```{r}
+#FINDING CORRELATIONS BETWEEN IMPORTANT DRUGS AND CNV EEEEEEEEE
+
+#high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
+high_cor_drugs_cnv <- correlation_highcor(prism, highvar(prism.cnv, 0.9))
+```
+
+
+```{r}
+# CODE OPTIMIZATION
+data2 = prism.exp
+
+apply(data2 ,2,function(k){#iterating through prism.exp
+        
+        i=prism[1:length(k),200]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        correlation_data_data2 <- cor(cleaned_i, cleaned_k, method = "spearman")
+    
+})
+```
+
+
+```{r}
+#CODEPOTIMIERUNG
+correlation_matrix = cor_drugs_genes
+for (m in (1:dim(correlation_matrix)[1])){
+  for (n in (1:dim(correlation_matrix)[2])){
+    if(correlation_matrix[m,n] > 0.4){
+      f = rownames(correlation_matrix)
+      g = colnames(correlation_matrix)
+      i = f[m]
+      j = f[n]
+      print(j)
+    }
+  }}
+```
+
+
+```{r}
+#AUTOMATISIERUNG
+#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
+
+# first we want to extract the drug gene pairs that are highly correlated 
+
+T = 0.8 #setting a threshold
+
+copy_prism
+actual_prism = rownames(prism)
+target_prism = rownames(prism.exp)
+treatment_prism = copy_prism[match(actual_prism, target_prism),]
+cor_matrix = cor_drugs_genes
+
+
+apply(cor_matrix, function(p){ #p is one correlation value
+ 
+   if (p > T)#filtering correlations below threshold
+    treatment = colname(p) 
+    i=treatment_prism[,treatment] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
+    apply(prism.exp,2,function(k){#iterating through prism.exp
+      i_remove = which(is.na(i))#removing NAs from the prsim column, prism.exp doesnt have any NA
+      cleaned_i = i[-i_remove]
+      cleaned_k = k[-i_remove]
+      cor(cleaned_i, cleaned_k, method = "spearman")
+    }
+    )
+}
+)
+```
+
+
+
+
+```{r}
+#same point, but with gene fitness
+#lets find some biomarkers, that are linked with gene fitness of ccls
+#CCLs are the same in cnv and prism
+# first we want to extract the drug gene pairs that are highly correlated 
+
+T = 0.8 #setting a threshold
+
+rm <- which(rownames(prism.achilles) %in% rownames(prism.exp))
+prism_achilles_congruent = prism.achilles[rm,] #selceting the ccl in achilles screen that also exist in prism.cnv
+
+copy_prism.exp = copy(prism.exp)
+actual_prism.exp = rownames(prism.exp)
+target_prism.exp = rownames(prism_achilles_congruent)
+prism.achilles_clean = copy_prism.exp[match(actual_prism.cnv, target_prism.cnv),]
+
+apply(cor_drug_gene, function(p){ #p is one correlation value
+ 
+   if (p > T)#filtering correlations below threshold
+    gene_knockout = colname(p) 
+    w=prism.achilles_clean[,gene_knockout] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
+    apply(prism.exp,2,function(k){#iterating through prism.exp
+    w.remove = which(is.na(w))
+    w_clean = w[-w.remove]
+    k_clean = k[-w.remove] 
+      cor(w_clean, k_clean, method = "spearman")
+    }
+    )
+}
+)
+```
+
+```{r}
+#CORRELATION DRUG SENSITIVITY/ CNV
+
+copy_prism.cnv = copy(prism.cnv)
+actual_prism.cnv = rownames(prism.cnv)
+target_prism.cnv = rownames(prism_achilles_congruent)
+prism.achilles_clean = copy_prism.cnv[match(actual_prism.cnv, target_prism.cnv),]
+```
+
 
 ```{r}
 #so wir wollen testen, ob das überhaupt lappt SIIUUUUU
 v1 <- c(1,2,3,4,5,6,7)
 remove.d = which(v1 == 2)
+reomove.t = which(v1 == 3)
 v2 = v1[-remove.d]
 v2
-
+v3 = v1[c(-remove.d, -reomove.t)]
+v3
 ```
 
 
 ```{r}
 #data ordnen: die ordung der zeilen von prsim.achilles wird an die ordnung der zeilen von prism angepasst
 
-copy_achilles= prism.achilles
+#copy_achilles= prism.achilles
 
-order_actual_achilles= rownames(copy_achilles)
-order_target_achilles = rownames(prism)
-new_prsim.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
-new_prsim.achilles
+#order_actual_achilles= rownames(copy_achilles)
+#order_target_achilles = rownames(prism)
+#new_prsim.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+#new_prsim.achilles
 ```
 ```{r}
 #data ordnen: die ordung der zeilen von prsim wird an die ordnung der zeilen von prism. achilles angepasst
@@ -82,11 +563,11 @@ copy_prism = prism
 
 order_actual_prism=rownames(copy_prism)
 order_target_prism = rownames(prism.achilles)
-new_prsim= copy_prism[match(order_actual_achilles, order_target_achilles),]
-new_prsim
+new_prism= copy_prism[match(order_target_prism, order_target_prism),]
+new_prism
 ```
 
-
+ENTRY TEST AREA 51 - WHAT HAPPENS HERE STAYS HERE
 
 ```{r}
 
@@ -106,6 +587,9 @@ new.prism
 ```
 
 
+```{r}
+pheatmap(cor_drugs_genes)
+```
 
 
 ```{r}
@@ -118,5 +602,148 @@ cor(x,y, method = "spearman")
 #just checking if all CCls of the achilles dataset are represented in the prism dataset
 matching.CLL = rownames(prism) %in% rownames(prism.achilles)
 sum(matching.CLL)
+```
+
+```{r}
+length(apply(prism, 1, mean))
+```
+
+```{r}
+#test area
+h1 = c(1,2,3,2,3,NA)
+h2 = c(2,NA,2,4,3,5)
+h3 = c(2,4,NA,3,5,4)
+h4 = c(2,2,3,2,4,5)
+
+H <- data.frame(h1,h2,h3,h4)
+H
+
+cor(H, method = "spearman")
+```
+```{r}
+#just some tests
+
+x= prism[,2]
+y= prism[,80]
+
+
+    x.remove = which(is.na(x))
+    x.remove
+    y.remove = which(is.na(y))
+    y.remove
+    
+sum(is.na(x))
+sum(is.na(y))
+    y.new.prism = y[c(-y.remove, -x.remove)]#y is a vector of gene knockout scores without NAs for all CCLs
+    y.new.prism
+  x.new.prism = x[c(-y.remove, -x.remove)]
+  x.new.prism
+  cor(x.new.prism,y.new.prism, method = "spearman")
+```
+
+
+```{r}
+```
+```{r}
+#testing if the "2" is reoved twice and NO IT IS NOT :)
+v1 <- c(1,2,3,4,5,6,7,8,9,10)
+rmv1 <- c(1,2)
+rmv2 <- c(2,3)
+
+v1[c(-rmv1, -rmv2)]
+```
+```{r}
+#SPIELPLATZ
+sum(rownames(prism.achilles) %in% rownames(prism.exp))
+rm <- which(rownames(prism.achilles) %in% rownames(prism.exp))
+rownames(prism.achilles[rm,])
+
+
+```
+
+```{r}
+#SPIELPLATZ
+sum(is.na(prism.cnv))
+sum(rownames(prism.achilles) %in% rownames(prism.cnv))
+sum(rownames(prism) %in% rownames(prism.cnv))
+
+sum(rownames(prism.cnv) %in% rownames(prism.achilles))
+sum(rownames(prism.cnv) %in% rownames(prism))
+```
+```{r}
+cor_druggen = correlation(prism, prism.achilles)
+cor_
+```
+```{r}
+prism.var = apply(prism, 2, var)
+q90 = quantile(prism.var, probs = 0.9)
+topvari = which(prism.var > q90)
+
+```
+
+
+```{r}
+z = 1:3
+remo = which(is.na(prism[z,]))
+cleanedpri = prism[z,][-remo]
+apply(cleanedpri,2, function(x){
+  if(x>0.5){
+    print(x)}})
+
+```
+```{r}
+#i want to reduce the dimensionslaity of the correlaion matrix to those columns that contain high correlationvalues, i just need the names of columns(drugs) with high correlation 
+
+#first create a vektor with the sum the vlues above a threshold
+
+threshold.machine <- function(x){
+  which
+  
+}
+
+
+apply(cor_drugs_genes, 2, )
+```
+
+```{r}
+correlations_above_threshold <- apply(cor_drugs_genes, 2, function(x){
+  sum(x>0.4)
+})
+
+#correlations_above_threshold
+#morethannull = correlations_above_threshold[isTRUE(correlations_above_threshold>0)]
+#morethannullcorrelations_above_threshold
+
+sum(correlations_above_threshold>0)
+which(correlations_above_threshold>0)
+sum(cor_drugs_genes>0.4)
+highly_correlated_drugs = correlations_above_threshold[which(correlations_above_threshold>0)]
+highly_correlated_drugs
+
+#hist(correlations_above_threshold, breaks = 400, xlim = range(c(0.5:5)), )
+
+```
+
+```{r}
+fef = c(1,2,3,4,5,6,7,8,9)
+fef2= c(1,2,3,4,5,6,7,8,9)
+fef3= c(4,5,4,3,5,6,45,4,4)
+feframe <- data.frame(fef, fef2, fef3)
+fuf <- apply(feframe, 2, function(x){
+  sum(x > 5)})
+fuf
+#hist(fuf, breaks = 30)
+sum(fuf>3)
+fef3>3
+
+```
+
+```{r}
+high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] #hist(apply(prism.exp, 2, mean), breaks= 200)
+
+```
+
+```{r}
+dim(highvar(prism.exp, 0.1))
 ```
 
