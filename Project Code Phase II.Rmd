@@ -962,31 +962,33 @@ Shen J, Qi L, Zou Z, Du J, Kong W, Zhao L, Wei J, Lin L, Ren M, Liu B. Identific
 
 ```{r}
 #Are these mutations relevant in the context of drug sensitivity? Let's see...
+#we look for the cell lines bearing these mutations and we see their prism scores
+#head(mutated_genes)
+#These are the most mutated genes in the data set of the cell lines
+#We want to see if the cell lines with mutations in these genes are more susceptible to drug treatment than those without. To see if the difference is significant, we will perform a T-TEST!
+
+#These are all the cell lines with a tp53 mutation
+#prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]
+
+#These are the prism scores of all the cell lines with a tp53 mutation
+#prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")],]
+
+#Let's calculate their mean values
+#apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")],],1,mean,na.rm=TRUE)
+#Now the mean of the means:
+#mean(apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")],],1,mean,na.rm=TRUE), na.rm=TRUE)
+#var(apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")],],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+var(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
 ```
 ```{r}
-#Ana's response to vector correlation:
-#computing the correlation between two vectors of unequal length by complementing the missing values by the mean of the vactor's values
-x = new_prism.achilles_wona$SOX10[which(rownames(new_prism.achilles_wona) %in% liver_cancer_cell_lines)]
-y = new_prism.exp_wona$SOX10[which(rownames(new_prism.exp_wona) %in% liver_cancer_cell_lines)]
-if ( length(x) != length(y))
-{
-  diff = abs(length(x)-length(y))
-  if(length(x)>length(y))
-  {
-    for (j in 1:diff)
-    {
-      y[length(y)+j] = mean(y, na.rm=TRUE)
-    }
-  }
-  else if(length(y)>length(x))
-  {
-    for (k in 1:diff)
-    {
-      x[length(x)+k] = mean(x, na.rm=TRUE)
-    }
-  }
-}
-cor(x,y)
+#What is the mean of the means of all cell lines?
+#mean(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+#var(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+
+#What is the mean of the means of all cell lines without the tp53 ones?
+#mean(apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")],],1,mean,na.rm=TRUE), na.rm=TRUE)
+#var(apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")],],1,mean,na.rm=TRUE), na.rm=TRUE)
 ```
 Hi Ana!
 The analysis which checks the correlation between the expression levels of specific target genes and the sensitivity of cell lines to drugs targeting that specific gene goes from line 719 to line 860. I wonder, why the overall correlation is very close to 0 and what can I do to show the actual connection between the two, as we discussed in our meeting on Wednesday (the idea was that by checking the correlation, I might miss another connection that is not expressed through the correlation). Could you please take a look at it when you find some moments?
@@ -1006,3 +1008,36 @@ new_prism.exp
 
 All the other variables are declared inside these lines. Thank you lots and have a nice week-end!
 Robert ;)
+
+```{r}
+#What is the mean of the means of all cell lines without the tp53 ones?
+#mean(apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")],],1,mean,na.rm=TRUE), na.rm=TRUE)
+#var(apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")],],1,mean,na.rm=TRUE), na.rm=TRUE)
+
+#unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")])
+#ok, that's why it was too big... the "alocated" space was being exceeded
+mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+var(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+```
+```{r}
+#Let's perform a T-Test now
+#?t.test()
+t.test(mean_values_tp53, alternative="greater", mu=mean_all_wo_tp53)
+t.test(mean_values_tp53, alternative="less", mu=mean_all_wo_tp53)
+# => the difference doesn't seem to be significant at all here...
+```
+
+```{r}
+mean_values_tp53 = apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]),],1,mean,na.rm=TRUE)
+#mean_tp53= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+#mean_all_wo_tp53=mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+```
+
+```{r}
+#What is the general susceptibility of the cell to drugs? What value approx.?
+#What is the mean of the means of all cell lines?
+#mean(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+#var(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+#Does this answer the question? Check later...
+```
+
