@@ -81,17 +81,28 @@ cor_drug_gene
 #names_highvar_genes = colnames(prism.achilles[which(achilles.var>q95)])
 #achilles.highvar = prism.achilles[,names_highvar_genes]
 
-highvar <- function(dataframe, qx){
-  dataframe.var = apply(dataframe, 2, var, na.rm = TRUE)
-  quan = quantile(dataframe, probs =  qx, na.rm = TRUE)
-  names_highvar = colnames(dataframe[which(dataframe.var>quan)])
-  dataframe[,names_highvar]
+#highvar <- function(dataframe, qx){
+ # dataframe.var = apply(dataframe, 2, var, na.rm = TRUE)
+ # quan = quantile(dataframe, probs =  qx, na.rm = TRUE)
+#  names_highvar = colnames(dataframe)[which(dataframe.var>quan)]
+ # dataframe[,names_highvar]
 }
 
-
+#dim(highvar(prism.exp, 0.9))
 ```
 
 
+```{r}
+dataframe=prism.exp
+qx = 0.9
+ highvar <- function(dataframe, qx){ dataframe.var = apply(dataframe, 2, var, na.rm = TRUE)
+  quan = quantile(dataframe.var, probs =  qx, na.rm = TRUE)
+  names_highvar = colnames(dataframe)[which(dataframe.var>quan)]
+  dataframe[,names_highvar]
+}
+
+dim(highvar(prism.exp, 0.8))
+```
 
 
 ```{r}
