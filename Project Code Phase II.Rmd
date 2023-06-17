@@ -962,6 +962,22 @@ Shen J, Qi L, Zou Z, Du J, Kong W, Zhao L, Wei J, Lin L, Ren M, Liu B. Identific
 
 ```{r}
 #Are these mutations relevant in the context of drug sensitivity? Let's see...
+#we look for the cell lines bearing these mutations and we see their prism scores
+#head(mutated_genes)
+#These are the most mutated genes in the data set of the cell lines
+#We want to see if the cell lines with mutations in these genes are more susceptible to drug treatment than those without. To see if the difference is significant, we will perform a T-TEST!
+
+#These are all the cell lines with a tp53 mutation
+#prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]
+
+#These are the prism scores of all the cell lines with a tp53 mutation
+#prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")],]
+
+#Let's calculate their mean values
+#apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")],],1,mean,na.rm=TRUE)
+#Now the mean of the means:
+mean(apply(prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")],],1,mean,na.rm=TRUE), na.rm=TRUE)
+
 ```
 Hi Ana!
 The analysis which checks the correlation between the expression levels of specific target genes and the sensitivity of cell lines to drugs targeting that specific gene goes from line 719 to line 860. I wonder, why the overall correlation is very close to 0 and what can I do to show the actual connection between the two, as we discussed in our meeting on Wednesday (the idea was that by checking the correlation, I might miss another connection that is not expressed through the correlation). Could you please take a look at it when you find some moments?
