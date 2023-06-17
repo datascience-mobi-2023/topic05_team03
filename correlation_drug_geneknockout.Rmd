@@ -389,7 +389,7 @@ for (m in 1:dim(highcor_prism_exp)[1]){
   for(n in 1:dim(highcor_prism_exp)[2]){
     if(highcor_prism_exp[m,n] > q90prism){
       ah = a[m]
-      bh = a[n]
+      bh = b[n]
       ch = highcor_prism_exp[m,n]
       
       print(paste(ah, "coorelates with", bh, "->", ch))
@@ -415,6 +415,12 @@ show(highcor_prism_exp)
 #wert
 #wert
 #NULL
+```
+```{r}
+#FINDING CORRELATIONS BETWEEN IMPORTANT DRUGS AND CNV EEEEEEEEE
+
+#high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
+high_cor_drugs_cnv <- correlation_highcor(prism, highvar(prism.cnv, 0.9))
 ```
 
 
