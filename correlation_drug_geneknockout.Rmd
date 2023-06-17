@@ -421,7 +421,20 @@ show(highcor_prism_exp)
 
 #high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
 high_cor_drugs_cnv <- correlation_highcor(prism, highvar(prism.cnv, 0.9))
+
 ```
+
+```{r}
+#FINDING CORRELATIONS BETWEEN GENE KNOCKOUTS AND EXPRESSION
+high_cor_genknockout_exp = correlation_highcor(prism.achilles, highvar(prism.exp, 0.9))
+```
+
+```{r}
+#FINDING CORRELATIONS B
+high_cor_genknockout_cnv = correlation_highcor(prism.achilles, highvar(prism.exp, 0.9))
+```
+
+
 
 
 ```{r}
@@ -746,4 +759,34 @@ high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] #hist(apply(pr
 ```{r}
 dim(highvar(prism.exp, 0.1))
 ```
+
+```{r}
+liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
+liver_cancer_cellline_names = prism.cl$DepMap_ID[liver_cancer_indices]
+liver_cancer_cell_lines_scores = prism[liver_cancer_cellline_names,]
+show(liver_cancer_cell_lines_scores)
+```
+
+```{r}
+#lets see if the highly corelated drug/genes target liver cancer genes
+
+
+threshold2 = -0.6
+livercancer_mean_drug_score = apply(liver_cancer_cell_lines_scores, 2, mean, na.rm=TRUE)
+names_important_drugs_liver_cancer = names(livercancer_mean_drug_score)[which((livercancer_mean_drug_score)< threshold2)] #zuerst wird der mean von allen cell line scores berechnet, dann werden die drugs ausgewählt, die eine durchschnittliche drug sensitivity von über threshold haben. von den 
+important_drugs_livercancer.treat = prism.treat[names_important_drugs_liver_cancer,]
+#show(important_drugs_livercancer.treat)
+Liver_cancer_target_genes = unique(important_drugs_livercancer.treat$target)
+
+
+
+```
+```{r}
+#which(isTRUE(as.character(prism.cl$disease == "Liver Cancer")))
+liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
+
+
+```
+
+
 
