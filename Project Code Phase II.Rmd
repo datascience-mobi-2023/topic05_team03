@@ -1020,6 +1020,16 @@ mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")
 var(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
 ```
 ```{r}
+#Let's perform a T-Test now
+#?t.test()
+t.test(mean_values_tp53, alternative="greater", mu=mean_all_wo_tp53)
+t.test(mean_values_tp53, alternative="less", mu=mean_all_wo_tp53)
+# => the difference doesn't seem to be significant at all here...
+```
 
+```{r}
+mean_values_tp53 = apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]),],1,mean,na.rm=TRUE)
+#mean_tp53= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+#mean_all_wo_tp53=mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
 ```
 
