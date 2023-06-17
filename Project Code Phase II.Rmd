@@ -1033,3 +1033,11 @@ mean_values_tp53 = apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_S
 #mean_all_wo_tp53=mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
 ```
 
+```{r}
+#What is the general susceptibility of the cell to drugs? What value approx.?
+#What is the mean of the means of all cell lines?
+#mean(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+#var(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+#Does this answer the question? Check later...
+```
+
