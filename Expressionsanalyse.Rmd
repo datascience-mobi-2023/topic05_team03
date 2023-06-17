@@ -70,11 +70,12 @@ for (x in liver_cancer_cl_indices)
 ```{r}
 # which highly expressed genes are mostly common?
 
-liver_genes_total = c(liver_genes_3, liver_genes_4, liver_genes_5, liver_genes_6, liver_genes_7, liver_genes_8, liver_genes_9, liver_genes_10, liver_genes_11, liver_genes_12, liver_genes_13, liver_genes_14, liver_genes_15, liver_genes_16, liver_genes_17)
+liver_genes_total = c(liver_genes_1, liver_genes_2, liver_genes_3, liver_genes_4, liver_genes_5, liver_genes_6, liver_genes_7, liver_genes_8, liver_genes_9, liver_genes_10, liver_genes_11, liver_genes_12, liver_genes_13, liver_genes_14, liver_genes_15, liver_genes_16, liver_genes_17)
 liver_genes_total
 
 summary(as.factor(liver_genes_total))
-names(sort(summary(as.factor(liver_genes_total))))
+sort(summary(as.factor(liver_genes_total)))
+names(summary(as.factor(liver_genes_total)))
 liver_genes_vector = names(sort(summary(as.factor(liver_genes_total))))
 order(summary(as.factor(liver_genes_vector)))
 liver_genes_vector
