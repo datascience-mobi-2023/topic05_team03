@@ -337,7 +337,7 @@ apply(correlation_matrix,2, function(p){
 #high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
 
 
-correlation_highcor <- function(data, data2){
+correlation_highcor <- function(data, pre_data2){
 copy_data = data[, highly_correlated_drugs]
 actual_data = rownames(data)
 target_data = rownames(data2)
@@ -368,8 +368,9 @@ apply(data_organized,2, function(i){
 
 
 ```{r}
-highcor_prism_exp = correlation_highcor(prism, highvar(prism.exp, 0.9))
-show(highcor_prism_exp)
+prism.exp.0.9 = highvar(prism.exp, 0.9)
+highcor_prism_exp = correlation_highcor(prism, prism.exp.0.9)
+dim(highcor_prism_exp)
 
 #ergebnis ist 
 #wert
@@ -378,6 +379,28 @@ show(highcor_prism_exp)
 #NULL
 ```
 
+```{r}
+#SOME DESCRIPTIVE STATISITCS ON THE CORREALTIONS BETWEEN PRISM.EXP AND PRISM
+q90prism = quantile(highcor_prism_exp, probs = 0.9)
+
+a = rownames(highcor_prism_exp)
+b = colnames(highcor_prism_exp)
+for (m in 1:dim(highcor_prism_exp)[1]){
+  for(n in 1:dim(highcor_prism_exp)[2]){
+    if(highcor_prism_exp[m,n] > q90prism){
+      ah = a[m]
+      bh = a[n]
+      ch = highcor_prism_exp[m,n]
+      
+      print(paste(ah, "coorelates with", bh, "->", ch))
+      
+    }
+    
+    
+  }
+}
+
+```
 
 
 
