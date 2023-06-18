@@ -1069,5 +1069,6 @@ mean_lrp1b
 means_genes_mutations = c(mean_ttn,mean_muc16,mean_tp53,mean_obscn, mean_ryr2, mean_lrp1b)
 hist(means_genes_mutations)
 plot(means_genes_mutations, xlab=names(head(mutated_genes)))
+#create a loop to store the means of all genes? maybe you can find something interesting there...
 ```
-
+#Why doesn't this have any effect??? Try looking at drugs which target these genes that are mutated just like you did for achilles and expression!
