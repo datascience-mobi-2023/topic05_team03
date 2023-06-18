@@ -38,3 +38,10 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 
 #Let's separate factors of drug sensitivity according to their contribution to general variation
 #PCA, clustering, linear regression
+
+```{r}
+prcomp(t(prism))
+prcom(prism)
+princomp(t(prism))
+```
+
