@@ -1065,4 +1065,9 @@ print("LRP1B")
 mean_lrp1b
 #pretty comparable...
 ```
+```{r}
+means_genes_mutations = c(mean_ttn,mean_muc16,mean_tp53,mean_obscn, mean_ryr2, mean_lrp1b)
+hist(means_genes_mutations)
+plot(means_genes_mutations, xlab=names(head(mutated_genes)))
+```
 
