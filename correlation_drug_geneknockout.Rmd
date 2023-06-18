@@ -424,14 +424,75 @@ high_cor_drugs_cnv <- correlation_highcor(prism, highvar(prism.cnv, 0.9))
 
 ```
 
+
+
+
++++++++++++++++++++GENE_KNOCKOUT_CORRELATIONS+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+```{r}
+#EXTRACTING THE GENE knockouts WITH HIGH CORRELATIONS 
+correlations_above_threshold_geneknockout <- apply(cor_drugs_genes, 1, function(x){
+  sum(x>0.4)
+})
+
+#correlations_above_threshold
+#morethannull = correlations_above_threshold[isTRUE(correlations_above_threshold>0)]
+#morethannullcorrelations_above_threshold
+
+sum(correlations_above_threshold_geneknockout>0)
+which(correlations_above_threshold_geneknockout>0)
+sum(cor_drugs_genes>0.4)
+highly_correlated_geneknockouts = correlations_above_threshold_geneknockout[which(correlations_above_threshold_geneknockout>0)]
+highly_correlated_geneknockouts
+names_correlations_above_threshold_geneknockout = names(which(correlations_above_threshold_geneknockout>0))
+names_correlations_above_threshold_geneknockout
+
+#hist(correlations_above_threshold, breaks = 400, xlim = range(c(0.5:5)), )
+
+```
+
+
+```{r}
+#CALCULATING CORRELATIONS BETWEEN FOR HIGH CORRELATION PRSELECTED PRISM.ACHILLES AND GENE EXPRESSION
+correlation_highcor_ACHILLES <- function(data, pre_data2){
+copy_data = data[,names_correlations_above_threshold_geneknockout]
+actual_data = rownames(data)
+target_data = rownames(data2)
+data_matched = copy_data[match(actual_data, target_data),]
+same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+data_organized = data_matched[same_rownames,]
+data2 = pre_data2[same_rownames,]
+
+
+
+
+apply(data_organized,2, function(i){
+     # i=data_organized[,correlation_matrix[p]]
+      apply(data2 ,2,function(k){#iterating through prism.exp
+        #i=data_organized[,n]
+        i_remove = which(is.na(i))
+        k_remove = which(is.na(k))
+        cleaned_i = i[c(-i_remove, -k_remove)]
+        cleaned_k = k[c(-k_remove, -i_remove)]
+        cor(cleaned_i, cleaned_k, method = "spearman")
+       # print(correlation_data_data2)
+        })
+}#closes if 
+)
+}#closes fun
+```
+
+
+
 ```{r}
 #FINDING CORRELATIONS BETWEEN GENE KNOCKOUTS AND EXPRESSION
-high_cor_genknockout_exp = correlation_highcor(prism.achilles, highvar(prism.exp, 0.9))
+high_cor_genknockout_exp = correlation_highcor_ACHILLES(prism.achilles, highvar(prism.exp, 0.9))
 ```
 
 ```{r}
 #FINDING CORRELATIONS B
-high_cor_genknockout_cnv = correlation_highcor(prism.achilles, highvar(prism.exp, 0.9))
+high_cor_genknockout_cnv = correlation_highcor(prism.achilles, highvar(prism.cnv, 0.9))
 ```
 
 
