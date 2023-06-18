@@ -1041,3 +1041,28 @@ mean_values_tp53 = apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_S
 #Does this answer the question? Check later...
 ```
 
+```{r}
+#Let's check the mean of all mutated genes above:
+head(mutated_genes)
+mean_ttn= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TTN")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_muc16= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="MUC16")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_obscn= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="OBSCN")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_ryr2= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="RYR2")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_lrp1b= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="LRP1B")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+```
+```{r}
+print("TTN")
+mean_ttn
+print("MUC16")
+mean_muc16
+print("TP53")
+mean_tp53
+print("OBSCN")
+mean_obscn
+print("RYR2")
+mean_ryr2
+print("LRP1B")
+mean_lrp1b
+#pretty comparable...
+```
+
