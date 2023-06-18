@@ -40,8 +40,10 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 #PCA, clustering, linear regression
 
 ```{r}
-prcomp(t(prism))
-prcom(prism)
-princomp(t(prism))
+#prcomp(t(prism))
+#prcom(prism)
+#princomp(t(prism))
+prcomp(t(prism),na.omit)
+#what is the problem here?Ask Ana
 ```
 
