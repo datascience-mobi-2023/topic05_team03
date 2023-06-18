@@ -5,7 +5,7 @@ na.rm überspringt nur die werte, es löscht sie nicht
 
 ```{r}
 
-#this chuck contains code that wont be used
+#(((((((((((((((((((((((((((((((((((#this chuck contains code that wont be used
 
 #zuerst die ccls ordnen, sodass bei prism und bei prism.achilles die gleiche reihenfolge der CCLs ist
 #versuchen zuerst die correlation herauszufinden und dann die nas rausnehmen 
@@ -93,6 +93,7 @@ cor_drug_gene
 
 
 ```{r}
+#DEFINING a function that filters columns of a dataframe by variance 
 dataframe=prism.exp
 qx = 0.9
  highvar <- function(dataframe, qx){ dataframe.var = apply(dataframe, 2, var, na.rm = TRUE)
@@ -139,10 +140,14 @@ cor_dataset1_dataset2 <- apply(new_dataset1, 2, function(x){ #first loop iterate
 }
 cor_dataset1_dataset2
 ```
+
+
+
 ```{r}
+#!!!!!!!! key correlation matrix betwen all genekockouts and prism scores
 prism.achilles.highvar = highvar(prism.achilles, 0.9)
 prism.highvar = highvar(prism, 0.9)
-cor_drugs_genes = correlation(prism.highvar, achilles.highvar)
+cor_drugs_genes = correlation(prism.highvar, prism.achilles.highvar)
 cor_drugs_genes
 ```
 
@@ -150,7 +155,7 @@ cor_drugs_genes
 
 
 ```{r}
-#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
+#CCCCCCCCCCCCCCCClets find some biomarkers, that are linked with drug sensitivity of CCLs 
 
 # first we want to extract the drug gene pairs that are highly correlated 
 
@@ -181,7 +186,7 @@ apply(cor_drug_gene, function(p){ #p is one correlation value
 
 
 ```{r}
-#AUTOMATISIERUNG 
+#(((((((((((((((((((((((((((AUTOMATISIERUNG 
 #lets find some biomarkers, that are linked with drug sensitivity of CCLs 
 
 # first we want to extract the drug gene pairs that are highly correlated 
@@ -213,7 +218,7 @@ apply(correlation_matrix, function(p){ #p is one correlation value
 ```
 
 ```{r}
-#apply(correlation_matrix,2,mean)
+#((((((((((((((((((((((((((((((#apply(correlation_matrix,2,mean)
 #colnames(correlation_matrix)
 #AUTOMATISIERUNG 
 #lets find some biomarkers, that are linked with drug sensitivity of CCLs 
@@ -261,7 +266,7 @@ for (m in (1:dim(correlation_matrix)[1])){
 ```
 
 ```{r}
-#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY BBBBBBBBBB
+#(((((((((((((((((((((((((((((#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY BBBBBBBBBB
 
 
 correlation_highcor <- function(data, data2, correlation_matrix, T){
@@ -295,7 +300,7 @@ apply(correlation_matrix,c(1,2), function(p){
 
 
 ```{r}
-#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY CCCCCCCCCC
+#(((((((((((((((((((((((((((((((((((((((((((((#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY CCCCCCCCCC
 
 high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
 
@@ -331,8 +336,31 @@ apply(correlation_matrix,2, function(p){
 }
 ```
 
++++++++++++++correlations+betweeen+preselected+prism+and+expression++cnv+++++++++++++++++++++++
+
 ```{r}
-#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY  AND THE COMPRIMIZED DATASET DDDDDDDDD
+H = 0.15
+correlations_above_threshold <- apply(cor_drugs_genes, 2, function(x){
+  sum(x> H)
+})
+
+#correlations_above_threshold
+#morethannull = correlations_above_threshold[isTRUE(correlations_above_threshold>0)]
+#morethannullcorrelations_above_threshold
+
+sum(correlations_above_threshold>0)
+which(correlations_above_threshold>0)
+sum(cor_drugs_genes>H)
+highly_correlated_drugs = correlations_above_threshold[which(correlations_above_threshold>0)]
+highly_correlated_drugs
+
+#hist(correlations_above_threshold, breaks = 400, xlim = range(c(0.5:5)), )
+
+```
+
+
+```{r}
+#!!!!!!!!!!!!!! this code works!!!!!!! FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY  AND THE COMPRIMIZED DATASET DDDDDDDDD
 
 #high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
 
@@ -368,15 +396,11 @@ apply(data_organized,2, function(i){
 
 
 ```{r}
+#calculating the correlations between preselected prism and prismexp
 prism.exp.0.9 = highvar(prism.exp, 0.9)
 highcor_prism_exp = correlation_highcor(prism, prism.exp.0.9)
 dim(highcor_prism_exp)
 
-#ergebnis ist 
-#wert
-#wert
-#wert
-#NULL
 ```
 
 ```{r}
@@ -404,18 +428,6 @@ for (m in 1:dim(highcor_prism_exp)[1]){
 
 
 
-
-
-```{r}
-highcor_prism_exp = correlation_highcor(prism, highvar(prism.exp, 0.998), cor_drugs_genes, 0.5)
-show(highcor_prism_exp)
-
-#ergebnis ist 
-#wert
-#wert
-#wert
-#NULL
-```
 ```{r}
 #FINDING CORRELATIONS BETWEEN IMPORTANT DRUGS AND CNV EEEEEEEEE
 
@@ -433,7 +445,7 @@ high_cor_drugs_cnv <- correlation_highcor(prism, highvar(prism.cnv, 0.9))
 ```{r}
 #EXTRACTING THE GENE knockouts WITH HIGH CORRELATIONS 
 correlations_above_threshold_geneknockout <- apply(cor_drugs_genes, 1, function(x){
-  sum(x>0.4)
+  sum(x>0.15)
 })
 
 #correlations_above_threshold
@@ -442,7 +454,7 @@ correlations_above_threshold_geneknockout <- apply(cor_drugs_genes, 1, function(
 
 sum(correlations_above_threshold_geneknockout>0)
 which(correlations_above_threshold_geneknockout>0)
-sum(cor_drugs_genes>0.4)
+sum(cor_drugs_genes>0.15)
 highly_correlated_geneknockouts = correlations_above_threshold_geneknockout[which(correlations_above_threshold_geneknockout>0)]
 highly_correlated_geneknockouts
 names_correlations_above_threshold_geneknockout = names(which(correlations_above_threshold_geneknockout>0))
@@ -495,6 +507,10 @@ high_cor_genknockout_exp = correlation_highcor_ACHILLES(prism.achilles, highvar(
 high_cor_genknockout_cnv = correlation_highcor(prism.achilles, highvar(prism.cnv, 0.9))
 ```
 
+```{r}
+#ARE THERE ANY DRUG/GENE PAIRS THAT BOTH HAVE HIGH CORREALTIONS WITH A BIOMARKER?
+
+```
 
 
 
@@ -779,24 +795,7 @@ threshold.machine <- function(x){
 apply(cor_drugs_genes, 2, )
 ```
 
-```{r}
-correlations_above_threshold <- apply(cor_drugs_genes, 2, function(x){
-  sum(x>0.4)
-})
 
-#correlations_above_threshold
-#morethannull = correlations_above_threshold[isTRUE(correlations_above_threshold>0)]
-#morethannullcorrelations_above_threshold
-
-sum(correlations_above_threshold>0)
-which(correlations_above_threshold>0)
-sum(cor_drugs_genes>0.4)
-highly_correlated_drugs = correlations_above_threshold[which(correlations_above_threshold>0)]
-highly_correlated_drugs
-
-#hist(correlations_above_threshold, breaks = 400, xlim = range(c(0.5:5)), )
-
-```
 
 ```{r}
 fef = c(1,2,3,4,5,6,7,8,9)
