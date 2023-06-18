@@ -33,9 +33,33 @@ for (x in liver_cancer_cl_indices)
     print(prism[x,])
 
 # we created a new table by combining the rates of cell growth only for liver cancer cell lines:
-prism_for_liver_cancer_cell_lines = rbind(prism[liver_cancer_cl_indices,])
-prism_for_liver_cancer_cell_lines
 
+liver_cancer_cl_indices = which(new_prism.cl$lineage == "liver")
+length(liver_cancer_cl_indices)
+liver_cancer_cl_indices
+
+prism_for_liver_withNAs = rbind(prism[liver_cancer_cl_indices,])
+prism_for_liver_withNAs
+
+sum(is.na(prism_for_liver_withNAs)) #15191 NAs
+sum(apply(prism_for_liver_withNAs, 2, function(x){any(is.na(x))})) #6560 Spalten mit NA`s
+
+
+# we should remove all NAs from the prism table for liver cancer cell lines and substitute the NAs with the mean value of columns.
+
+prism_for_liver <- as.data.frame(apply(prism_for_liver_withNAs, 2, function(x) {
+    is_na <- is.na(x)
+    x[is_na] <- mean(x, na.rm = TRUE)
+    return(x)
+}))
+
+prism_for_liver
+
+columns_withNAs = colnames(prism_for_liver_withNAs)[colSums(is.na(prism_for_liver_withNAs)) > 0]
+```
+
+
+```{r}
 
 # we should set a threshold for the growth rate to find out the most effective drugs to stop cell growth.
 
