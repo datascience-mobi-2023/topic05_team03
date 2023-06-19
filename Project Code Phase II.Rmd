@@ -1041,3 +1041,79 @@ mean_values_tp53 = apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_S
 #Does this answer the question? Check later...
 ```
 
+```{r}
+#Let's check the mean of all mutated genes above:
+head(mutated_genes)
+mean_ttn= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="TTN")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_muc16= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="MUC16")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_obscn= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="OBSCN")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_ryr2= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="RYR2")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+mean_lrp1b= mean(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol=="LRP1B")]),],1,mean,na.rm=TRUE), na.rm=TRUE)
+```
+```{r}
+print("TTN")
+mean_ttn
+print("MUC16")
+mean_muc16
+print("TP53")
+mean_tp53
+print("OBSCN")
+mean_obscn
+print("RYR2")
+mean_ryr2
+print("LRP1B")
+mean_lrp1b
+#pretty comparable...
+```
+```{r}
+means_genes_mutations = c(mean_ttn,mean_muc16,mean_tp53,mean_obscn, mean_ryr2, mean_lrp1b)
+hist(means_genes_mutations)
+plot(means_genes_mutations, xlab=names(head(mutated_genes)))
+#create a loop to store the means of all genes? maybe you can find something interesting there...
+```
+#Why doesn't this have any effect??? Try looking at drugs which target these genes that are mutated just like you did for achilles and expression!
+
+```{r}
+#correlation between drugs targeting these genes and the mutations
+which(new_prism.treat$target == "TTN")
+which(new_prism.treat$target == "MUC16")
+which(new_prism.treat$target == "TP53")
+which(new_prism.treat$target == "OBSCN")
+which(new_prism.treat$target == "RYR2")
+which(new_prism.treat$target == "LRP1B")
+#which(new_prism.treat$target == "MAP2K1")
+#=> there are no drugs that target these genes...
+```
+```{r}
+#ok, let's look at their achilles scores:
+#new_prism.achilles[,"TTN"]
+mean(new_prism.achilles[,"TTN"],na.rm=TRUE)
+var(new_prism.achilles[,"TTN"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"MUC16"],na.rm=TRUE)
+var(new_prism.achilles[,"MUC16"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"TP53"],na.rm=TRUE)
+var(new_prism.achilles[,"TP53"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"OBSCN"],na.rm=TRUE)
+var(new_prism.achilles[,"OBSCN"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"RYR2"],na.rm=TRUE)
+var(new_prism.achilles[,"RYR2"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"LRP1B"],na.rm=TRUE)
+var(new_prism.achilles[,"LRP1B"],na.rm=TRUE)
+
+#ok, so here we see some effects...
+```
+```{r}
+mean(apply(new_prism.achilles,2,mean,na.rm=TRUE))
+```
+```{r}
+plot(apply(new_prism.achilles,2,mean,na.rm=TRUE))
+#+abline(h=c(mean(new_prism.achilles[,"TTN"],na.rm=TRUE),mean(new_prism.achilles[,"TP53"],na.rm=TRUE)),col=c('red','blue')
+#+abline(mean(new_prism.achilles[,"TP53"],na.rm=TRUE),col='blue')
+```
+
+
