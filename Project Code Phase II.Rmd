@@ -1072,3 +1072,17 @@ plot(means_genes_mutations, xlab=names(head(mutated_genes)))
 #create a loop to store the means of all genes? maybe you can find something interesting there...
 ```
 #Why doesn't this have any effect??? Try looking at drugs which target these genes that are mutated just like you did for achilles and expression!
+
+```{r}
+#correlation between drugs targeting these genes and the mutations
+which(new_prism.treat$target == "TTN")
+which(new_prism.treat$target == "MUC16")
+which(new_prism.treat$target == "TP53")
+which(new_prism.treat$target == "OBSCN")
+which(new_prism.treat$target == "RYR2")
+which(new_prism.treat$target == "LRP1B")
+#which(new_prism.treat$target == "MAP2K1")
+#=> there are no drugs that target these genes...
+```
+
+
