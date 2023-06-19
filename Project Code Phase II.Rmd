@@ -1084,5 +1084,28 @@ which(new_prism.treat$target == "LRP1B")
 #which(new_prism.treat$target == "MAP2K1")
 #=> there are no drugs that target these genes...
 ```
+```{r}
+#ok, let's look at their achilles scores:
+#new_prism.achilles[,"TTN"]
+mean(new_prism.achilles[,"TTN"],na.rm=TRUE)
+var(new_prism.achilles[,"TTN"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"MUC16"],na.rm=TRUE)
+var(new_prism.achilles[,"MUC16"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"TP53"],na.rm=TRUE)
+var(new_prism.achilles[,"TP53"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"OBSCN"],na.rm=TRUE)
+var(new_prism.achilles[,"OBSCN"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"RYR2"],na.rm=TRUE)
+var(new_prism.achilles[,"RYR2"],na.rm=TRUE)
+
+mean(new_prism.achilles[,"LRP1B"],na.rm=TRUE)
+var(new_prism.achilles[,"LRP1B"],na.rm=TRUE)
+
+#ok, so here we see some effects...
+```
 
 
