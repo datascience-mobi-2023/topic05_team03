@@ -46,4 +46,10 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 prcomp(t(prism),na.omit)
 #what is the problem here?Ask Ana
 ```
+```{r}
+#v=var(prism)
+length(v)
+sum(is.na(v))
+#why is this??
+```
 
