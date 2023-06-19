@@ -1107,5 +1107,13 @@ var(new_prism.achilles[,"LRP1B"],na.rm=TRUE)
 
 #ok, so here we see some effects...
 ```
+```{r}
+mean(apply(new_prism.achilles,2,mean,na.rm=TRUE))
+```
+```{r}
+plot(apply(new_prism.achilles,2,mean,na.rm=TRUE))
+#+abline(h=c(mean(new_prism.achilles[,"TTN"],na.rm=TRUE),mean(new_prism.achilles[,"TP53"],na.rm=TRUE)),col=c('red','blue')
+#+abline(mean(new_prism.achilles[,"TP53"],na.rm=TRUE),col='blue')
+```
 
 
