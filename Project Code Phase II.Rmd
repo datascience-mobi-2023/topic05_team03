@@ -1115,5 +1115,10 @@ plot(apply(new_prism.achilles,2,mean,na.rm=TRUE))
 #+abline(h=c(mean(new_prism.achilles[,"TTN"],na.rm=TRUE),mean(new_prism.achilles[,"TP53"],na.rm=TRUE)),col=c('red','blue')
 #+abline(mean(new_prism.achilles[,"TP53"],na.rm=TRUE),col='blue')
 ```
+```{r}
+#These 9 HRR genes are BRCA1, BRCA2, ATM, BRIP1, CHEK2, FANCI, RAD51C, RAD51D, and RAD54L
+#https://www.frontiersin.org/articles/10.3389/fonc.2022.709645/full#:~:text=These%209%20HRR%20genes%20are,RAD51C%2C%20RAD51D%2C%20and%20RAD54L.
+#Let's see if loss of HRR eficiency (homologuous recombinational repair) is a feature in liver cancer cell lines or in the general tumor dataset
+```
 
 
