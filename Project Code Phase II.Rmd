@@ -1129,4 +1129,10 @@ mutated_genes[which(names(mutated_genes) %in% HRR_genes)]
 sum(mutated_genes[which(names(mutated_genes) %in% HRR_genes)])/sum(mutated_genes)*100
 #so 0.1 of all mutations are related to HRR
 ```
+```{r}
+#check this for liver cancer
+liver_mutated_genes[which(names(liver_mutated_genes) %in% HRR_genes)]
+#ok, so the liver cancer cell lines are not touched by HRR gene mutations at all
+names(liver_mutated_genes)
+```
 
