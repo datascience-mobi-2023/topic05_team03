@@ -1024,6 +1024,7 @@ var(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]
 #?t.test()
 t.test(mean_values_tp53, alternative="greater", mu=mean_all_wo_tp53)
 t.test(mean_values_tp53, alternative="less", mu=mean_all_wo_tp53)
+t.test(mean_values_tp53, mu=mean_all_wo_tp53)
 # => the difference doesn't seem to be significant at all here...
 ```
 
@@ -1134,5 +1135,9 @@ sum(mutated_genes[which(names(mutated_genes) %in% HRR_genes)])/sum(mutated_genes
 liver_mutated_genes[which(names(liver_mutated_genes) %in% HRR_genes)]
 #ok, so the liver cancer cell lines are not touched by HRR gene mutations at all
 names(liver_mutated_genes)
+```
+
+```{r}
+#B2M mutations??? relevant?
 ```
 
