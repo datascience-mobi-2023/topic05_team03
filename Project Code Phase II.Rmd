@@ -1121,4 +1121,12 @@ plot(apply(new_prism.achilles,2,mean,na.rm=TRUE))
 #Let's see if loss of HRR eficiency (homologuous recombinational repair) is a feature in liver cancer cell lines or in the general tumor dataset
 ```
 
+```{r}
+HRR_genes = c("BRCA1", "BRCA2", "ATM", "BRIP1", "CHEK2", "FANCI", "RAD51C", "RAD51D", "RAD54L")
+which(names(mutated_genes) %in% HRR_genes)
+mutated_genes[which(names(mutated_genes) %in% HRR_genes)]
+#ok, so there is a meaningful amount here
+sum(mutated_genes[which(names(mutated_genes) %in% HRR_genes)])/sum(mutated_genes)*100
+#so 0.1 of all mutations are related to HRR
+```
 
