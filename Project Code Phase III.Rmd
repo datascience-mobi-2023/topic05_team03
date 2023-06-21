@@ -52,4 +52,30 @@ length(v)
 sum(is.na(v))
 #why is this??
 ```
+Let's try that linear regression!
+
+```{r}
+install.packages("readxl")
+library("readxl")
+```
+
+
+First for expression and copy number variation!
+```{r}
+lm()
+#liver_cancer_cell_lines_expression is for prism.exp
+#liver_cancer_cell_lines_scores is for prism
+```
+
+```{r}
+
+```
+
+
+Now for expression and drug efficiency
+
+```{r}
+lm(liver_cancer_cell_lines_scores["ACH-000217",]~liver_cancer_cell_lines_expression["ACH-000217",], data=c(liver_cancer_cell_lines_scores, liver_cancer_cell_lines_expression))
+#what is wrong here?
+```
 
