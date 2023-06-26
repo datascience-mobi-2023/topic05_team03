@@ -152,190 +152,6 @@ cor_drugs_genes
 ```
 
 
-
-
-```{r}
-#CCCCCCCCCCCCCCCClets find some biomarkers, that are linked with drug sensitivity of CCLs 
-
-# first we want to extract the drug gene pairs that are highly correlated 
-
-T = 0.4 #setting a threshold
-
-copy_prism
-actual_prism = rownames(prism)
-target_prism = rownames(prism.exp)
-treatment_prism = copy_prism[match(actual_prism, target_prism),]
-
-apply(cor_drug_gene, function(p){ #p is one correlation value
- 
-   if (p > T)#filtering correlations below threshold
-    treatment = colname(p) 
-    i=treatment_prism[,treatment] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
-    apply(prism.exp,2,function(k){#iterating through prism.exp
-      i_remove = which(is.na(i))#removing NAs 
-      cleaned_i = i[-i_remove]
-      cleaned_k = k[-i_remove]
-      cor(cleaned_i, cleaned_k, method = "spearman")
-    }
-    )
-}
-)
-```
-
-
-
-
-```{r}
-#(((((((((((((((((((((((((((AUTOMATISIERUNG 
-#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
-
-# first we want to extract the drug gene pairs that are highly correlated 
-
-T = 0.4 #setting a threshold
-data = prism       #prism or achilles
-data2 = highvar(prism.exp, 0.95) #gene expression or cnv
-correlation_matrix = cor_drugs_genes
-copy_data = data
-actual_data = rownames(data)
-target_data = rownames(data2)
-data_organized = copy_data[match(actual_data, target_data),]
-
-apply(correlation_matrix, function(p){ #p is one correlation value
- 
-   if (p > T)#filtering correlations below threshold
-    treatment = colname(p)
-    i=data_organized[,treatment] # extracting the column with the IC50 values of the drug of one of the drug gene pairs in prism
-    apply(data2 ,2,function(k){#iterating through prism.exp
-      i_remove = which(is.na(i))
-      k_remove = which(is.na(k))
-      cleaned_i = i[c(-i_remove, -k.remove)]
-      cleaned_k = k[c(-i_remove, -k.remove)]
-      cor(cleaned_i, cleaned_k, method = "spearman")
-    }
-    )
-}
-)
-```
-
-```{r}
-#((((((((((((((((((((((((((((((#apply(correlation_matrix,2,mean)
-#colnames(correlation_matrix)
-#AUTOMATISIERUNG 
-#lets find some biomarkers, that are linked with drug sensitivity of CCLs 
-
-# first we want to extract the drug gene pairs that are highly correlated 
-
-#T = 0.4 #setting a threshold
-#data = prism       #prism or achilles
-#pre_data2 = highvar(prism.exp, 0.95) #gene expression or cnv
-#correlation_matrix = cor_drugs_genes
-
-#defining function
-
-correlation_highcor <- function(data, data2, correlation_matrix, T){
-copy_data = data
-actual_data = rownames(data)
-target_data = rownames(data2)
-data_matched = copy_data[match(actual_data, target_data),]
-same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
-data_organized = data_matched[same_rownames,]
-data2 = pre_data2[same_rownames,]
-
-
-for (m in (1:dim(correlation_matrix)[1])){
-  for (n in (1:dim(correlation_matrix)[2])){
-  
-    if (correlation_matrix[m, n]> T){#filtering correlations below threshold
-      i=data_organized[,n]
-      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
-        i=data_organized[,n]
-        i_remove = which(is.na(i))
-        k_remove = which(is.na(k))
-        cleaned_i = i[c(-i_remove, -k_remove)]
-        cleaned_k = k[c(-k_remove, -i_remove)]
-        cor(cleaned_i, cleaned_k, method = "spearman")
-        print(correlation_data_data2)
-    #return(correlation_data_data2)
-      }
-      )
-      #print(correlation_data_data2)
-    }
-}
-}
-}
-```
-
-```{r}
-#(((((((((((((((((((((((((((((#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY BBBBBBBBBB
-
-
-correlation_highcor <- function(data, data2, correlation_matrix, T){
-copy_data = data
-actual_data = rownames(data)
-target_data = rownames(data2)
-data_matched = copy_data[match(actual_data, target_data),]
-same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
-data_organized = data_matched[same_rownames,]
-data2 = pre_data2[same_rownames,]
-
-
-apply(correlation_matrix,c(1,2), function(p){
-  
-    if (p > T){#filtering correlations below threshold
-      i=data_organized[,correlation_matrix[p]]
-      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
-        i=data_organized[,n]
-        i_remove = which(is.na(i))
-        k_remove = which(is.na(k))
-        cleaned_i = i[c(-i_remove, -k_remove)]
-        cleaned_k = k[c(-k_remove, -i_remove)]
-        cor(cleaned_i, cleaned_k, method = "spearman")
-       # print(correlation_data_data2)
-        })
-}#closes if 
-}#closes fun
-)
-}
-```
-
-
-```{r}
-#(((((((((((((((((((((((((((((((((((((((((((((#FOR LOOP DOES NOT WORK YET, LETS TRY IT WITH APPLY CCCCCCCCCC
-
-high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] # reducing dimensionality of data to only drugs that had a high correlation
-
-
-correlation_highcor <- function(data, data2, correlation_matrix, T){
-copy_data = data
-actual_data = rownames(data)
-target_data = rownames(data2)
-data_matched = copy_data[match(actual_data, target_data),]
-same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
-data_organized = data_matched[same_rownames,]
-data2 = pre_data2[same_rownames,]
-
-
-
-
-apply(correlation_matrix,2, function(p){
-  
-    if (p > T){#filtering correlations below threshold
-      i=data_organized[,correlation_matrix[p]]
-      correlation_data_data2 <- apply(data2 ,2,function(k){#iterating through prism.exp
-        i=data_organized[,n]
-        i_remove = which(is.na(i))
-        k_remove = which(is.na(k))
-        cleaned_i = i[c(-i_remove, -k_remove)]
-        cleaned_k = k[c(-k_remove, -i_remove)]
-        cor(cleaned_i, cleaned_k, method = "spearman")
-       # print(correlation_data_data2)
-        })
-}#closes if 
-}#closes fun
-)
-}
-```
-
 +++++++++++++correlations+betweeen+preselected+prism+and+expression++cnv+++++++++++++++++++++++
 
 ```{r}
@@ -657,7 +473,48 @@ new_prism= copy_prism[match(order_target_prism, order_target_prism),]
 new_prism
 ```
 
+
++++++COMPARING THE HIGHLY CORRELATED DRUG/GENE PAIRS WITH THE LIVER CANCER DRUG TARGETS+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+```{r}
+liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
+liver_cancer_cellline_names = prism.cl$DepMap_ID[liver_cancer_indices]
+liver_cancer_cell_lines_scores = prism[liver_cancer_cellline_names,]
+show(liver_cancer_cell_lines_scores)
+```
+
+```{r}
+#lets see if the highly corelated drug/genes target liver cancer genes
+
+
+threshold2 = -0.6
+livercancer_mean_drug_score = apply(liver_cancer_cell_lines_scores, 2, mean, na.rm=TRUE)
+names_important_drugs_liver_cancer = names(livercancer_mean_drug_score)[which((livercancer_mean_drug_score)< threshold2)] #zuerst wird der mean von allen cell line scores berechnet, dann werden die drugs ausgewählt, die eine durchschnittliche drug sensitivity von über threshold haben. von den 
+important_drugs_livercancer.treat = prism.treat[names_important_drugs_liver_cancer,]
+#show(important_drugs_livercancer.treat)
+Liver_cancer_target_genes = unique(important_drugs_livercancer.treat$target)
+Liver_cancer_target_genes_all = important_drugs_livercancer.treat$target
+
+
+
+```
+
+```{r}
+#which(isTRUE(as.character(prism.cl$disease == "Liver Cancer")))
+liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
+
+
+```
+
+
+
+
+
+
+
+
 ENTRY TEST AREA 51 - WHAT HAPPENS HERE STAYS HERE
+
 
 ```{r}
 
@@ -760,10 +617,7 @@ sum(rownames(prism) %in% rownames(prism.cnv))
 sum(rownames(prism.cnv) %in% rownames(prism.achilles))
 sum(rownames(prism.cnv) %in% rownames(prism))
 ```
-```{r}
-cor_druggen = correlation(prism, prism.achilles)
-cor_
-```
+
 ```{r}
 prism.var = apply(prism, 2, var)
 q90 = quantile(prism.var, probs = 0.9)
@@ -812,41 +666,16 @@ fef3>3
 ```
 
 ```{r}
+#CODETESTING
 high_cor_drugs_genes = cor_drugs_genes[, highly_correlated_drugs] #hist(apply(prism.exp, 2, mean), breaks= 200)
 
 ```
 
 ```{r}
+#code testing 
 dim(highvar(prism.exp, 0.1))
 ```
 
-```{r}
-liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
-liver_cancer_cellline_names = prism.cl$DepMap_ID[liver_cancer_indices]
-liver_cancer_cell_lines_scores = prism[liver_cancer_cellline_names,]
-show(liver_cancer_cell_lines_scores)
-```
-
-```{r}
-#lets see if the highly corelated drug/genes target liver cancer genes
-
-
-threshold2 = -0.6
-livercancer_mean_drug_score = apply(liver_cancer_cell_lines_scores, 2, mean, na.rm=TRUE)
-names_important_drugs_liver_cancer = names(livercancer_mean_drug_score)[which((livercancer_mean_drug_score)< threshold2)] #zuerst wird der mean von allen cell line scores berechnet, dann werden die drugs ausgewählt, die eine durchschnittliche drug sensitivity von über threshold haben. von den 
-important_drugs_livercancer.treat = prism.treat[names_important_drugs_liver_cancer,]
-#show(important_drugs_livercancer.treat)
-Liver_cancer_target_genes = unique(important_drugs_livercancer.treat$target)
-
-
-
-```
-```{r}
-#which(isTRUE(as.character(prism.cl$disease == "Liver Cancer")))
-liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
-
-
-```
 
 ```{r}
 
