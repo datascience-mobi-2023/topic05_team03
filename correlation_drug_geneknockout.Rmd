@@ -155,6 +155,8 @@ cor_drugs_genes
 +++++++++++++correlations+betweeen+preselected+prism+and+expression++cnv+++++++++++++++++++++++
 
 ```{r}
+
+#HERE THE THRESHOLD OF CORRELTAION MATRIX IS SET 
 H = 0.15
 correlations_above_threshold <- apply(cor_drugs_genes, 2, function(x){
   sum(x> H)
@@ -163,7 +165,7 @@ correlations_above_threshold <- apply(cor_drugs_genes, 2, function(x){
 #correlations_above_threshold
 #morethannull = correlations_above_threshold[isTRUE(correlations_above_threshold>0)]
 #morethannullcorrelations_above_threshold
-
+correlations_above_threshold
 sum(correlations_above_threshold>0)
 which(correlations_above_threshold>0)
 sum(cor_drugs_genes>H)
@@ -324,7 +326,8 @@ high_cor_genknockout_cnv = correlation_highcor(prism.achilles, highvar(prism.cnv
 ```
 
 ```{r}
-#ARE THERE ANY DRUG/GENE PAIRS THAT BOTH HAVE HIGH CORREALTIONS WITH A BIOMARKER?
+#ARE THERE ANY DRUG/GENE PAIRS THAT BOTH HAVE HIGH CORREALTIONS WITH the same BIOMARKER?
+which(rown)
 
 ```
 
@@ -507,8 +510,32 @@ liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
 ```
 
 
+```{r}
+table(Liver_cancer_target_genes)
+#problem = die targets werden als ein bestimmtes target gesehen, wenn es mehrere targets gibt, und nicht als einzelne targets 
+```
+
+```{r}
+same_targets = which( #TARGETS OF HIGHLY CORRELATED DRUGS %in% Liver_cancer_target_genes) )
+length(same_targets)
+same_targetsSSSS
+
+names_highly_correlated_drugs = names(highly_correlated_drugs)
+prism_highly_correlated_drugs = prism[,names_highly_correlated_drugs]
 
 
+
+```
+
+```{r}
+#finding genes of the drug/gene pairs that are the same as liver cnacer target genes 
+same_targets = which(names_correlations_above_threshold_geneknockout %in% Liver_cancer_target_genes)
+length(same_targets)
+same_targets
+Liver_cancer_target_genes[same_targets]
+
+#!!!!!!ALL THEM GENES HAVE A PAIRED DRUG--> FIND THEM 
+```
 
 
 
