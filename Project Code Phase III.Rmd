@@ -83,4 +83,37 @@ vector01=liver_cancer_cell_lines_expression[,"TSPAN6"]
 vector02=new_prism.achilles$TSPAN6
 lm(vector01~vector02)
 ```
+```{r}
+x = vector01
+y = vector02
+if ( length(x) != length(y))
+{
+  diff = abs(length(x)-length(y))
+  if(length(x)>length(y))
+  {
+    for (j in 1:diff)
+    {
+      y[length(y)+j] = mean(y, na.rm=TRUE)
+    }
+  }
+  else if(length(y)>length(x))
+  {
+    for (k in 1:diff)
+    {
+      x[length(x)+k] = mean(x, na.rm=TRUE)
+    }
+  }
+}
+cor(x,y)
+```
+```{r}
+vector01
+```
+```{r}
+#vector02
+vector03 =new_prism.exp$TSPAN6
+```
+```{r}
+lm(vector02~vector03)
+```
 
