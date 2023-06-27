@@ -545,8 +545,6 @@ names_liver_cancer_target_genes_highcorA
 #indices_liver_cancer_targets
 #machs dirket mit den names
 cor_drugs_genes_lctargetgenes = cor_drugs_genes[names_liver_cancer_target_genes_highcorA,] #correlation matrix only with important liver genes 
-
-
 ```
 
 ```{r}
@@ -560,7 +558,39 @@ highcor_filter <- function(threshold3, matrix){apply(cor_drugs_genes_lctargetgen
 ```{r}
 #FOUND THE DRUGS THAT CORRELATE WITH THE GENE KNOCKOUTS THAT ARE EFFICIENT FOR LIVER CANCER TREATMENT 
 drug_gene_pairs_lc = highcor_filter(0.15, cor_drugs_genes_lctargetgenes)
-drug_gene_pairs_lc
+vector_drug_gene_pairs_lc = unlist(drug_gene_pairs_lc)
+vector_drug_gene_pairs_lc
+table(vector_drug_gene_pairs_lc)
+
+
+```
+
+```{r}
+#for the next step: We wanna find the drugs that have high cor
+K = 0.15
+
+drugs_with_high = apply(cor_drugs_genes_lctargetgenes, 2, function(y){
+  length(which(y>K))
+}
+)
+vector_drugsof_drug_gene_pairs_lc = names(which(drugs_with_high>0))
+```
+
+
+
+```{r}
+#BUT!!! ARE THERE ANY NEW DRUGS THAT DID NOT SHOW to be EFFECTIVE as a TREATMENT IN PRISM???
+#first lets find o
+
+
+indices_same_drugs = which(vector_drugsof_drug_gene_pairs_lc %in% names_important_drugs_liver_cancer)
+length(vector_drugsof_drug_gene_pairs_lc)
+length(indices_same_drugs)
+unexpected_drugs_lc = vector_drugsof_drug_gene_pairs_lc[-indices_same_drugs]
+unexpected_drugs_lc
+
+
+
 
 ```
 
