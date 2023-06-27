@@ -116,4 +116,10 @@ vector03 =new_prism.exp$TSPAN6
 ```{r}
 lm(vector02~vector03)
 ```
+```{r}
+lm(new_prism.achilles$TP53~new_prism.exp$TP53)
+```
+```{r}
+
+```
 
