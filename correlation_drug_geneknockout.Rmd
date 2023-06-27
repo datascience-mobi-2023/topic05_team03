@@ -503,8 +503,6 @@ Liver_cancer_target_genes_all = important_drugs_livercancer.treat$target
 ```
 
 ```{r}
-liver_cancer_targets
-
 
 ```
 
@@ -559,6 +557,12 @@ highcor_filter <- function(threshold3, matrix){apply(cor_drugs_genes_lctargetgen
 })}
 ```
 
+```{r}
+#FOUND THE DRUGS THAT CORRELATE WITH THE GENE KNOCKOUTS THAT ARE EFFICIENT FOR LIVER CANCER TREATMENT 
+drug_gene_pairs_lc = highcor_filter(0.15, cor_drugs_genes_lctargetgenes)
+drug_gene_pairs_lc
+
+```
 
 
 ENTRY TEST AREA 51 - WHAT HAPPENS HERE STAYS HERE
