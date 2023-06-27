@@ -503,8 +503,7 @@ Liver_cancer_target_genes_all = important_drugs_livercancer.treat$target
 ```
 
 ```{r}
-#which(isTRUE(as.character(prism.cl$disease == "Liver Cancer")))
-liver_cancer_indices = which(prism.cl$disease == "Liver Cancer")
+liver_cancer_targets
 
 
 ```
@@ -516,25 +515,33 @@ table(Liver_cancer_target_genes)
 ```
 
 ```{r}
-same_targets = which( #TARGETS OF HIGHLY CORRELATED DRUGS %in% Liver_cancer_target_genes) )
-length(same_targets)
-same_targetsSSSS
-
+#WICH DRUGS OF THE DRUG/GENE PAIRS DO HAVE THE SAME TARGETS AS THE IMPORTANT LIVER GENES----THIS STEP IS PRETTY UNNECESSARY AS IT CAN BE FOUND OUT IN A MUCH EASIER WAY!!
 names_highly_correlated_drugs = names(highly_correlated_drugs)
-prism_highly_correlated_drugs = prism[,names_highly_correlated_drugs]
+prism.treat_highly_correlated_drugs_targets = prism.treat[names_highly_correlated_drugs,]$target
+length(prism.treat_highly_correlated_drugs_targets)
 
+
+same_targetsB = which(Liver_cancer_target_genes %in% prism.treat_highly_correlated_drugs) 
+#same_targetsB = which(prism.treat_highly_correlated_drugs_targets %in% Liver_cancer_target_genes) 
+length(same_targetsB)
+#same_targetsB
+Liver_cancer_target_genes[same_targetsB]
 
 
 ```
 
 ```{r}
 #finding genes of the drug/gene pairs that are the same as liver cnacer target genes 
-same_targets = which(names_correlations_above_threshold_geneknockout %in% Liver_cancer_target_genes)
+same_targets = which(Liver_cancer_target_genes%in%names_correlations_above_threshold_geneknockout)
 length(same_targets)
 same_targets
-Liver_cancer_target_genes[same_targets]
+names_liver_cancer_target_genes_highcor = Liver_cancer_target_genes[same_targets]
 
-#!!!!!!ALL THEM GENES HAVE A PAIRED DRUG--> FIND THEM 
+#!!!!!!ALL THEM GENES HAVE AT LEAST ONE PAIRED DRUG THAT MAY HAVE OTHER TARGETS BUT STILL HAVE THE SAME EFFECT--> FIND THEM 
+#indices_liver_cancer_targets = which(rownames(cor_drugs_genes) %in% names_liver_cancer_target_genes_highcor)
+#indices_liver_cancer_targets
+#machs dirket mit den names
+
 ```
 
 
@@ -705,7 +712,13 @@ dim(highvar(prism.exp, 0.1))
 
 
 ```{r}
-
+#JUST PLAYING 
+A = c(1,2,3,4,5,6,7,8)
+B = c(2,3)
+G = which( A %in% B)
+G
+H = which(B %in% A)
+H
 ```
 
 
