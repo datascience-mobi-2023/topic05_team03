@@ -120,6 +120,13 @@ lm(vector02~vector03)
 lm(new_prism.achilles$TP53~new_prism.exp$TP53)
 ```
 ```{r}
-
+#unique(liver_cancer_genes)
+for (i in 1:length(unique(liver_cancer_genes)))
+     {
+  if(i==2)
+    next
+  lm(new_prism.achilles[,unique(length(liver_cancer_genes))[i]]~new_prism.exp[,unique(length(liver_cancer_genes))[i]])
+}
+# what is the problem here?
 ```
 
