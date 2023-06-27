@@ -532,18 +532,32 @@ Liver_cancer_target_genes[same_targetsB]
 
 ```{r}
 #finding genes of the drug/gene pairs that are the same as liver cnacer target genes 
-same_targets = which(Liver_cancer_target_genes%in%names_correlations_above_threshold_geneknockout)
-length(same_targets)
-same_targets
-names_liver_cancer_target_genes_highcor = Liver_cancer_target_genes[same_targets]
-
+same_targetsA = which(names_correlations_above_threshold_geneknockout%in%Liver_cancer_target_genes)
+#same_targetsB = which(Liver_cancer_target_genes%in%names_correlations_above_threshold_geneknockout)#second object is the genes that correlate with a drug above a threshold
+length(same_targetsA)
+#length(same_targetsB)
+same_targetsA
+#same_targetsB
+names_liver_cancer_target_genes_highcorA = names_correlations_above_threshold_geneknockout[same_targetsA]
+#names_liver_cancer_target_genes_highcorB = Liver_cancer_target_genes[same_targetsB]
+names_liver_cancer_target_genes_highcorA
+#names_liver_cancer_target_genes_highcorB
 #!!!!!!ALL THEM GENES HAVE AT LEAST ONE PAIRED DRUG THAT MAY HAVE OTHER TARGETS BUT STILL HAVE THE SAME EFFECT--> FIND THEM 
 #indices_liver_cancer_targets = which(rownames(cor_drugs_genes) %in% names_liver_cancer_target_genes_highcor)
 #indices_liver_cancer_targets
 #machs dirket mit den names
+cor_drugs_genes_lctargetgenes = cor_drugs_genes[names_liver_cancer_target_genes_highcorA,] #correlation matrix only with important liver genes 
+
 
 ```
 
+```{r}
+ #threshold
+highcor_filter <- function(threshold3, matrix){apply(cor_drugs_genes_lctargetgenes, 1, function(x){
+  drugs_with_highcor = which(x > threshold3)
+  x[drugs_with_highcor]
+})}
+```
 
 
 
