@@ -1150,5 +1150,16 @@ names(liver_mutated_genes)
 b2m_cells_mutation = unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol == "B2M")])
 #prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol == "B2M")],]
 prism[which(rownames(prism) %in% b2m_cells_mutation),]
+
+```
+```{r}
+apply(prism[which(rownames(prism) %in% b2m_cells_mutation),],1,mean,na.rm=TRUE)
+mean(apply(prism[which(rownames(prism) %in% b2m_cells_mutation),],1,mean,na.rm=TRUE),na.rm=TRUE)
+#Nice! We see, that all prism scores are negative for this mutation! Let's compare this to all cell lines
+```
+```{r}
+apply(prism,1,mean,na.rm=TRUE)
+mean(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+#ok, so this doesn't really tell us anything
 ```
 
