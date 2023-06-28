@@ -148,4 +148,7 @@ qqnorm(new_prism.exp$TP53)
 #seems pretty normal
 #ok, looks great
 ```
+```{r}
+#try some k-means clustering of the gene expression after the PCA
+```
 
