@@ -233,15 +233,10 @@ for (m in 1:dim(highcor_prism_exp)[1]){
       ah = a[m]
       bh = b[n]
       ch = highcor_prism_exp[m,n]
-      
       print(paste(ah, "coorelates with", bh, "->", ch))
-      
     }
-    
-    
   }
 }
-
 ```
 
 
@@ -601,6 +596,52 @@ prims_liver_cancer_unexpected_drugs
 
 ```
 
++++++++++++LOOKING FOR BIOMARKERS THAT HAVE HIGH CORRELATION BOTH WITH DRUG SENSITIVITY AND GENE KNOCKOUT+++++++++++++++++++++++++++++++++
+
+```{r}
+#STEPS THAT NEED TO BE DONE:
+#1 für jedes drug die hohen expressionscorrelationen rausfischen 
+#2 für jeden gene knockout die hohen korrelationen rausfischen
+#3 vergleichen, ob übereinsgtimmungen zu finden sind 
+#falls ja, soll das ausgegeben wereden 
+#das alles soll für jeden exp durchgemacht werden 
+
+C = 0.15 #threshold for correlation of drug or genewith exp
+result_list <- lapply(rownames(highcor_prism_exp), function(x){
+  a = which(highcor_prism_exp[x,] > C)
+ # a2 = highcor_prism_exp[x, a]
+  a2 = colnames(highcor_prism_exp)[a]
+  b = which(high_cor_genknockout_exp[x,] > C)
+ # b2 = high_cor_genknockout_exp[x, b]
+  b2 = rownames(high_cor_genknockout_exp)[b]
+  return(list(x,a2,b2))
+ # c = which(names(a2) %in% names(b2))
+  #d = length(c)
+  #print(c(x, "correlates with", a2, "and", b2))
+})
+result_list
+
+
+ # if (d > 0){
+    
+    #apply(a2, function(z){
+   #   z[c]
+  #  }
+ # )
+  
+ # }
+  # else{
+  #    print(c("nah bro"))
+     
+   # }
+#})
+
+```
+
+
+
+
+
 
 
 ENTRY TEST AREA 51 - WHAT HAPPENS HERE STAYS HERE
@@ -777,4 +818,9 @@ H = which(B %in% A)
 H
 ```
 
+```{r}
+lapply(fef, function(x){
+  x+1
+})
+```
 
