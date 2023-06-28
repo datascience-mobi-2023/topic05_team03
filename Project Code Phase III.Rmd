@@ -140,4 +140,12 @@ t.test(new_prism.exp$TP53)
 p.adjust(new_prism.exp$TP53)
 #what does this mean? check later...
 ```
+```{r}
+#check for normality
+plot(new_prism.exp$TP53)
+hist(new_prism.exp$TP53)
+qqnorm(new_prism.exp$TP53)
+#seems pretty normal
+#ok, looks great
+```
 
