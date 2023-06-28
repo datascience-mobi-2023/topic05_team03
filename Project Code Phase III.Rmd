@@ -130,3 +130,14 @@ for (i in 1:length(unique(liver_cancer_genes)))
 # what is the problem here?
 ```
 
+```{r}
+#when creating a t-test, we want:
+#1) check if data is normally distributed
+#2) adjust the p-value with p.adjust
+#Let's test this:
+
+t.test(new_prism.exp$TP53)
+p.adjust(new_prism.exp$TP53)
+#what does this mean? check later...
+```
+
