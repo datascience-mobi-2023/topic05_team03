@@ -561,9 +561,8 @@ drug_gene_pairs_lc = highcor_filter(0.15, cor_drugs_genes_lctargetgenes)
 vector_drug_gene_pairs_lc = unlist(drug_gene_pairs_lc)
 vector_drug_gene_pairs_lc
 table(vector_drug_gene_pairs_lc)
-
-
 ```
+
 
 ```{r}
 #for the next step: We wanna find the drugs that have high cor
@@ -589,10 +588,19 @@ length(indices_same_drugs)
 unexpected_drugs_lc = vector_drugsof_drug_gene_pairs_lc[-indices_same_drugs]
 unexpected_drugs_lc
 
+#look at the prism scores foer all cancer cell lines 
 
 
 
 ```
+
+```{r}
+#LETS HAVE A LOOK AT THE PRISM SCORES OF THE UNEXPECTED DRUGS 
+prims_liver_cancer_unexpected_drugs = prism[liver_cancer_cellline_names, unexpected_drugs_lc]
+prims_liver_cancer_unexpected_drugs
+
+```
+
 
 
 ENTRY TEST AREA 51 - WHAT HAPPENS HERE STAYS HERE
