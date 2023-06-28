@@ -1139,5 +1139,16 @@ names(liver_mutated_genes)
 
 ```{r}
 #B2M mutations??? relevant?
+#MHCI and MHCII?
+#TAP1 and TAP2?
+#PD-L1 expression?
+```
+
+```{r}
+#check for B2M mutation, because it prevents metastasis
+#which(prism.snv$Hugo_Symbol == "B2M")
+b2m_cells_mutation = unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol == "B2M")])
+#prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol == "B2M")],]
+prism[which(rownames(prism) %in% b2m_cells_mutation),]
 ```
 
