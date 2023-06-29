@@ -151,4 +151,7 @@ qqnorm(new_prism.exp$TP53)
 ```{r}
 #try some k-means clustering of the gene expression after the PCA
 ```
+```{r}
+#hepatitis b or c genes?
+```
 
