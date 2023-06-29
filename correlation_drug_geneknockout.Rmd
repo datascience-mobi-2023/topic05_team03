@@ -596,9 +596,15 @@ prims_liver_cancer_unexpected_drugs
 
 ```
 
+
+
+
+
+
 +++++++++++LOOKING FOR BIOMARKERS THAT HAVE HIGH CORRELATION BOTH WITH DRUG SENSITIVITY AND GENE KNOCKOUT+++++++++++++++++++++++++++++++++
 
 ```{r}
+#IN THIS CHUNK, WE FIND THE DRUGS AND GENES THAT HAVE HIGH CORRELATIONS WITH THE SAME BIOMARKER 
 #STEPS THAT NEED TO BE DONE:
 #1 für jedes drug die hohen expressionscorrelationen rausfischen 
 #2 für jeden gene knockout die hohen korrelationen rausfischen
@@ -620,21 +626,13 @@ result_list <- lapply(rownames(highcor_prism_exp), function(x){
   #print(c(x, "correlates with", a2, "and", b2))
 })
 result_list
+```
 
+```{r}
+#FOR EACH BIOMARKER, WE HAVE TO SEE IF THERE ARE DRUG/GENE PAIRS IN THE HIGH CORREALTIONS 
 
- # if (d > 0){
-    
-    #apply(a2, function(z){
-   #   z[c]
-  #  }
- # )
-  
- # }
-  # else{
-  #    print(c("nah bro"))
-     
-   # }
-#})
+#THIS IS WHY WE FIRST HAVE TO CREATE A LIST WITH THE DRUG/GENE PAIRS 
+
 
 ```
 
@@ -644,7 +642,44 @@ result_list
 
 
 
+
+
+
+```{r}
+summary(highcor_prism_exp)
+```
+
+
+
+
+
 ENTRY TEST AREA 51 - WHAT HAPPENS HERE STAYS HERE
+
+```{r}
+x = rownames(highcor_prism_exp)[5]
+a = which(highcor_prism_exp[x,] > 0)
+ # a2 = highcor_prism_exp[x, a]
+  a2 = colnames(highcor_prism_exp)[a]
+  a2
+  x
+  a
+  highcor_prism_exp[x,]
+  length(highcor_prism_exp[x,])
+```
+
+```{r}
+#I WANT TO GET ALL THE DRUG GENE PAIRS IN A MATRIX 
+
+list_druggenepairs <- apply(cor_drugs_genes,c(1,2),function(x){
+  if(x > T){
+    return(list(colnames(x), rownames(x)))
+  }
+})
+list_druggenepairs
+```
+
+
+
 
 
 ```{r}
