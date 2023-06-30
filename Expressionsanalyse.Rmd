@@ -70,32 +70,33 @@ for (x in liver_cancer_cl_indices)
 ```{r}
 # which highly expressed genes are mostly common?
 
-liver_genes_total = c(liver_genes_3, liver_genes_4, liver_genes_5, liver_genes_6, liver_genes_7, liver_genes_8, liver_genes_9, liver_genes_10, liver_genes_11, liver_genes_12, liver_genes_13, liver_genes_14, liver_genes_15, liver_genes_16, liver_genes_17)
+liver_genes_total = c(liver_genes_1, liver_genes_2, liver_genes_3, liver_genes_4, liver_genes_5, liver_genes_6, liver_genes_7, liver_genes_8, liver_genes_9, liver_genes_10, liver_genes_11, liver_genes_12, liver_genes_13, liver_genes_14, liver_genes_15, liver_genes_16, liver_genes_17)
+liver_genes_total
 
 summary(as.factor(liver_genes_total))
-names(sort(summary(as.factor(liver_genes_total))))
+sort(summary(as.factor(liver_genes_total)))
+names(summary(as.factor(liver_genes_total)))
 liver_genes_vector = names(sort(summary(as.factor(liver_genes_total))))
 order(summary(as.factor(liver_genes_vector)))
+liver_genes_vector
 
-important_liver_genes = liver_genes_vector[11:17]
+# we should eliminate the mitochondrial genes as they are also highly expressed in normal cells.
+
+mitochondrial_genes = grep("MT.CO3|MT.CO2|MT.CO1|MT.ND1|MT.ND2|MT.ND2|MT.ND3|MT.ND4|MT.ND4L|MT.ND6|MT.ATP6|MT.ATP8", liver_genes_total)
+
+important_liver_genes = liver_genes_total[-mitochondrial_genes]
 important_liver_genes
+
+summary(as.factor(important_liver_genes))
+names(sort(summary(as.factor(important_liver_genes))))
+order(summary(as.factor(important_liver_genes)))
+
 
 
 # let's look if the commonly high expressed genes in liver cancer are also highly expressed in other cancer cell lines or not.
 
-hist(new_prism.exp$MT.CO3)
-hist(new_prism.exp$MT.CO2)
-hist(new_prism.exp$MT.ATP8)
-hist(new_prism.exp$MT.ATP6)
-hist(new_prism.exp$MT.ND4L)
-hist(new_prism.exp$MT.CO1)
-hist(new_prism.exp$MT.ND4)
-
-mean(new_prism.exp$MT.CO3, na.rm = TRUE)
-
-
-matrix_gene_expression_important_liver_genes_all_cell_lines = cbind(new_prism.exp$MT.CO3, new_prism.exp$MT.CO2, new_prism.exp$MT.ATP8, new_prism.exp$MT.ATP6, new_prism.exp$MT.ND4L, new_prism.exp$MT.CO1, new_prism.exp$MT.ND4)
-colnames(matrix_gene_expression_important_liver_genes_all_cell_lines) <- c("MT.CO3", "MT.CO2", "MT.ATP8", "MT.ATP6", "MT.ND4L", "MT.CO1", "MT.ND4")
+matrix_gene_expression_important_liver_genes_all_cell_lines = cbind(new_prism.exp$AFP, new_prism.exp$APOA2, new_prism.exp$EEF1A1, new_prism.exp$FTH1, new_prism.exp$FTL, new_prism.exp$RPL31, new_prism.exp$TMSB10, new_prism.exp$TMSB4X)
+colnames(matrix_gene_expression_important_liver_genes_all_cell_lines) <- c("AFP", "APOA2", "EEF1A1", "FTH1", "FTL", "RPL31", "TMSB10","TMSB4X")
 rownames(matrix_gene_expression_important_liver_genes_all_cell_lines) <- c(new_prism.cl$DepMap_ID)
 
 matrix_gene_expression_important_liver_genes_all_cell_lines
@@ -103,14 +104,6 @@ matrix_gene_expression_important_liver_genes_all_cell_lines
 ```
 
 
-```{r}
-x = liver_genes_1[which(liver_genes_1 %in% liver_genes_2)]
-for ( i in 1:length(liver_genes_vector)-1)
-{
-  s= liver_genes_vector[i]#[which (x %in% liver_genes_vector[i+1])]
-}
-s
-```
 
 
 ```{r}
@@ -155,7 +148,7 @@ genes_with_topVar
 # are these genes highly expressed because of their gene copy numbers?
 
 # we can look for an example to start:
-# CD74 is a highly expressed gene. How about its copy number?
+# CD74 is a highly expressed gene. What about its copy number?
 
 hist(new_prism.cnv$CD74)
 mean(new_prism.cnv$CD74)

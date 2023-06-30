@@ -1,0 +1,234 @@
+
+---
+title: "Cancer cell lines"
+output: html_document
+date: "2023-05-31"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+Different cancer cell lines
+
+# find out how many different cancer cell lines there are, count them and find out their exact DepMapIDs.
+
+
+```{r}
+# liver lineage:
+liver_cancer_cl_indices = which(new_prism.cl$lineage == "liver")
+length(liver_cancer_cl_indices)
+liver_cancer_cl_indices
+
+liver_cancer_cell_lines = rownames(new_prism.cl[liver_cancer_cl_indices,])
+liver_cancer_cell_lines
+```
+
+```{r}
+# lung lineage:
+lung_cancer_cl_indices = which(new_prism.cl$lineage == "lung")
+length(lung_cancer_cl_indices)
+lung_cancer_cl_indices
+
+lung_cancer_cell_lines = rownames(new_prism.cl[lung_cancer_cl_indices,])
+lung_cancer_cell_lines
+```
+
+```{r}
+# skin lineage (melanoma):
+skin_cancer_cl_indices = which(new_prism.cl$lineage == "skin")
+length(skin_cancer_cl_indices)
+skin_cancer_cl_indices
+
+skin_cancer_cell_lines = rownames(new_prism.cl[skin_cancer_cl_indices,])
+skin_cancer_cell_lines
+```
+
+```{r}
+# central nervous system lineage:
+central_nervous_system_cancer_cl_indices = which(new_prism.cl$lineage == "central_nervous_system")
+length(central_nervous_system_cancer_cl_indices)
+central_nervous_system_cancer_cl_indices
+
+central_nervous_system_cancer_cell_lines = rownames(new_prism.cl[central_nervous_system_cancer_cl_indices,])
+central_nervous_system_cancer_cell_lines
+```
+
+```{r}
+# pancreatic lineage:
+pancreas_cancer_cl_indices = which(new_prism.cl$lineage == "pancreas")
+length(pancreas_cancer_cl_indices)
+pancreas_cancer_cl_indices
+
+pancreas_cancer_cell_lines = rownames(new_prism.cl[pancreas_cancer_cl_indices,])
+pancreas_cancer_cell_lines
+```
+
+```{r}
+# ovarian lineage:
+ovary_cancer_cl_indices = which(new_prism.cl$lineage == "ovary")
+length(ovary_cancer_cl_indices)
+ovary_cancer_cl_indices
+
+ovary_cancer_cell_lines = rownames(new_prism.cl[ovary_cancer_cl_indices,])
+ovary_cancer_cell_lines
+```
+
+```{r}
+# colorectal lineage:
+colorectal_cancer_cl_indices = which(new_prism.cl$lineage == "colorectal")
+length(colorectal_cancer_cl_indices)
+colorectal_cancer_cl_indices
+
+colorectal_cancer_cell_lines = rownames(new_prism.cl[colorectal_cancer_cl_indices,])
+colorectal_cancer_cell_lines
+```
+
+```{r}
+# esophagus lineage:
+esophagus_cancer_cl_indices = which(new_prism.cl$lineage == "esophagus")
+length(esophagus_cancer_cl_indices)
+esophagus_cancer_cl_indices
+
+esophagus_cancer_cell_lines = rownames(new_prism.cl[esophagus_cancer_cl_indices,])
+esophagus_cancer_cell_lines
+```
+
+```{r}
+# urinary tract lineage:
+urinary_tract_cancer_cl_indices = which(new_prism.cl$lineage == "urinary_tract")
+length(urinary_tract_cancer_cl_indices)
+urinary_tract_cancer_cl_indices
+
+urinary_tract_cancer_cell_lines = rownames(new_prism.cl[urinary_tract_cancer_cl_indices,])
+urinary_tract_cancer_cell_lines
+```
+
+```{r}
+# breast lineage:
+breast_cancer_cl_indices = which(new_prism.cl$lineage == "breast")
+length(breast_cancer_cl_indices)
+breast_cancer_cl_indices
+
+breast_cancer_cell_lines = rownames(new_prism.cl[breast_cancer_cl_indices,])
+breast_cancer_cell_lines
+```
+
+```{r}
+# upper aerodigestive lineage:
+upper_aerodigestive_cancer_cl_indices = which(new_prism.cl$lineage == "upper_aerodigestive")
+length(upper_aerodigestive_cancer_cl_indices)
+upper_aerodigestive_cancer_cl_indices
+
+upper_aerodigestive_cancer_cell_lines = rownames(new_prism.cl[upper_aerodigestive_cancer_cl_indices,])
+upper_aerodigestive_cancer_cell_lines
+```
+
+```{r}
+# uterus lineage:
+uterus_cancer_cl_indices = which(new_prism.cl$lineage == "uterus")
+length(uterus_cancer_cl_indices)
+uterus_cancer_cl_indices
+
+uterus_cancer_cell_lines = rownames(new_prism.cl[uterus_cancer_cl_indices,])
+uterus_cancer_cell_lines
+```
+
+```{r}
+# gastric lineage:
+gastric_cancer_cl_indices = which(new_prism.cl$lineage == "gastric")
+length(gastric_cancer_cl_indices)
+gastric_cancer_cl_indices
+
+gastric_cancer_cell_lines = rownames(new_prism.cl[gastric_cancer_cl_indices,])
+gastric_cancer_cell_lines
+```
+
+```{r}
+# kidney lineage:
+kidney_cancer_cl_indices = which(new_prism.cl$lineage == "kidney")
+length(kidney_cancer_cl_indices)
+kidney_cancer_cl_indices
+
+kidney_cancer_cell_lines = rownames(new_prism.cl[kidney_cancer_cl_indices,])
+kidney_cancer_cell_lines
+```
+
+```{r}
+# bone lineage:
+bone_cancer_cl_indices = which(new_prism.cl$lineage == "bone")
+length(bone_cancer_cl_indices)
+bone_cancer_cl_indices
+
+bone_cancer_cell_lines = rownames(new_prism.cl[bone_cancer_cl_indices,])
+bone_cancer_cell_lines
+```
+
+```{r}
+# thyroid lineage:
+thyroid_cancer_cl_indices = which(new_prism.cl$lineage == "thyroid")
+length(thyroid_cancer_cl_indices)
+thyroid_cancer_cl_indices
+
+thyroid_cancer_cell_lines = rownames(new_prism.cl[thyroid_cancer_cl_indices,])
+thyroid_cancer_cell_lines
+```
+
+```{r}
+# bile duct lineage:
+bile_duct_cancer_cl_indices = which(new_prism.cl$lineage == "bile_duct")
+length(bile_duct_cancer_cl_indices)
+liver_cancer_cl_indices
+
+bile_duct_cancer_cell_lines = rownames(new_prism.cl[bile_duct_cancer_cl_indices,])
+bile_duct_cancer_cell_lines
+```
+
+```{r}
+# peripheral nervous system lineage:
+peripheral_nervous_system_cancer_cl_indices = which(new_prism.cl$lineage == "peripheral_nervous_system")
+length(peripheral_nervous_system_cancer_cl_indices)
+peripheral_nervous_system_cancer_cl_indices
+
+peripheral_nervous_system_cancer_cell_lines = rownames(new_prism.cl[peripheral_nervous_system_cancer_cl_indices,])
+peripheral_nervous_system_cancer_cell_lines
+```
+
+```{r}
+# prostate lineage:
+prostate_cancer_cl_indices = which(new_prism.cl$lineage == "prostate")
+length(prostate_cancer_cl_indices)
+prostate_cancer_cl_indices
+
+prostate_cancer_cell_lines = rownames(new_prism.cl[prostate_cancer_cl_indices,])
+prostate_cancer_cell_lines
+```
+
+```{r}
+# soft tissue lineage:
+soft_tissue_cancer_cl_indices = which(new_prism.cl$lineage == "soft_tissue")
+length(soft_tissue_cancer_cl_indices)
+soft_tissue_cancer_cl_indices
+
+soft_tissue_cancer_cell_lines = rownames(new_prism.cl[soft_tissue_cancer_cl_indices,])
+soft_tissue_cancer_cell_lines
+```
+
+```{r}
+# fibroblast lineage:
+fibroblast_cancer_cl_indices = which(new_prism.cl$lineage == "fibroblast")
+length(fibroblast_cancer_cl_indices)
+fibroblast_cancer_cl_indices
+
+fibroblast_cancer_cell_lines = rownames(new_prism.cl[fibroblast_cancer_cl_indices,])
+fibroblast_cancer_cell_lines
+```
+
+

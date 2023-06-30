@@ -1,0 +1,117 @@
+
+```{r}
+# how is the correlation for different concentrations of drugs to the growth rate of the cell lines?
+
+concentrations_nM <- c(0.6, 2.4, 9.8, 39.1, 156.3, 625, 10000, 2500)
+
+cell_growth_rate_BRD_A00077618_236_07_6 <- prism[1, 1:8]
+
+cell_growth_rate_BRD_A00758722_001_04_9 <- prism[1, 9:16]
+
+BRD_A00077618_236_07_6 = c(t(cell_growth_rate_BRD_A00077618_236_07_6))
+BRD_A00758722_001_04_9 = c(t(cell_growth_rate_BRD_A00758722_001_04_9))
+
+
+
+plot(concentrations_nM, cell_growth_rate_BRD_A00758722_001_04_9, main="ACH_007", xlab="concentrations of drugs in nM", ylab="cell growth rate", pch=20, cex=1.5, col="green" )
+points(concentration_nM, cell_growth_rate_BRD_A00077618_236_07_6, pch=20, cex=1.5, col="red")
+
+cor(BRD_A00077618_236_07_6, BRD_A00758722_001_04_9, method = "pearson")
+
+```
+
+
+# which drugs inhibit the cell growth rate in liver cancer cell lines?
+
+```{r}
+# the indices of the liver cancer cell lines on the prism table:
+liver_cancer_cell_lines
+liver_cancer_cl_indices
+
+
+for (x in liver_cancer_cl_indices)
+    print(prism[x,])
+
+# we created a new table by combining the rates of cell growth only for liver cancer cell lines:
+
+liver_cancer_cl_indices = which(new_prism.cl$lineage == "liver")
+length(liver_cancer_cl_indices)
+liver_cancer_cl_indices
+
+prism_for_liver_withNAs = rbind(prism[liver_cancer_cl_indices,])
+prism_for_liver_withNAs
+
+sum(is.na(prism_for_liver_withNAs)) #15191 NAs
+sum(apply(prism_for_liver_withNAs, 2, function(x){any(is.na(x))})) #6560 Spalten mit NA`s
+
+
+# we should remove all NAs from the prism table for liver cancer cell lines and substitute the NAs with the mean value of columns.
+
+prism_for_liver <- as.data.frame(apply(prism_for_liver_withNAs, 2, function(x) {
+    is_na <- is.na(x)
+    x[is_na] <- mean(x, na.rm = TRUE)
+    return(x)
+}))
+
+prism_for_liver
+
+sum(is.na(prism_for_liver)) # => there are 0 NAs :)
+
+columns_withNAs = colnames(prism_for_liver_withNAs)[colSums(is.na(prism_for_liver_withNAs)) > 0]
+
+
+# we can try to make a heatmap
+
+library(pheatmap)
+heatmap_liver <- pheatmap(prism_for_liver, show_rownames = TRUE, show_colnames = FALSE)
+heatmap_liver
+
+## Histogramm for the cell growth
+vector_liver <- unlist(sapply(prism_for_liver, function(x) x[is.numeric(x)]))
+vector_liver <- na.omit(vector_liver)
+hist(vector_liver, breaks = 100, xlab = "cell growth", main = "Effect of the drugs on the cell growth", xlim = c(-6, 2)); abline(v = mean(vector_liver, na.rm = TRUE), col = "blue", lwd = 2, lty = 3); abline(v = median(vector_liver, na.rm = TRUE), col = "green", lwd = 2, lty= 3); legend("topright", legend = c("mean", "median"), col = c("blue", "green"), lwd = 2, lty = 3)
+```
+
+
+
+```{r}
+
+# what is the correlation between the drugs?
+
+cor_liver_drugs <- cor(prism_for_liver, method = "pearson")
+
+
+
+# we should set a threshold for the growth rate to find out the most effective drugs to stop cell growth.
+
+for (x in liver_cancer_cl_indices)
+    print(colnames(prism[which(prism[x,]< -2)]))
+
+
+# saving for-loop in a vector
+
+inhibiting_drugs_liver_cancer <- character()
+inhibiting_drugs_liver_cancer
+
+for (x in liver_cancer_cl_indices) {
+    my_out <- colnames(prism[which(prism[x,]< -2)])
+    inhibiting_drugs_liver_cancer <- c(my_out)
+}
+    
+inhibiting_drugs_liver_cancer
+
+library(dplyr)
+
+# z.B. the 10000 nM concentrated drug BRD-A00758722-001-04-9 inhibits the cell growth and we find out its mechanism from the table new_prism.treat:
+
+new_prism.treat %>% filter_all(any_vars(. %in% c('BRD-A00758722-001-04-9')))
+
+new_prism.treat %>% filter_all(any_vars(. %in% inhibiting_drugs_liver_cancer))
+
+
+which(new_prism.treat[inhibiting_drugs_liver_cancer,])
+
+
+
+```
+
