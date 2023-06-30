@@ -153,5 +153,6 @@ qqnorm(new_prism.exp$TP53)
 ```
 ```{r}
 #hepatitis b or c genes?
+poly g tracts?
 ```
 
