@@ -615,24 +615,83 @@ prims_liver_cancer_unexpected_drugs
 C = 0.15 #threshold for correlation of drug or genewith exp
 result_list <- lapply(rownames(highcor_prism_exp), function(x){
   a = which(highcor_prism_exp[x,] > C)
- # a2 = highcor_prism_exp[x, a]
   a2 = colnames(highcor_prism_exp)[a]
   b = which(high_cor_genknockout_exp[x,] > C)
- # b2 = high_cor_genknockout_exp[x, b]
   b2 = rownames(high_cor_genknockout_exp)[b]
-  return(list(x,a2,b2))
- # c = which(names(a2) %in% names(b2))
-  #d = length(c)
-  #print(c(x, "correlates with", a2, "and", b2))
+  return(list(Biomarker = x, correlatingDrug = a2,correlatingGeneknockout = b2))
+
 })
 result_list
 ```
+
+```{r}
+result_list[[c(1,3)]]
+```
+
+
+
+```{r}
+C = 0.15 #threshold for correlation of drug or genewith exp
+result_list <- lapply(rownames(highcor_prism_exp), function(x){
+  a = which(highcor_prism_exp[x,] > C)
+
+  a2 = colnames(highcor_prism_exp)[a]
+  b = which(high_cor_genknockout_exp[x,] > C)
+  b2 = rownames(high_cor_genknockout_exp)[b]
+ # return(list(Biomarker = x, correlatingDrug = a2,correlatingGeneknockout = b2))
+  biomarker = x
+  correlatingDrug = a2
+  correlatingGeneknockout = b2
+  return(c(biomarker, correlatingDrug, correlatingGeneknockout))
+
+
+})
+#return(list(biomarker, correlatingDrug, correlatingGeneknockout))
+#result_list
+liste <- list(biomarker, correlatingDrug, correlatingGeneknockout)
+```
+```{r}
+C = 0.15 #threshold for correlation of drug or genewith exp
+result_list <- lapply(
+  lapply(rownames(highcor_prism_exp), function(x){
+  a = which(highcor_prism_exp[x,] > C)
+  a2 = colnames(highcor_prism_exp)[a]
+  b = which(high_cor_genknockout_exp[x,] > C)
+  b2 = rownames(high_cor_genknockout_exp)[b]
+  return(Biomarker = x)
+  return(correlatingDrug = a2)
+  return(correlatingGeneknockout = b2)
+
+}), return(list(Biomarker,correlatingDrug,correlatingGeneknockout)))
+result_list
+```
+
+```{r}
+C = 0.15 #threshold for correlation of drug or genewith exp
+for (x in 1:length(rownames(highcor_prism_exp))){
+  #biomarker_correlations <- list()
+  x = rownames(highcor_prism_exp)[x]
+  a = which(highcor_prism_exp[x,] > C)
+  a2 = colnames(highcor_prism_exp)[a]
+  b = which(high_cor_genknockout_exp[x,] > C)
+  b2 = rownames(high_cor_genknockout_exp)[b]
+  result_list2 <- list(Biomarker = x, correlatingDrug = a2,correlatingGeneknockout = b2)
+  return(result_list2)
+}
+result_list2
+
+```
+
+
+
 
 ```{r}
 #FOR EACH BIOMARKER, WE HAVE TO SEE IF THERE ARE DRUG/GENE PAIRS IN THE HIGH CORREALTIONS 
 
 #THIS IS WHY WE FIRST HAVE TO CREATE A LIST WITH THE DRUG/GENE PAIRS 
 
+#lapply(result_list, length)
+result_list
 
 ```
 
@@ -847,15 +906,34 @@ dim(highvar(prism.exp, 0.1))
 #JUST PLAYING 
 A = c(1,2,3,4,5,6,7,8)
 B = c(2,3)
-G = which( A %in% B)
-G
-H = which(B %in% A)
-H
+C = c(4,5,3,4,5,4,43,4)
+#G = which( A %in% B)
+#G
+#H = which(B %in% A)
+#H
 ```
+
+```{r}
+testlist <- list(x1= list(A,fef3), x2 = B, x3 = C)
+#testlist <- list(x1= A, x2 = B, x3 = C)
+
+testlist
+lapply(testlist, mean)
+```
+
+
 
 ```{r}
 lapply(fef, function(x){
   x+1
 })
+```
+```{r}
+#LEARNING ABOUT LISTS
+Name = "learn"
+mylul <- list(Name= Name, vector7 = A, dat7 = feframe)
+#mylul
+mylul[c(1,2)]
+
 ```
 
