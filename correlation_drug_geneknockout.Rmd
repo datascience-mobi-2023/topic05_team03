@@ -668,20 +668,25 @@ result_list
 
 ```{r}
 C = 0.15 #threshold for correlation of drug or genewith exp
+
+biomarker_correlations <- list()
 for (x in 1:length(rownames(highcor_prism_exp))){
-  #biomarker_correlations <- list()
   x = rownames(highcor_prism_exp)[x]
   a = which(highcor_prism_exp[x,] > C)
   a2 = colnames(highcor_prism_exp)[a]
   b = which(high_cor_genknockout_exp[x,] > C)
   b2 = rownames(high_cor_genknockout_exp)[b]
-  result_list2 <- list(Biomarker = x, correlatingDrug = a2,correlatingGeneknockout = b2)
-  return(result_list2)
+  if(length(b2) > 0 & length(a2)){
+  result_list2 <- list(correlatingDrug = a2,correlatingGeneknockout = b2)
+  biomarker_correlations[[x]] <- result_list2
+  }
 }
-result_list2
-
+biomarker_correlations
 ```
 
+```{r}
+biomarkers_with_highcor = names(biomarker_correlations)
+```
 
 
 
