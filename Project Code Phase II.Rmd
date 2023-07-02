@@ -1024,6 +1024,7 @@ var(apply(prism[unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol!="TP53")]
 #?t.test()
 t.test(mean_values_tp53, alternative="greater", mu=mean_all_wo_tp53)
 t.test(mean_values_tp53, alternative="less", mu=mean_all_wo_tp53)
+t.test(mean_values_tp53, mu=mean_all_wo_tp53)
 # => the difference doesn't seem to be significant at all here...
 ```
 
@@ -1115,5 +1116,50 @@ plot(apply(new_prism.achilles,2,mean,na.rm=TRUE))
 #+abline(h=c(mean(new_prism.achilles[,"TTN"],na.rm=TRUE),mean(new_prism.achilles[,"TP53"],na.rm=TRUE)),col=c('red','blue')
 #+abline(mean(new_prism.achilles[,"TP53"],na.rm=TRUE),col='blue')
 ```
+```{r}
+#These 9 HRR genes are BRCA1, BRCA2, ATM, BRIP1, CHEK2, FANCI, RAD51C, RAD51D, and RAD54L
+#https://www.frontiersin.org/articles/10.3389/fonc.2022.709645/full#:~:text=These%209%20HRR%20genes%20are,RAD51C%2C%20RAD51D%2C%20and%20RAD54L.
+#Let's see if loss of HRR eficiency (homologuous recombinational repair) is a feature in liver cancer cell lines or in the general tumor dataset
+```
 
+```{r}
+HRR_genes = c("BRCA1", "BRCA2", "ATM", "BRIP1", "CHEK2", "FANCI", "RAD51C", "RAD51D", "RAD54L")
+which(names(mutated_genes) %in% HRR_genes)
+mutated_genes[which(names(mutated_genes) %in% HRR_genes)]
+#ok, so there is a meaningful amount here
+sum(mutated_genes[which(names(mutated_genes) %in% HRR_genes)])/sum(mutated_genes)*100
+#so 0.1 of all mutations are related to HRR
+```
+```{r}
+#check this for liver cancer
+liver_mutated_genes[which(names(liver_mutated_genes) %in% HRR_genes)]
+#ok, so the liver cancer cell lines are not touched by HRR gene mutations at all
+names(liver_mutated_genes)
+```
+
+```{r}
+#B2M mutations??? relevant?
+#MHCI and MHCII?
+#TAP1 and TAP2?
+#PD-L1 expression?
+```
+
+```{r}
+#check for B2M mutation, because it prevents metastasis
+#which(prism.snv$Hugo_Symbol == "B2M")
+b2m_cells_mutation = unique(prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol == "B2M")])
+#prism[prism.snv$DepMap_ID[which(prism.snv$Hugo_Symbol == "B2M")],]
+prism[which(rownames(prism) %in% b2m_cells_mutation),]
+
+```
+```{r}
+apply(prism[which(rownames(prism) %in% b2m_cells_mutation),],1,mean,na.rm=TRUE)
+mean(apply(prism[which(rownames(prism) %in% b2m_cells_mutation),],1,mean,na.rm=TRUE),na.rm=TRUE)
+#Nice! We see, that all prism scores are negative for this mutation! Let's compare this to all cell lines
+```
+```{r}
+apply(prism,1,mean,na.rm=TRUE)
+mean(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
+#ok, so this doesn't really tell us anything
+```
 

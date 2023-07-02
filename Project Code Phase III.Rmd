@@ -52,4 +52,107 @@ length(v)
 sum(is.na(v))
 #why is this??
 ```
+Let's try that linear regression!
+
+```{r}
+install.packages("readxl")
+library("readxl")
+```
+
+
+First for expression and copy number variation!
+```{r}
+lm()
+#liver_cancer_cell_lines_expression is for prism.exp
+#liver_cancer_cell_lines_scores is for prism
+```
+
+```{r}
+
+```
+
+
+Now for expression and drug efficiency
+
+```{r}
+lm(liver_cancer_cell_lines_scores["ACH-000217",]~liver_cancer_cell_lines_expression["ACH-000217",], data=c(liver_cancer_cell_lines_scores, liver_cancer_cell_lines_expression))
+#what is wrong here?
+```
+```{r}
+vector01=liver_cancer_cell_lines_expression[,"TSPAN6"]
+vector02=new_prism.achilles$TSPAN6
+lm(vector01~vector02)
+```
+```{r}
+x = vector01
+y = vector02
+if ( length(x) != length(y))
+{
+  diff = abs(length(x)-length(y))
+  if(length(x)>length(y))
+  {
+    for (j in 1:diff)
+    {
+      y[length(y)+j] = mean(y, na.rm=TRUE)
+    }
+  }
+  else if(length(y)>length(x))
+  {
+    for (k in 1:diff)
+    {
+      x[length(x)+k] = mean(x, na.rm=TRUE)
+    }
+  }
+}
+cor(x,y)
+```
+```{r}
+vector01
+```
+```{r}
+#vector02
+vector03 =new_prism.exp$TSPAN6
+```
+```{r}
+lm(vector02~vector03)
+```
+```{r}
+lm(new_prism.achilles$TP53~new_prism.exp$TP53)
+```
+```{r}
+#unique(liver_cancer_genes)
+for (i in 1:length(unique(liver_cancer_genes)))
+     {
+  if(i==2)
+    next
+  lm(new_prism.achilles[,unique(length(liver_cancer_genes))[i]]~new_prism.exp[,unique(length(liver_cancer_genes))[i]])
+}
+# what is the problem here?
+```
+
+```{r}
+#when creating a t-test, we want:
+#1) check if data is normally distributed
+#2) adjust the p-value with p.adjust
+#Let's test this:
+
+t.test(new_prism.exp$TP53)
+p.adjust(new_prism.exp$TP53)
+#what does this mean? check later...
+```
+```{r}
+#check for normality
+plot(new_prism.exp$TP53)
+hist(new_prism.exp$TP53)
+qqnorm(new_prism.exp$TP53)
+#seems pretty normal
+#ok, looks great
+```
+```{r}
+#try some k-means clustering of the gene expression after the PCA
+```
+```{r}
+#hepatitis b or c genes?
+poly g tracts?
+```
 
