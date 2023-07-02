@@ -631,6 +631,7 @@ result_list[[c(1,3)]]
 
 
 ```{r}
+###############################
 C = 0.15 #threshold for correlation of drug or genewith exp
 result_list <- lapply(rownames(highcor_prism_exp), function(x){
   a = which(highcor_prism_exp[x,] > C)
@@ -651,19 +652,20 @@ result_list <- lapply(rownames(highcor_prism_exp), function(x){
 liste <- list(biomarker, correlatingDrug, correlatingGeneknockout)
 ```
 ```{r}
+############################doesnt work
 C = 0.15 #threshold for correlation of drug or genewith exp
-result_list <- lapply(
-  lapply(rownames(highcor_prism_exp), function(x){
+lelel= list()
+result_list <- lapply(rownames(highcor_prism_exp), function(x){
   a = which(highcor_prism_exp[x,] > C)
   a2 = colnames(highcor_prism_exp)[a]
   b = which(high_cor_genknockout_exp[x,] > C)
   b2 = rownames(high_cor_genknockout_exp)[b]
-  return(Biomarker = x)
-  return(correlatingDrug = a2)
-  return(correlatingGeneknockout = b2)
+  if(length(b2) > 0 & length(a2)){
+  result_list2 <- list(correlatingDrug = a2,correlatingGeneknockout = b2)
+  biomarker_correlations[[x]] <- result_list2
+  
 
-}), return(list(Biomarker,correlatingDrug,correlatingGeneknockout)))
-result_list
+})
 ```
 
 ```{r}
@@ -685,8 +687,50 @@ biomarker_correlations
 ```
 
 ```{r}
+#these are the biomarkers that have correlations both with drugs and gene knockouts
 biomarkers_with_highcor = names(biomarker_correlations)
 ```
+
+```{r}
+#find the drug/gene pairs 
+Ä = 0.15 #threshold
+#df_drug_gene_pairs = data.frame(matrix(ncol = 2, nrow = 0))  
+#colnames(df_drug_gene_pairs) <- c("drug", "gene_knockout")
+druggens = apply(cor_drugs_genes,c(1,2), function(x){
+ if(x > Ä){
+   p = colnames(x)
+   j = rownames(x)
+   drug_gene_pair = c(p,j)
+ }
+
+})
+druggens
+
+#fpr morgen : herausfinden, wie ich die drug gene pairs in eine ncol = 2 matrix bekomme
+```
+
+```{r}
+#>>>>><<<<<<####not sure if it  works with the apply function
+
+#find the drug/gene pairs 
+Ä = 0.15 #threshold
+df_drug_gene_pairs = data.frame(matrix(ncol = 0, nrow = 2))  
+rownames(df_drug_gene_pairs) <- c("drug", "gene_knockout")
+for (x in 1:dim(cor_drugs_genes)[1]){
+  for (y in 1:dim(cor_drugs_genes)[2]){
+     if(cor_drugs_genes[x,y] > Ä){
+      p = rownames(cor_drugs_genes)[x]
+      j = colnames(cor_drugs_genes)[y]
+      drug_gene_pair = c(p,j)
+      df_drug_gene_pairs[,ncol(df_drug_gene_pairs) + 1] <- drug_gene_pair
+ }
+}
+}
+
+df_drug_gene_pairs
+```
+
+
 
 
 
