@@ -1,0 +1,134 @@
+---
+title: 'Focus: Liver Cancer'
+author: "Robert Schwarz"
+date: "2023-07-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+#Let's see the differentially expressed genes again:
+```{r}
+# Filter the "new_prism.exp" data frame to include only liver cancer cell lines
+liver_cancer_cell_lines_data = new_prism.cl[new_prism.cl$disease == "Liver Cancer",]
+liver_cancer_cell_lines_data
+liver_cancer_cell_lines
+```
+
+```{r}
+liver_cancer_expression = new_prism.exp[liver_cancer_cell_lines, ]
+sum(liver_cancer_expression == liver_cancer_cell_lines_expression)
+#so liver_cancer_cell_lines_expression gives the expression rates of the genes of the liver cancer cell lines
+```
+
+
+```{r}
+#These are all the other cell lines that aren't associated with liver cancer
+not_liver_cancer_cell_lines = rownames(new_prism.cl[new_prism.cl$disease != "Liver Cancer",])
+not_liver_cancer_cell_lines_expression = new_prism.exp[not_liver_cancer_cell_lines, ]
+```
+
+```{r}
+# Perform differential expression analysis using a suitable statistical test
+# For example, you can use the t-test to compare expression levels between groups
+#differential_genes <- apply(liver_cancer_expression, 2, function(gene) {
+#  t.test(gene, normal_expression[, colnames(liver_cancer_expression)])
+#})
+
+liver_cancer_differential_genes = apply(liver_cancer_cell_lines_expression,2,function(gene) {
+  t.test(gene, not_liver_cancer_cell_lines_expression[, colnames(liver_cancer_cell_lines_expression)])
+})
+```
+
+
+```{r}
+
+# Create an empty list to store the results
+liver_cancer_differential_genes = list()
+
+# Loop through the columns and perform t-tests
+for (col in colnames(liver_cancer_cell_lines_expression)) 
+  gene = liver_cancer_cell_lines_expression[[col]]
+  result = t.test(gene, not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = result
+
+# Print the computed differential genes
+#print(liver_cancer_differential_genes)
+```
+```{r}
+liver_cancer_differential_genes
+#check later what this means for the genes
+```
+```{r}
+#for( i in 1:19177)
+  #print(liver_cancer_differential_genes[i]$p.value)
+liver_cancer_differential_genes[[1]]
+liver_cancer_differential_genes[[1]]$p.value
+```
+```{r}
+t.test(liver_cancer_cell_lines_data, not_liver_cancer_cell_lines_expression[[col]])
+```
+```{r}
+p_values = sapply(liver_cancer_differential_genes, function(result) result$p.value)
+p_values
+```
+
+```{r}
+adjusted_p.values = p.adjust(p_values, method = "BH")
+adjusted_p.values
+```
+
+```{r}
+# Set a significance threshold (e.g., adjusted p-value < 0.05) for identifying differentially expressed genes
+#significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.05]
+significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.01]
+significant_genes_liver_cancer
+```
+
+In conclusion:
+
+# Filter the "new_prism.exp" data frame to include only liver cancer cell lines
+liver_cancer_cell_lines_expression = new_prism.exp[liver_cancer_cell_lines, ]
+#These are all the other cell lines that aren't associated with liver cancer and their expression scores
+not_liver_cancer_cell_lines = rownames(new_prism.cl[new_prism.cl$disease != "Liver Cancer",])
+not_liver_cancer_cell_lines_expression = new_prism.exp[not_liver_cancer_cell_lines, ]
+#We will use a t-test to compare the expression levels of the genes in liver cancer cell lines and those in cancer cell lines that are not associated to liver cancer:
+liver_cancer_differential_genes = apply(liver_cancer_cell_lines_expression,2,function(gene) {
+  t.test(gene, not_liver_cancer_cell_lines_expression[, colnames(liver_cancer_cell_lines_expression)])
+})
+# Now, we will loop through the columns and perform t-tests
+for (col in colnames(liver_cancer_cell_lines_expression)) {
+  storage_for_result = t.test(liver_cancer_cell_lines_expression[[col]], not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = storage_for_result
+#liver_cancer_differential_genes
+#Now, we would like to check which ones of these genes are actually significant, so really differently expressed in liver cancer than in other cancer types. So, we will set a threshold and choose those genes, where the t-test had a small p-value (under the significance level)
+#First, we will adjust the p-values of the multiple t-testing:
+p_values_liver_vs_noliver = sapply(liver_cancer_differential_genes, function(t_test_liver_noliver) t_test_liver_noliver$p.value)
+adjusted_p.values = p.adjust(p_values, method = "BH")
+#Now, we can set the significance level at 1%:
+significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.01]
+#These are the differentially expressed genes in liver cancer:
+significant_genes_liver_cancer
+CHECK IF THE DATA IS NORMALLY DISTRIBUTED!!!

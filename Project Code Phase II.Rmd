@@ -948,6 +948,7 @@ liver_mutated_genes
 barplot(liver_mutated_genes)
 #plot(liver_mutated_genes)
 #hist(liver_mutated_genes)
+#mutated_genes
 barplot(mutated_genes)
 #plot(mutated_genes)
 #hist(mutated_genes)
