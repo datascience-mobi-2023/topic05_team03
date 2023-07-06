@@ -1181,4 +1181,41 @@ new_prism.exp = new_prism.exp[, sorted_column_names_exp]
 new_prism.exp
 #PERFECT!!! :))) Finally:)))
 ```
+```{r}
+
+#We cannot calculate a correlation because the dimensions of the matrices do not match!
+#We have to perform the correlation only on the common genes
+common_genes_exp_ach = intersect(colnames(new_prism.exp), colnames(new_prism.achilles))
+
+# We will only include the common genes in our analysis
+cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
+cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
+
+# Compute correlation matrix for these common genes
+correlation_matrix_exp_ach = cor(cor_of_prism.exp, cor_of_prism.achilles)
+```
+
+```{r}
+#Let's view it:
+correlation_matrix_exp_ach
+#ok, something still isn't right...
+```
+
+```{r}
+cor_of_prism.exp
+```
+```{r}
+cor_of_prism.achilles
+```
+```{r}
+correlation_matrix_exp_ach_dataframe = as.data.frame(correlation_matrix_exp_ach)
+```
+```{r}
+1+1
+```
+```{r}
+correlation_matrix_exp_ach_dataframe
+#ok it gives me NAs, check later
+#histogramm, check later
+```
 
