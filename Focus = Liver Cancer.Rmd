@@ -523,4 +523,64 @@ normality_genes[which(normality_genes %in% significant_genes_liver_cancer)]
 The problem is:
 I have tried several significance levels from 0.99 to 0.8. I always get the response that there are no genes that are differentially expressed in liver cancer AND normaly distributed. The threshold of 0.7 seems pretty low to me. I am afraid I am doing something wrong. What would you advise?
   
+
+```{r}
+#Let's try to plot histograms and qq plots
+```
   
+```{r}
+liver_cancer_cell_lines_expression
+```
+```{r}
+
+hist(liver_cancer_cell_lines_expression[[1]] )
+```
+```{r}
+#We cannot plot 19177 histogramms, so let us choose 100 random genes
+
+number_of_genes = 100
+
+random_genes = sample(colnames(liver_cancer_cell_lines_expression), number_of_genes)
+
+for (gene in random_genes) {
+  hist(liver_cancer_cell_lines_expression[[gene]], 
+       main = paste("Histogram -", col),
+       xlab = "Expression Levels",
+       col = "skyblue",
+       breaks = 17)
+}
+#yeah, they're not really normally distributed...
+```
+  
+```{r}
+#Let's create a QQ-plot
+qqnorm(liver_cancer_cell_lines_expression[[1]])
+qqline(liver_cancer_cell_lines_expression[[1]])
+
+```
+```{r}
+#We cannot plot 19177 QQ plots, so let us choose 100 random genes
+
+number_of_genes = 100
+
+random_genes = sample(colnames(liver_cancer_cell_lines_expression), number_of_genes)
+
+for (gene in random_genes) {
+  qqnorm(liver_cancer_cell_lines_expression[[gene]])
+  qqline(liver_cancer_cell_lines_expression[[gene]])
+}
+```
+```{r}
+#okay, at least for the genes that we identified as normally distributed, let's also visualize them...
+for(gene in normality_genes[which(normality_genes %in% significant_genes_liver_cancer)])
+{
+  qqnorm(liver_cancer_cell_lines_expression[[gene]],main = paste("QQ Plot -", gene))
+  qqline(liver_cancer_cell_lines_expression[[gene]])
+}
+
+for(gene in normality_genes[which(normality_genes %in% significant_genes_liver_cancer)])
+{
+  hist(liver_cancer_cell_lines_expression[[gene]],main = paste(gene), breaks=17)
+}
+```
+
