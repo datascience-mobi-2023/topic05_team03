@@ -117,7 +117,16 @@ vector03 =new_prism.exp$TSPAN6
 lm(vector02~vector03)
 ```
 ```{r}
-lm(new_prism.achilles$TP53~new_prism.exp$TP53)
+fit = lm(new_prism.achilles$TP53~new_prism.exp$TP53)
+fit
+```
+
+```{r}
+plot(new_prism.achilles$TP53~new_prism.exp$TP53) ; abline(fit)
+```
+
+```{r}
+plot(lm(new_prism.achilles$TP53~new_prism.exp$TP53))
 ```
 ```{r}
 #unique(liver_cancer_genes)
@@ -155,4 +164,31 @@ qqnorm(new_prism.exp$TP53)
 #hepatitis b or c genes?
 poly g tracts?
 ```
+```{r}
+prcomp(prism)
+```
+```{r}
+#Let's try to merge the data in one dataframe so we can perform a linear regression on it...
+
+# Merge prism with prism.exp based on a common column
+common_column = colnames(t(prism)) 
+merged_data_frame <- merge(t(prism), new_prism.exp, by = rownames(prism) )
+
+
+
+
+
+
+
+```
+```{r}
+#Let's verify if there is a common column
+which( rownames(prism) != rownames(new_prism.exp) )
+which( rownames (new_prism.exp) != rownames(prism))
+#ok, so let's remove these rows
+```
+
+
+```{r}
+
 

@@ -1,0 +1,526 @@
+---
+title: 'Focus: Liver Cancer'
+author: "Robert Schwarz"
+date: "2023-07-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+#Let's see the differentially expressed genes again:
+```{r}
+# Filter the "new_prism.exp" data frame to include only liver cancer cell lines
+liver_cancer_cell_lines_data = new_prism.cl[new_prism.cl$disease == "Liver Cancer",]
+liver_cancer_cell_lines_data
+liver_cancer_cell_lines
+```
+
+```{r}
+liver_cancer_expression = new_prism.exp[liver_cancer_cell_lines, ]
+sum(liver_cancer_expression == liver_cancer_cell_lines_expression)
+#so liver_cancer_cell_lines_expression gives the expression rates of the genes of the liver cancer cell lines
+```
+
+
+```{r}
+#These are all the other cell lines that aren't associated with liver cancer
+not_liver_cancer_cell_lines = rownames(new_prism.cl[new_prism.cl$disease != "Liver Cancer",])
+not_liver_cancer_cell_lines_expression = new_prism.exp[not_liver_cancer_cell_lines, ]
+```
+
+```{r}
+
+#  t.test(gene, normal_expression[, colnames(liver_cancer_expression)])
+#})
+
+liver_cancer_differential_genes = apply(liver_cancer_cell_lines_expression,2,function(gene) {
+  t.test(gene, not_liver_cancer_cell_lines_expression[, colnames(liver_cancer_cell_lines_expression)])
+})
+```
+
+
+```{r}
+
+# Create an empty list to store the results
+liver_cancer_differential_genes = list()
+
+# Loop through the columns and perform t-tests
+for (col in colnames(liver_cancer_cell_lines_expression)) 
+  gene = liver_cancer_cell_lines_expression[[col]]
+  storage_for_result = t.test(gene, not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = storage_for_result
+
+```
+```{r}
+liver_cancer_differential_genes
+#check later what this means for the genes
+```
+```{r}
+#for( i in 1:19177)
+  #print(liver_cancer_differential_genes[i]$p.value)
+liver_cancer_differential_genes[[1]]
+liver_cancer_differential_genes[[1]]$p.value
+```
+```{r}
+t.test(liver_cancer_cell_lines_data, not_liver_cancer_cell_lines_expression[[col]])
+```
+```{r}
+p_values = sapply(liver_cancer_differential_genes, function(result) result$p.value)
+p_values
+```
+
+```{r}
+adjusted_p.values = p.adjust(p_values, method = "BH")
+adjusted_p.values
+```
+
+```{r}
+# Set a significance threshold (e.g., adjusted p-value < 0.05) for identifying differentially expressed genes
+#significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.05]
+significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.01]
+significant_genes_liver_cancer
+```
+
+
+```{r}
+#I want to check the normality of the data with different methods
+#First, I will perform a Shapiro-Wilk Test:
+#shapiro.test(liver_cancer_cell_lines_expression)
+#shapiro.test(not_liver_cancer_cell_lines_expression)
+#need to create empty list before dont forget
+#First for the liver cancer cell lines...
+storage_for_result1=list()
+
+for (gene in colnames(liver_cancer_cell_lines_expression)) 
+ { 
+  if(all(liver_cancer_cell_lines_expression[[gene]] == liver_cancer_cell_lines_expression[[gene]][1]))
+    next
+#Here, I had a problem because one column had only zeros, so all the elements were the same. SO if everything is the same, we just skip this iteration
+  else
+    storage_for_result1[[gene]] = shapiro.test(liver_cancer_cell_lines_expression[[gene]])
+ 
+  
+}
+liver_cancer_cell_lines_expression_normality = storage_for_result1
+
+#Now for the not liver cancer cell lines:
+#I first tried this code:
+
+#storage_for_result2 = list()
+
+#for (gene2 in colnames(not_liver_cancer_cell_lines_expression)) {
+#  if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]])) &&
+#      all(not_liver_cancer_cell_lines_expression[[gene2]] == #not_liver_cancer_cell_lines_expression[[gene2]][1])) {
+#    next
+#  } else {
+#    if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]]))) {
+#      storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[gene2]])
+#    }
+#  }
+#}
+#storage_for_result2
+
+#But the problem was, that my storage_for_result2 was empty (NULL)
+
+
+# Ok, so maybe there is too much missing data, let's create a function to replace the NA values with the mean
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  
+  x[is.na(x)] = na_mean 
+  return(x)
+}
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+#Here the problem was that the data type changed and for the analysis to work we needed the same data type
+
+
+# Now let's check with the shapiro test
+
+storage_for_result2=list()
+
+for (gene2 in colnames(not_liver_cancer_cell_lines_expression_wona)) 
+ { 
+  if(all(not_liver_cancer_cell_lines_expression_wona[[gene2]] == not_liver_cancer_cell_lines_expression_wona[[gene2]][1]))
+    next
+  else
+    storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[gene2]])
+ 
+  
+}
+not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+```
+
+
+```{r}
+#storage_for_result2 = list()
+#for (col2 in colnames(not_liver_cancer_cell_lines_expression)) 
+# { 
+#  if(all(not_liver_cancer_cell_lines_expression[[col2]] == not_liver_cancer_cell_lines_expression[[col2]][1]))
+#    next
+#  else
+#    storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[col2]])
+ 
+  
+#}
+# storage_for_result2
+ 
+# storage_for_result2 = list()
+
+#for (col2 in colnames(not_liver_cancer_cell_lines_expression)) {
+  #print(col2)  
+#  if (all(!is.na(not_liver_cancer_cell_lines_expression[[col2]])) &&
+#      all(not_liver_cancer_cell_lines_expression[[col2]] == not_liver_cancer_cell_lines_expression[[col2]][1])) {
+#    print(all(!is.na(not_liver_cancer_cell_lines_expression[[col2]])) && all(not_liver_cancer_cell_lines_expression[[col2]] == #not_liver_cancer_cell_lines_expression[[col2]][1]))
+#    next  # Skip if all values are identical
+#  } else {
+#    if (all(!is.na(not_liver_cancer_cell_lines_expression[[col2]]))) {
+#      storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[col2]])
+#    }
+#  }
+#}
+
+#storage_for_result2
+#ok, so they all must contain missing values or so...
+```
+```{r}
+# Ok, so maybe there is too much missing data, let's create a function to replace the NA values with the mean
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  # Calculate the mean, ignoring NAs
+  x[is.na(x)] = na_mean  # Replace NAs with the mean value
+  return(x)
+}
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+
+# Now let's check with the shapiro test
+storage_for_result2 = list()
+for (col2 in colnames(not_liver_cancer_cell_lines_expression)) {
+  if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]])) &&
+      all(not_liver_cancer_cell_lines_expression_wona[[col2]] == not_liver_cancer_cell_lines_expression_wona[[col2]][1])) {
+    next
+  } else {
+    if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]]))) {
+      storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[col2]])
+    }
+  }
+}
+storage_for_result2
+
+```
+```{r}
+#storage_for_result2$p.value
+```
+
+
+```{r}
+#liver_cancer_cell_lines_expression_normality = storage_for_result1
+#not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+```
+
+```{r}
+p_values_normal = sapply(liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value})
+which(p_values_normal>0.9)
+```
+
+```{r}
+adjusted_p.values_normal = p.adjust(p_values_normal, method = "BH")
+#adjusted_p.values_normal
+which(adjusted_p.values_normal>0.9)
+```
+
+
+```{r}
+#significant_liver_normality =names(liver_cancer_cell_lines_expression_normality[which(adjusted_p.values_normal>0.99)])
+#significant_liver_normality
+liver_cancer_cell_lines_expression_normality[which(adjusted_p.values_normal>0.99)]
+```
+
+```{r}
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  
+  x[is.na(x)] = na_mean  
+  return(x)
+}
+
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+
+storage_for_result2 = list()
+for (col2 in colnames(not_liver_cancer_cell_lines_expression)) {
+  if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]])) &&
+      all(not_liver_cancer_cell_lines_expression_wona[[col2]] == not_liver_cancer_cell_lines_expression_wona[[col2]][1])) {
+    next
+  } else {
+    if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]]))) {
+      storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[col2]])
+    }
+  }
+}
+
+liver_cancer_cell_lines_expression_normality = storage_for_result1
+not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+
+p_values_normal_liver = sapply(liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_liver = names(liver_cancer_cell_lines_expression_normality)[which(p_values_normal_liver > 0.99)]
+
+```
+```{r}
+significant_genes_normality_liver
+#liver_cancer_cell_lines_expression_normality[which(p_values_normal > 0.99)]
+#okay, so these are the genes that are normally distributed. So we will only take the t.tests into consideration, where the data is normally distributed
+```
+
+```{r}
+#now let's do the same for the ones form not liver cancer
+p_values_normal_not_liver = sapply(not_liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_not_liver = #names(not_liver_cancer_cell_lines_expression_normality)[which(p_values_normal_not_liver > 0.99)]
+  names(not_liver_cancer_cell_lines_expression_normality)[which(p_values_normal_not_liver > 0.90)]
+```
+```{r}
+significant_genes_normality_not_liver
+#not_liver_cancer_cell_lines_expression_normality[which(p_values_normal_not_liver > 0.99)]
+#okay, let's lower the significance level here...
+#okay, 90% seems good
+```
+```{r}
+significant_genes_normality_liver
+significant_genes_normality_not_liver
+```
+```{r}
+#Let's see which ones they have in common
+normality_genes = intersect(significant_genes_normality_liver, significant_genes_normality_not_liver)
+normality_genes
+#ok, so these are the genes that are normally expressed, so for these genes we will consider the t-tests
+
+```
+```{r}
+normality_genes %in% significant_genes_liver_cancer
+#okay, so these genes are not differentially expressed... maybe we lower the significance level?
+
+```
+```{r}
+#liver_cancer_cell_lines_expression[,which(adjusted_p.values<0.10)]
+#significant_genes_liver_cancer
+#all(significant_genes_liver_cancer == colnames(liver_cancer_cell_lines_expression)[adjusted_p.values<0.10])
+#adjusted_p.values<0.10
+adjusted_p.values["LBHD1"]
+```
+
+
+```{r}
+#okay, let's check now if there are any genes that are normally distributed AND differentially expressed!
+normality_genes %in% significant_genes_liver_cancer
+#still not...
+#Let's check how these genes are actually expressed:
+liver_cancer_differential_genes[normality_genes]
+```
+
+
+
+if(all(liver_cancer_cell_lines_expression[[col]] == liver_cancer_cell_lines_expression[[1]]))
+next
+
+
+for (col in colnames(liver_cancer_cell_lines_expression)) 
+  gene = liver_cancer_cell_lines_expression[[col]]
+  storage_for_result = t.test(gene, not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = storage_for_result
+  
+```{r}
+save(new_prism.cl, file="new_prism.cl.RData")
+```
+  
+
+#########################################################################################################  
+  
+  DIFFERENTIALLY EXPRESSED GENES LIVER CANCER
+### SYNTHESIS SO FAR:
+  
+  1. 
+```{r}
+
+# Filter the "new_prism.exp" data frame to include only liver cancer cell lines
+liver_cancer_cell_lines_expression = new_prism.exp[liver_cancer_cell_lines, ]
+
+#These are all the other cell lines that aren't associated with liver cancer and their expression scores
+not_liver_cancer_cell_lines = rownames(new_prism.cl[new_prism.cl$disease != "Liver Cancer",])
+not_liver_cancer_cell_lines_expression = new_prism.exp[not_liver_cancer_cell_lines, ]
+
+
+#We will use a t-test to compare the expression levels of the genes in liver cancer cell lines and those in cancer cell lines that are not associated to liver cancer:
+for (col in colnames(liver_cancer_cell_lines_expression)) {
+  result = t.test(liver_cancer_cell_lines_expression[[col]], not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = result
+}
+liver_cancer_differential_genes
+#length(names(liver_cancer_differential_genes))
+#We have a t-test for every gene
+```
+
+
+2. 
+```{r}
+#Now, we would like to check which ones of these genes are actually significant, so really differently expressed in liver cancer than in other cancer types. So, we will set a threshold and choose those genes, where the t-test had a small p-value (under the significance level)
+
+#First, we will adjust the p-values of the multiple t-testing:
+p_values_liver_vs_noliver = sapply(liver_cancer_differential_genes, function(t_test_liver_noliver) t_test_liver_noliver$p.value)
+adjusted_p.values = p.adjust(p_values_liver_vs_noliver, method = "BH")
+
+#Now, we can set the significance level at 1%:
+significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.01]
+significant_genes_liver_cancer
+```
+
+3. CHECK IF THE DATA IS NORMALLY DISTRIBUTED!!!
+
+```{r}
+#I want to check the normality of the data with different methods
+#First, I will perform a Shapiro-Wilk Test:
+#shapiro.test(liver_cancer_cell_lines_expression)
+#shapiro.test(not_liver_cancer_cell_lines_expression)
+
+#First for the liver cancer cell lines...
+storage_for_result1=list()
+
+for (gene in colnames(liver_cancer_cell_lines_expression)) 
+ { 
+  if(all(liver_cancer_cell_lines_expression[[gene]] == liver_cancer_cell_lines_expression[[gene]][1]))
+    next
+#Here, I had a problem because one column had only zeros, so all the elements were the same. SO if everything is the same, we just skip this iteration
+  else
+    storage_for_result1[[gene]] = shapiro.test(liver_cancer_cell_lines_expression[[gene]])
+ 
+  
+}
+liver_cancer_cell_lines_expression_normality = storage_for_result1
+
+#Now for the not liver cancer cell lines:
+#I first tried this code:
+
+#storage_for_result2 = list()
+
+#for (gene2 in colnames(not_liver_cancer_cell_lines_expression)) {
+#  if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]])) &&
+#      all(not_liver_cancer_cell_lines_expression[[gene2]] == #not_liver_cancer_cell_lines_expression[[gene2]][1])) {
+#    next
+#  } else {
+#    if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]]))) {
+#      storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[gene2]])
+#    }
+#  }
+#}
+#storage_for_result2
+
+#But the problem was, that my storage_for_result2 was empty (NULL)
+
+
+# Ok, so maybe there is too much missing data, let's create a function to replace the NA values with the mean
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  
+  x[is.na(x)] = na_mean 
+  return(x)
+}
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+#Here the problem was that the data type changed and for the analysis to work we needed the same data type
+
+
+# Now let's check with the shapiro test
+
+storage_for_result2=list()
+
+for (gene2 in colnames(not_liver_cancer_cell_lines_expression_wona)) 
+ { 
+  if(all(not_liver_cancer_cell_lines_expression_wona[[gene2]] == not_liver_cancer_cell_lines_expression_wona[[gene2]][1]))
+    next
+  else
+    storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[gene2]])
+ 
+  
+}
+not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+
+#liver_cancer_cell_lines_expression_normality and not_liver_cancer_cell_lines_expression_normality contain the shapiro tests that check whether or not these genes are normally distributed
+```
+
+```{r}
+liver_cancer_cell_lines_expression_normality
+```
+
+```{r}
+not_liver_cancer_cell_lines_expression_normality
+```
+
+```{r}
+#length(names(liver_cancer_cell_lines_expression_normality))
+#length(names(not_liver_cancer_cell_lines_expression_normality))
+```
+
+```{r}
+#Checking for significance
+
+p_values_normal_liver = sapply(liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_liver = names(liver_cancer_cell_lines_expression_normality)[which(p_values_normal_liver > 0.70)]
+
+#significant_genes_normality_liver
+
+```
+
+```{r}
+#now let's do the same for the ones form not liver cancer
+p_values_normal_not_liver = sapply(not_liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_not_liver = names(not_liver_cancer_cell_lines_expression_normality)[which(p_values_normal_not_liver > 0.70)]
+
+#significant_genes_normality_not_liver
+```
+
+```{r}
+
+#ok, so these are the genes that are normally expressed, so for these genes we will consider the t-tests
+normality_genes = significant_genes_normality_liver[which(significant_genes_normality_liver %in% significant_genes_normality_not_liver)]
+normality_genes
+
+```
+
+```{r}
+normality_genes[which(normality_genes %in% significant_genes_liver_cancer)]
+```
+The problem is:
+I have tried several significance levels from 0.99 to 0.8. I always get the response that there are no genes that are differentially expressed in liver cancer AND normaly distributed. The threshold of 0.7 seems pretty low to me. I am afraid I am doing something wrong. What would you advise?
+  
+  
