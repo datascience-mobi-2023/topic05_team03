@@ -692,7 +692,7 @@ biomarkers_with_highcor = names(biomarker_correlations)
 ```
 
 ```{r}
-#find the drug/gene pairs 
+##################################find the drug/gene pairs  does not work !!!!!!!!!!!!
 Ä = 0.15 #threshold
 #df_drug_gene_pairs = data.frame(matrix(ncol = 2, nrow = 0))  
 #colnames(df_drug_gene_pairs) <- c("drug", "gene_knockout")
@@ -705,8 +705,6 @@ druggens = apply(cor_drugs_genes,c(1,2), function(x){
 
 })
 druggens
-
-#fpr morgen : herausfinden, wie ich die drug gene pairs in eine ncol = 2 matrix bekomme
 ```
 
 ```{r}
