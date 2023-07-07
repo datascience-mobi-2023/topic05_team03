@@ -761,6 +761,15 @@ df_HDAC_expressions
 
 ```
 
+```{r}
+#lets see if there are genes that are highly correlated with the HDAC inhibitor, that are targets of effective liver cancer gene knockouts
+highcor_gen = df_drug_gene_pairs[2,]
+highcor_gen_vector <- unlist(as.vector(highcor_gen))
+highcor_gen_vector_unique <- unique(highcor_gen_vector)
+highcor_gen_vector_unique[which(highcor_gen_vector_unique %in% Liver_cancer_target_genes)]
+length(which(highcor_gen_vector_unique %in% Liver_cancer_target_genes))
+#these genes are all inhibited by HDAC inhibitors. they are likely to be closely associated in the protein network of liver cancer cells. 
+```
 
 
 
