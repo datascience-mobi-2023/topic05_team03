@@ -906,4 +906,70 @@ save(new_prism.exp, file="new_prism.exp.RData")
 save(new_prism.achilles, file="new_prism.achilles.RData")
 ```
 ###########################################################################################################################
+```{r}
+#ok, so it's as if l hadn't run the code with the cormat for liver...
+#Do that overnight
+#1. heatmap all
+#2. cormat expach liver
+```
+
+
+```{r}
+#let's select important correlation scores
+#note that: anticorrelation = gene that relevant for cell proliferation promotion is highly expressed = exp up, if KO prolif down
+#correlation = gene that relevant for cell prolif promotion is lowly expressed or gene that inhibits prolif is highly expressed= exp up, if KO prolif up
+
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/correlation_matrix_exp_ach.RData")
+```
+```{r}
+correlation_matrix_exp_ach[17000,17000]
+```
+```{r}
+str(correlation_matrix_exp_ach)
+```
+```{r}
+sum(is.na(correlation_matrix_exp_ach))
+```
+```{r}
+sum(is.na(new_prism.exp))
+sum(is.na(new_prism.achilles))
+```
+```{r}
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/new_prism.exp.RData")
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/new_prism.achilles.RData")
+```
+
+```{r}
+range(correlation_matrix_exp_ach, na.rm=TRUE)
+```
+```{r}
+max(correlation_matrix_exp_ach, na.rm=TRUE)
+min(correlation_matrix_exp_ach, na.rm=TRUE)
+```
+```{r}
+threshold = 0.9 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+relevant_correlation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach>threshold)]
+```
+
+```{r}
+relevant_correlation_values
+```
+```{r}
+threshold_anticor = 0.9 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+relevant_anticorrelation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach<threshold_anticor)]
+```
+
+```{r}
+relevant_anticorrelation_values
+```
+```{r}
+#Yessssss! Now let's see what genes are important:
+which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)
+```
+```{r}
+correlation_matrix_exp_ach[which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)]
+```
+```{r}
+
+```
 
