@@ -631,6 +631,7 @@ result_list[[c(1,3)]]
 
 
 ```{r}
+###############################
 C = 0.15 #threshold for correlation of drug or genewith exp
 result_list <- lapply(rownames(highcor_prism_exp), function(x){
   a = which(highcor_prism_exp[x,] > C)
@@ -651,19 +652,20 @@ result_list <- lapply(rownames(highcor_prism_exp), function(x){
 liste <- list(biomarker, correlatingDrug, correlatingGeneknockout)
 ```
 ```{r}
+############################doesnt work
 C = 0.15 #threshold for correlation of drug or genewith exp
-result_list <- lapply(
-  lapply(rownames(highcor_prism_exp), function(x){
+lelel= list()
+result_list <- lapply(rownames(highcor_prism_exp), function(x){
   a = which(highcor_prism_exp[x,] > C)
   a2 = colnames(highcor_prism_exp)[a]
   b = which(high_cor_genknockout_exp[x,] > C)
   b2 = rownames(high_cor_genknockout_exp)[b]
-  return(Biomarker = x)
-  return(correlatingDrug = a2)
-  return(correlatingGeneknockout = b2)
+  if(length(b2) > 0 & length(a2)){
+  result_list2 <- list(correlatingDrug = a2,correlatingGeneknockout = b2)
+  biomarker_correlations[[x]] <- result_list2
+  
 
-}), return(list(Biomarker,correlatingDrug,correlatingGeneknockout)))
-result_list
+})
 ```
 
 ```{r}
@@ -685,7 +687,88 @@ biomarker_correlations
 ```
 
 ```{r}
+#z = biomarkers_with_highcor[5]
+#z
+#biomarker_correlations$"ITGA3"
+biomarker_correlations[[5]]
+```
+
+
+```{r}
+#these are the biomarkers that have correlations both with drugs and gene knockouts
 biomarkers_with_highcor = names(biomarker_correlations)
+```
+
+```{r}
+##################################find the drug/gene pairs  does not work !!!!!!!!!!!!
+Ä = 0.15 #threshold
+#df_drug_gene_pairs = data.frame(matrix(ncol = 2, nrow = 0))  
+#colnames(df_drug_gene_pairs) <- c("drug", "gene_knockout")
+druggens = apply(cor_drugs_genes,c(1,2), function(x){
+ if(x > Ä){
+   p = colnames(x)
+   j = rownames(x)
+   drug_gene_pair = c(p,j)
+ }
+})
+druggens
+```
+
+```{r}
+#>>>>><<<<<<####not sure if it  works with the apply function
+
+#find the drug/gene pairs 
+Ä = 0.3 #threshold
+df_drug_gene_pairs = data.frame(matrix(ncol = 0, nrow = 3))  
+rownames(df_drug_gene_pairs) <- c("drug", "gene_knockout", "correlation value")
+for (x in 1:dim(cor_drugs_genes)[1]){
+  for (y in 1:dim(cor_drugs_genes)[2]){
+     if(cor_drugs_genes[x,y] > Ä){
+      p = rownames(cor_drugs_genes)[x]
+      j = colnames(cor_drugs_genes)[y]
+      k = cor_drugs_genes[x,y]
+     # f = prism.treat$moa[p]
+      drug_gene_pair = c(j,p,k)
+      df_drug_gene_pairs[,ncol(df_drug_gene_pairs) + 1] <- drug_gene_pair
+ }
+}
+}
+
+df_drug_gene_pairs
+```
+
+```{r}
+highcor_drugs = df_drug_gene_pairs[1,]
+highcor_drugs_vector <- unlist(as.vector(highcor_drugs))
+highcor_drugs_vector_unique <- unique(highcor_drugs_vector)
+length(highcor_drugs_vector_unique)
+
+#lets see their moa
+prism.treat[highcor_drugs_vector, "moa"]
+```
+
+```{r}
+#HDAC INHIBITORS SEEM TO BE HIGHLY CORRELATED TO MANY GENE KNOCKOUTS. LETS SEE IF THEY ARE OVEREXPRESSED IN LIVER CANCER.
+
+vector_HDAC = c("HDAC1", "HDAC2", "HDAC3", "HDAC4", "HDAC5", "HDAC6", "HDAC7", "HDAC8", "HDAC9", "HDAC10", "HDAC11")
+
+mean_HDAC_expression = apply(prism.exp[, vector_HDAC],2, mean)
+mean_HDAC_expression_lc = apply(prism.exp[liver_cancer_cellline_names, vector_HDAC],2,mean)
+df_HDAC_expressions = data.frame(mean_HDAC_expression_lc, mean_HDAC_expression)
+df_HDAC_expressions
+
+#t test poosible. do mean values significantly differ? 
+
+```
+
+```{r}
+#lets see if there are genes that are highly correlated with the HDAC inhibitor, that are targets of effective liver cancer gene knockouts
+highcor_gen = df_drug_gene_pairs[2,]
+highcor_gen_vector <- unlist(as.vector(highcor_gen))
+highcor_gen_vector_unique <- unique(highcor_gen_vector)
+highcor_gen_vector_unique[which(highcor_gen_vector_unique %in% Liver_cancer_target_genes)]
+length(which(highcor_gen_vector_unique %in% Liver_cancer_target_genes))
+#these genes are all inhibited by HDAC inhibitors. they are likely to be closely associated in the protein network of liver cancer cells. 
 ```
 
 
@@ -694,14 +777,57 @@ biomarkers_with_highcor = names(biomarker_correlations)
 #FOR EACH BIOMARKER, WE HAVE TO SEE IF THERE ARE DRUG/GENE PAIRS IN THE HIGH CORREALTIONS 
 
 #THIS IS WHY WE FIRST HAVE TO CREATE A LIST WITH THE DRUG/GENE PAIRS 
-
+# this is done :)
 #lapply(result_list, length)
-result_list
+#result_list
+drugs_genes_biomarker <- data.frame(matrix(nrow = 3, ncol=0))
+rownames(drugs_genes_biomarker) <- c("biomarker", "drug", "gene")
+for (x in 1:length(biomarker_correlations)){
+  
+    biomarker_drugs_highcor = biomarker_correlations[[x]][1]
+    biomarker_geneknockouts_highcor = biomarker_correlations[[x]][2]
+    for (y in 1: ncol(df_drug_gene_pairs)){
+    drug_ofdruggenepair = df_drug_gene_pairs[1,y]
+    geneknockout_ofdruggenepair = df_drug_gene_pairs[2,y]
+    
+    same_drugs = which(biomarker_drugs_highcor %in% drug_ofdruggenepair)
+    same_geneknockouts = which(biomarker_geneknockouts_highcor %in% geneknockout_ofdruggenepair)
+    
+    d = length(same_drugs)
+    g = length(same_geneknockouts)
+    
+   
+    
+    if (d>0 & g>0){
+      output = c(biomarkers_with_highcor[x], drug_ofdruggenepair, geneknockout_ofdruggenepair)
+      drugs_genes_biomarker[,ncol(drugs_genes_biomarker)+1] <- output
+    }
+    
+    
+    
+    
+}
+}
+
+drugs_genes_biomarker
+
 
 ```
 
 
+```{r}
+drugs_genes_biomarker
+```
 
+##########################CLUSTERING########################
+
+```{r}
+library(cluster)
+prism.0.9 = highvar(prism, 0.9)
+prism.0.9.lc = prism.0.9
+
+kmeans(na.omit(prism[,1:100]), centers = 3, nstart = 20)
+```
 
 
 
@@ -712,6 +838,131 @@ result_list
 ```{r}
 summary(highcor_prism_exp)
 ```
+
+
+
+
+
+############cluster analysis#########################
+
+WE WANT TO PERFORM A CLUSTER ANALYSIS
+
+```{r}
+install.packages("factoextra")
+library(factoextra)
+```
+
+
+```{r}
+#DATACLEANING
+data_prism.achilles = na.omit(prism.achilles)
+data_prism.exp = na.omit(prism.exp)
+data_prism.cnv = na.omit(prism.cnv)
+```
+
+```{r}
+data_lc <- data_prism.achilles[,Liver_cancer_target_genes]
+data_lc_target_genes_prism.achilles_highvar = highvar(data_lc_target_genes_prism.achilles_highvar)
+```
+
+
+```{r}
+
+data = highvar(data_prism.achilles, 0.95)
+#scale 
+data_scaled = scale(data)
+
+#
+```
+
+```{r}
+#find out how many clusters are needed
+fviz_nbclust(data_scaled, kmeans, method = "wss") +
+  labs(subtitle = "elbow method")
+```
+
+```{r}
+km.out <- kmeans(data, centers = 4, nstart = 100)
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+```
+```{r}
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+```
+```{r}
+lc_gene
+```
+
+
++++++++++now with prism cnv ++++++++++++
+
+```{r}
+
+data = highvar(data_prism.cnv, 0.95)
+#scale 
+data_scaled = scale(data)
+
+#
+```
+
+```{r}
+#find out how many clusters are needed
+fviz_nbclust(data_scaled, kmeans, method = "wss") +
+  labs(subtitle = "elbow method")
+```
+
+```{r}
+km.out <- kmeans(data, centers = 4, nstart = 100)
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+km.out
+```
+```{r}
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+```
+
+
++++++++++ kmeans EXP +++++++++++++++++++++++++++++
+
+
+```{r}
+
+data = highvar(data_prism.achilles, 0.95)
+#scale 
+data_scaled = scale(data)
+
+#
+```
+
+```{r}
+#find out how many clusters are needed
+fviz_nbclust(data_scaled, kmeans, method = "wss") +
+  labs(subtitle = "elbow method")
+```
+
+```{r}
+km.out <- kmeans(data, centers = 4, nstart = 100)
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+km.out
+```
+```{r}
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -885,7 +1136,10 @@ apply(cor_drugs_genes, 2, )
 fef = c(1,2,3,4,5,6,7,8,9)
 fef2= c(1,2,3,4,5,6,7,8,9)
 fef3= c(4,5,4,3,5,6,45,4,4)
-feframe <- data.frame(fef, fef2, fef3)
+fef4 = c(3,4,3,43,43,4,2,4,4)
+fef5 = c(5,67,4,7,8,5,3,5,8)
+
+feframe <- data.frame(fef, fef2, fef3, fef4, fef5)
 fuf <- apply(feframe, 2, function(x){
   sum(x > 5)})
 fuf
@@ -940,5 +1194,31 @@ mylul <- list(Name= Name, vector7 = A, dat7 = feframe)
 #mylul
 mylul[c(1,2)]
 
+```
+
+```{r}
+# Daten einlesen
+
+
+
+
+
+data <- na.omit(highvar(prism.exp, 0.9))
+  #read.csv("prism")
+
+# K-Means-Clustering durchführen
+k <- 6  # Anzahl der Cluster
+set.seed(123)  # Festlegen des Zufallssaat für Reproduzierbarkeit
+kmeans_model <- kmeans(data, centers = k)
+
+# Ergebnisse anzeigen
+print(kmeans_model)
+
+# Visualisierung der Cluster
+library(ggplot2)
+ggplot(data, aes(x = prism.exp$colnames(data)[1], y = prism.exp$colnames(data)[2] , color = as.factor(kmeans_model$cluster))) +
+  geom_point() +
+  labs(color = "Cluster") +
+  theme_minimal()
 ```
 
