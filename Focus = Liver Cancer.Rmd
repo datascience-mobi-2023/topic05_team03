@@ -893,4 +893,17 @@ pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
          colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
 ```
 
+```{r}
+save(differentially_expressed_genes_in_liver_cancer, file="differentially_expressed_genes_in_liver_cancer.RData")
+```
+```{r}
+save(correlation_matrix_exp_ach, file = "correlation_matrix_exp_ach.RData")
+```
+```{r}
+save(new_prism.exp, file="new_prism.exp.RData")
+```
+```{r}
+save(new_prism.achilles, file="new_prism.achilles.RData")
+```
+
 
