@@ -948,6 +948,7 @@ liver_mutated_genes
 barplot(liver_mutated_genes)
 #plot(liver_mutated_genes)
 #hist(liver_mutated_genes)
+#mutated_genes
 barplot(mutated_genes)
 #plot(mutated_genes)
 #hist(mutated_genes)
@@ -1161,5 +1162,68 @@ mean(apply(prism[which(rownames(prism) %in% b2m_cells_mutation),],1,mean,na.rm=T
 apply(prism,1,mean,na.rm=TRUE)
 mean(apply(prism,1,mean,na.rm=TRUE),na.rm=TRUE)
 #ok, so this doesn't really tell us anything
+```
+```{r}
+new_prism.exp
+```
+
+```{r}
+new_prism.achilles
+```
+```{r}
+#Order the colnames of exp data frame alphabetically:
+
+sorted_column_names_exp = colnames(new_prism.exp)[order(colnames(new_prism.exp))]
+new_prism.exp = new_prism.exp[, sorted_column_names_exp]
+```
+
+```{r}
+new_prism.exp
+#PERFECT!!! :))) Finally:)))
+```
+```{r}
+
+#We cannot calculate a correlation because the dimensions of the matrices do not match!
+#We have to perform the correlation only on the common genes
+common_genes_exp_ach = intersect(colnames(new_prism.exp), colnames(new_prism.achilles))
+
+# We will only include the common genes in our analysis
+cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
+cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
+
+# Compute correlation matrix for these common genes
+correlation_matrix_exp_ach = cor(cor_of_prism.exp, cor_of_prism.achilles, use = "pairwise.complete.obs")
+```
+
+```{r}
+#Let's view it:
+correlation_matrix_exp_ach
+#ok, something still isn't right...
+```
+
+```{r}
+#cor_of_prism.exp
+#which(is.na(cor_of_prism.exp))
+```
+```{r}
+cor_of_prism.achilles
+```
+```{r}
+correlation_matrix_exp_ach_dataframe = as.data.frame(correlation_matrix_exp_ach, use = "pairwise.complete.obs")
+#correlation_matrix_exp_ach_dataframe = as.data.frame(correlation_matrix_exp_ach)
+```
+```{r}
+1+1
+```
+
+```{r}
+correlation_matrix_exp_ach
+```
+
+
+```{r}
+head(correlation_matrix_exp_ach_dataframe)
+#ok it gives me NAs, check later
+#histogramm, check later
 ```
 

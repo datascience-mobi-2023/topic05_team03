@@ -1,0 +1,896 @@
+---
+title: 'Focus: Liver Cancer'
+author: "Robert Schwarz"
+date: "2023-07-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+#Let's see the differentially expressed genes again:
+```{r}
+# Filter the "new_prism.exp" data frame to include only liver cancer cell lines
+liver_cancer_cell_lines_data = new_prism.cl[new_prism.cl$disease == "Liver Cancer",]
+liver_cancer_cell_lines_data
+liver_cancer_cell_lines
+```
+
+```{r}
+liver_cancer_expression = new_prism.exp[liver_cancer_cell_lines, ]
+
+#sum(liver_cancer_expression == liver_cancer_cell_lines_expression)
+#so liver_cancer_cell_lines_expression gives the expression rates of the genes of the liver cancer cell lines
+
+#liver_cancer_cell_lines_expression = liver_cancer_expression
+```
+
+
+```{r}
+#These are all the other cell lines that aren't associated with liver cancer
+not_liver_cancer_cell_lines = rownames(new_prism.cl[new_prism.cl$disease != "Liver Cancer",])
+not_liver_cancer_cell_lines_expression = new_prism.exp[not_liver_cancer_cell_lines, ]
+```
+
+```{r}
+
+#  t.test(gene, normal_expression[, colnames(liver_cancer_expression)])
+#})
+
+liver_cancer_differential_genes = apply(liver_cancer_cell_lines_expression,2,function(gene) {
+  t.test(gene, not_liver_cancer_cell_lines_expression[, colnames(liver_cancer_cell_lines_expression)])
+})
+```
+
+
+```{r}
+
+# Create an empty list to store the results
+liver_cancer_differential_genes = list()
+
+# Loop through the columns and perform t-tests
+for (col in colnames(liver_cancer_cell_lines_expression)) 
+  gene = liver_cancer_cell_lines_expression[[col]]
+  storage_for_result = t.test(gene, not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = storage_for_result
+
+```
+```{r}
+liver_cancer_differential_genes
+#check later what this means for the genes
+```
+```{r}
+#for( i in 1:19177)
+  #print(liver_cancer_differential_genes[i]$p.value)
+liver_cancer_differential_genes[[1]]
+liver_cancer_differential_genes[[1]]$p.value
+```
+```{r}
+t.test(liver_cancer_cell_lines_data, not_liver_cancer_cell_lines_expression[[col]])
+```
+```{r}
+p_values = sapply(liver_cancer_differential_genes, function(result) result$p.value)
+p_values
+```
+
+```{r}
+adjusted_p.values = p.adjust(p_values, method = "BH")
+adjusted_p.values
+```
+
+```{r}
+# Set a significance threshold (e.g., adjusted p-value < 0.05) for identifying differentially expressed genes
+#significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.05]
+significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.01]
+significant_genes_liver_cancer
+```
+
+
+```{r}
+#I want to check the normality of the data with different methods
+#First, I will perform a Shapiro-Wilk Test:
+#shapiro.test(liver_cancer_cell_lines_expression)
+#shapiro.test(not_liver_cancer_cell_lines_expression)
+#need to create empty list before dont forget
+#First for the liver cancer cell lines...
+storage_for_result1=list()
+
+for (gene in colnames(liver_cancer_cell_lines_expression)) 
+ { 
+  if(all(liver_cancer_cell_lines_expression[[gene]] == liver_cancer_cell_lines_expression[[gene]][1]))
+    next
+#Here, I had a problem because one column had only zeros, so all the elements were the same. SO if everything is the same, we just skip this iteration
+  else
+    storage_for_result1[[gene]] = shapiro.test(liver_cancer_cell_lines_expression[[gene]])
+ 
+  
+}
+liver_cancer_cell_lines_expression_normality = storage_for_result1
+
+#Now for the not liver cancer cell lines:
+#I first tried this code:
+
+#storage_for_result2 = list()
+
+#for (gene2 in colnames(not_liver_cancer_cell_lines_expression)) {
+#  if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]])) &&
+#      all(not_liver_cancer_cell_lines_expression[[gene2]] == #not_liver_cancer_cell_lines_expression[[gene2]][1])) {
+#    next
+#  } else {
+#    if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]]))) {
+#      storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[gene2]])
+#    }
+#  }
+#}
+#storage_for_result2
+
+#But the problem was, that my storage_for_result2 was empty (NULL)
+
+
+# Ok, so maybe there is too much missing data, let's create a function to replace the NA values with the mean
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  
+  x[is.na(x)] = na_mean 
+  return(x)
+}
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+#Here the problem was that the data type changed and for the analysis to work we needed the same data type
+
+
+# Now let's check with the shapiro test
+
+storage_for_result2=list()
+
+for (gene2 in colnames(not_liver_cancer_cell_lines_expression_wona)) 
+ { 
+  if(all(not_liver_cancer_cell_lines_expression_wona[[gene2]] == not_liver_cancer_cell_lines_expression_wona[[gene2]][1]))
+    next
+  else
+    storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[gene2]])
+ 
+  
+}
+not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+```
+
+
+```{r}
+#storage_for_result2 = list()
+#for (col2 in colnames(not_liver_cancer_cell_lines_expression)) 
+# { 
+#  if(all(not_liver_cancer_cell_lines_expression[[col2]] == not_liver_cancer_cell_lines_expression[[col2]][1]))
+#    next
+#  else
+#    storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[col2]])
+ 
+  
+#}
+# storage_for_result2
+ 
+# storage_for_result2 = list()
+
+#for (col2 in colnames(not_liver_cancer_cell_lines_expression)) {
+  #print(col2)  
+#  if (all(!is.na(not_liver_cancer_cell_lines_expression[[col2]])) &&
+#      all(not_liver_cancer_cell_lines_expression[[col2]] == not_liver_cancer_cell_lines_expression[[col2]][1])) {
+#    print(all(!is.na(not_liver_cancer_cell_lines_expression[[col2]])) && all(not_liver_cancer_cell_lines_expression[[col2]] == #not_liver_cancer_cell_lines_expression[[col2]][1]))
+#    next  # Skip if all values are identical
+#  } else {
+#    if (all(!is.na(not_liver_cancer_cell_lines_expression[[col2]]))) {
+#      storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[col2]])
+#    }
+#  }
+#}
+
+#storage_for_result2
+#ok, so they all must contain missing values or so...
+```
+```{r}
+# Ok, so maybe there is too much missing data, let's create a function to replace the NA values with the mean
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  # Calculate the mean, ignoring NAs
+  x[is.na(x)] = na_mean  # Replace NAs with the mean value
+  return(x)
+}
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+
+# Now let's check with the shapiro test
+storage_for_result2 = list()
+for (col2 in colnames(not_liver_cancer_cell_lines_expression)) {
+  if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]])) &&
+      all(not_liver_cancer_cell_lines_expression_wona[[col2]] == not_liver_cancer_cell_lines_expression_wona[[col2]][1])) {
+    next
+  } else {
+    if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]]))) {
+      storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[col2]])
+    }
+  }
+}
+storage_for_result2
+
+```
+```{r}
+#storage_for_result2$p.value
+```
+
+
+```{r}
+#liver_cancer_cell_lines_expression_normality = storage_for_result1
+#not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+```
+
+```{r}
+p_values_normal = sapply(liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value})
+which(p_values_normal>0.9)
+```
+
+```{r}
+adjusted_p.values_normal = p.adjust(p_values_normal, method = "BH")
+#adjusted_p.values_normal
+which(adjusted_p.values_normal>0.9)
+```
+
+
+```{r}
+#significant_liver_normality =names(liver_cancer_cell_lines_expression_normality[which(adjusted_p.values_normal>0.99)])
+#significant_liver_normality
+liver_cancer_cell_lines_expression_normality[which(adjusted_p.values_normal>0.99)]
+```
+
+```{r}
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  
+  x[is.na(x)] = na_mean  
+  return(x)
+}
+
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+
+storage_for_result2 = list()
+for (col2 in colnames(not_liver_cancer_cell_lines_expression)) {
+  if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]])) &&
+      all(not_liver_cancer_cell_lines_expression_wona[[col2]] == not_liver_cancer_cell_lines_expression_wona[[col2]][1])) {
+    next
+  } else {
+    if (all(!is.na(not_liver_cancer_cell_lines_expression_wona[[col2]]))) {
+      storage_for_result2[[col2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[col2]])
+    }
+  }
+}
+
+liver_cancer_cell_lines_expression_normality = storage_for_result1
+not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+
+p_values_normal_liver = sapply(liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_liver = names(liver_cancer_cell_lines_expression_normality)[which(p_values_normal_liver > 0.99)]
+
+```
+```{r}
+significant_genes_normality_liver
+#liver_cancer_cell_lines_expression_normality[which(p_values_normal > 0.99)]
+#okay, so these are the genes that are normally distributed. So we will only take the t.tests into consideration, where the data is normally distributed
+```
+
+```{r}
+#now let's do the same for the ones form not liver cancer
+p_values_normal_not_liver = sapply(not_liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_not_liver = #names(not_liver_cancer_cell_lines_expression_normality)[which(p_values_normal_not_liver > 0.99)]
+  names(not_liver_cancer_cell_lines_expression_normality)[which(p_values_normal_not_liver > 0.90)]
+```
+```{r}
+significant_genes_normality_not_liver
+#not_liver_cancer_cell_lines_expression_normality[which(p_values_normal_not_liver > 0.99)]
+#okay, let's lower the significance level here...
+#okay, 90% seems good
+```
+```{r}
+significant_genes_normality_liver
+significant_genes_normality_not_liver
+```
+```{r}
+#Let's see which ones they have in common
+normality_genes = intersect(significant_genes_normality_liver, significant_genes_normality_not_liver)
+normality_genes
+#ok, so these are the genes that are normally expressed, so for these genes we will consider the t-tests
+
+```
+```{r}
+normality_genes %in% significant_genes_liver_cancer
+#okay, so these genes are not differentially expressed... maybe we lower the significance level?
+
+```
+```{r}
+#liver_cancer_cell_lines_expression[,which(adjusted_p.values<0.10)]
+#significant_genes_liver_cancer
+#all(significant_genes_liver_cancer == colnames(liver_cancer_cell_lines_expression)[adjusted_p.values<0.10])
+#adjusted_p.values<0.10
+adjusted_p.values["LBHD1"]
+```
+
+
+```{r}
+#okay, let's check now if there are any genes that are normally distributed AND differentially expressed!
+normality_genes %in% significant_genes_liver_cancer
+#still not...
+#Let's check how these genes are actually expressed:
+liver_cancer_differential_genes[normality_genes]
+```
+
+
+
+if(all(liver_cancer_cell_lines_expression[[col]] == liver_cancer_cell_lines_expression[[1]]))
+next
+
+
+for (col in colnames(liver_cancer_cell_lines_expression)) 
+  gene = liver_cancer_cell_lines_expression[[col]]
+  storage_for_result = t.test(gene, not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = storage_for_result
+  
+```{r}
+save(new_prism.cl, file="new_prism.cl.RData")
+```
+  
+
+#########################################################################################################  
+  
+  DIFFERENTIALLY EXPRESSED GENES LIVER CANCER
+### SYNTHESIS SO FAR:
+  
+  1. 
+```{r}
+
+# Filter the "new_prism.exp" data frame to include only liver cancer cell lines
+liver_cancer_cell_lines_expression = new_prism.exp[liver_cancer_cell_lines, ]
+
+#These are all the other cell lines that aren't associated with liver cancer and their expression scores
+not_liver_cancer_cell_lines = rownames(new_prism.cl[new_prism.cl$disease != "Liver Cancer",])
+not_liver_cancer_cell_lines_expression = new_prism.exp[not_liver_cancer_cell_lines, ]
+
+
+#We will use a t-test to compare the expression levels of the genes in liver cancer cell lines and those in cancer cell lines that are not associated to liver cancer:
+for (col in colnames(liver_cancer_cell_lines_expression)) {
+  result = t.test(liver_cancer_cell_lines_expression[[col]], not_liver_cancer_cell_lines_expression[[col]])
+  liver_cancer_differential_genes[[col]] = result
+}
+liver_cancer_differential_genes
+#length(names(liver_cancer_differential_genes))
+#We have a t-test for every gene
+```
+
+
+2. 
+```{r}
+#Now, we would like to check which ones of these genes are actually significant, so really differently expressed in liver cancer than in other cancer types. So, we will set a threshold and choose those genes, where the t-test had a small p-value (under the significance level)
+
+#First, we will adjust the p-values of the multiple t-testing:
+p_values_liver_vs_noliver = sapply(liver_cancer_differential_genes, function(t_test_liver_noliver) t_test_liver_noliver$p.value)
+adjusted_p.values = p.adjust(p_values_liver_vs_noliver, method = "BH")
+
+#Now, we can set the significance level at 1%:
+significant_genes_liver_cancer = colnames(liver_cancer_cell_lines_expression)[adjusted_p.values < 0.01]
+significant_genes_liver_cancer
+```
+
+3. CHECK IF THE DATA IS NORMALLY DISTRIBUTED!!!
+
+```{r}
+#I want to check the normality of the data with different methods
+#First, I will perform a Shapiro-Wilk Test:
+#shapiro.test(liver_cancer_cell_lines_expression)
+#shapiro.test(not_liver_cancer_cell_lines_expression)
+
+#First for the liver cancer cell lines...
+storage_for_result1=list()
+
+for (gene in colnames(liver_cancer_cell_lines_expression)) 
+ { 
+  if(all(liver_cancer_cell_lines_expression[[gene]] == liver_cancer_cell_lines_expression[[gene]][1]))
+    next
+#Here, I had a problem because one column had only zeros, so all the elements were the same. SO if everything is the same, we just skip this iteration
+  else
+    storage_for_result1[[gene]] = shapiro.test(liver_cancer_cell_lines_expression[[gene]])
+ 
+  
+}
+liver_cancer_cell_lines_expression_normality = storage_for_result1
+
+#Now for the not liver cancer cell lines:
+#I first tried this code:
+
+#storage_for_result2 = list()
+
+#for (gene2 in colnames(not_liver_cancer_cell_lines_expression)) {
+#  if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]])) &&
+#      all(not_liver_cancer_cell_lines_expression[[gene2]] == #not_liver_cancer_cell_lines_expression[[gene2]][1])) {
+#    next
+#  } else {
+#    if (all(!is.na(not_liver_cancer_cell_lines_expression[[gene2]]))) {
+#      storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression[[gene2]])
+#    }
+#  }
+#}
+#storage_for_result2
+
+#But the problem was, that my storage_for_result2 was empty (NULL)
+
+
+# Ok, so maybe there is too much missing data, let's create a function to replace the NA values with the mean
+replace_na = function(x) {
+  na_mean = mean(x, na.rm = TRUE)  
+  x[is.na(x)] = na_mean 
+  return(x)
+}
+not_liver_cancer_cell_lines_expression_wona = apply(not_liver_cancer_cell_lines_expression, 2, replace_na)
+not_liver_cancer_cell_lines_expression_wona = as.data.frame(not_liver_cancer_cell_lines_expression_wona)
+#Here the problem was that the data type changed and for the analysis to work we needed the same data type
+
+
+# Now let's check with the shapiro test
+
+storage_for_result2=list()
+
+for (gene2 in colnames(not_liver_cancer_cell_lines_expression_wona)) 
+ { 
+  if(all(not_liver_cancer_cell_lines_expression_wona[[gene2]] == not_liver_cancer_cell_lines_expression_wona[[gene2]][1]))
+    next
+  else
+    storage_for_result2[[gene2]] = shapiro.test(not_liver_cancer_cell_lines_expression_wona[[gene2]])
+ 
+  
+}
+not_liver_cancer_cell_lines_expression_normality = storage_for_result2
+
+#liver_cancer_cell_lines_expression_normality and not_liver_cancer_cell_lines_expression_normality contain the shapiro tests that check whether or not these genes are normally distributed
+```
+
+```{r}
+liver_cancer_cell_lines_expression_normality
+```
+
+```{r}
+not_liver_cancer_cell_lines_expression_normality
+```
+
+```{r}
+#length(names(liver_cancer_cell_lines_expression_normality))
+#length(names(not_liver_cancer_cell_lines_expression_normality))
+```
+
+```{r}
+#Checking for significance
+
+p_values_normal_liver = sapply(liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_liver = names(liver_cancer_cell_lines_expression_normality)[which(p_values_normal_liver > 0.70)]
+
+#significant_genes_normality_liver
+
+```
+
+```{r}
+#now let's do the same for the ones form not liver cancer
+p_values_normal_not_liver = sapply(not_liver_cancer_cell_lines_expression_normality, function(result){
+  result$p.value
+})
+
+significant_genes_normality_not_liver = names(not_liver_cancer_cell_lines_expression_normality)[which(p_values_normal_not_liver > 0.70)]
+
+#significant_genes_normality_not_liver
+```
+
+```{r}
+
+#ok, so these are the genes that are normally expressed, so for these genes we will consider the t-tests
+normality_genes = significant_genes_normality_liver[which(significant_genes_normality_liver %in% significant_genes_normality_not_liver)]
+normality_genes
+
+```
+
+```{r}
+normality_genes[which(normality_genes %in% significant_genes_liver_cancer)]
+```
+The problem is:
+I have tried several significance levels from 0.99 to 0.8. I always get the response that there are no genes that are differentially expressed in liver cancer AND normaly distributed. The threshold of 0.7 seems pretty low to me. I am afraid I am doing something wrong. What would you advise?
+  
+
+```{r}
+#Let's try to plot histograms and qq plots
+```
+  
+```{r}
+liver_cancer_cell_lines_expression
+```
+```{r}
+
+hist(liver_cancer_cell_lines_expression[[1]] )
+```
+```{r}
+#We cannot plot 19177 histogramms, so let us choose 100 random genes
+
+number_of_genes = 100
+
+random_genes = sample(colnames(liver_cancer_cell_lines_expression), number_of_genes)
+
+for (gene in random_genes) {
+  hist(liver_cancer_cell_lines_expression[[gene]], 
+       main = paste("Histogram -", col),
+       xlab = "Expression Levels",
+       col = "skyblue",
+       breaks = 17)
+}
+#yeah, they're not really normally distributed...
+```
+  
+```{r}
+#Let's create a QQ-plot
+qqnorm(liver_cancer_cell_lines_expression[[1]])
+qqline(liver_cancer_cell_lines_expression[[1]])
+
+```
+```{r}
+#We cannot plot 19177 QQ plots, so let us choose 100 random genes
+
+number_of_genes = 100
+
+random_genes = sample(colnames(liver_cancer_cell_lines_expression), number_of_genes)
+
+for (gene in random_genes) {
+  qqnorm(liver_cancer_cell_lines_expression[[gene]])
+  qqline(liver_cancer_cell_lines_expression[[gene]])
+}
+```
+```{r}
+#okay, at least for the genes that we identified as normally distributed, let's also visualize them...
+for(gene in normality_genes[which(normality_genes %in% significant_genes_liver_cancer)])
+{
+  qqnorm(liver_cancer_cell_lines_expression[[gene]],main = paste("QQ Plot -", gene))
+  qqline(liver_cancer_cell_lines_expression[[gene]])
+}
+
+for(gene in normality_genes[which(normality_genes %in% significant_genes_liver_cancer)])
+{
+  hist(liver_cancer_cell_lines_expression[[gene]],main = paste(gene), breaks=17)
+}
+```
+
+
+Ok, so the liver cancer genes are not normally distributed, let's see how else we can filter out the differential genes
+```{r}
+liver_cancer_cell_lines_expression
+```
+```{r}
+not_liver_cancer_cell_lines_expression
+```
+```{r}
+#how do I analyze the differential expressed genes if the data is not normally distributed?
+```
+
+
+##########################################################################################################################
+
+###DIFFERENTIALLY EXPRESSED GENES###
+
+
+```{r}
+#To analyse the differentially expressed genes in liver cancer, we have to perform Wilcox Sum Tests on the expression of each gene
+#reason: as we have previously seen, the distribution of the gene expression values does seldom correspond to a normal distribution
+wilcox_test_for_liver_cancer_genes = vector("list", ncol(liver_cancer_cell_lines_expression))
+
+for (i in 1:ncol(liver_cancer_cell_lines_expression)) {
+  gene = as.numeric(liver_cancer_cell_lines_expression[, i])
+  not_liver_cancer_gene = as.numeric(na.omit(not_liver_cancer_cell_lines_expression[, i]))
+#The reason I am setting these vectors to numerical ones is because I encountered problems with the ways the values were accessed in a list. Maybe it had sth to do with the fact that I previously used the function apply and not the problem doesn't exist anymore, but better to be safe
+  
+  wilcox_test_for_liver_cancer_genes[[i]] = wilcox.test(gene, not_liver_cancer_gene, alternative = "two.sided")
+}
+
+# Let's extract the p.values so we can select the Wilcox tests with significant p.values
+p_values_wilcox_tests_liver_genes = sapply(wilcox_test_for_liver_cancer_genes, function(result) {
+  result$p.value
+})
+
+# Adjust p.values...
+adjusted_p_values_wilcox_tests_liver_genes = p.adjust(p_values_wilcox_tests_liver_genes, method = "BH")
+
+# Let's select the significant genes! Significance level: 5%
+differentially_expressed_genes_in_liver_cancer = names(liver_cancer_cell_lines_expression)[adjusted_p_values_wilcox_tests_liver_genes < 0.05]
+
+differentially_expressed_genes_in_liver_cancer
+#Beautieeeeees!!! :)))
+```
+
+################################################################################################################################
+
+```{r}
+is.numeric(not_liver_cancer_gene)
+is.numeric(liver_cancer_cell_lines_expression)
+```
+
+```{r}
+wilcox_test_for_liver_cancer_genes
+
+```
+
+```{r}
+which(differentially_expressed_genes_in_liver_cancer %in% c("ARL5B", "VIPAS39","ZNF148") )
+```
+
+```{r}
+differentially_expressed_genes_in_liver_cancer
+```
+
+```{r}
+ncol(liver_cancer_cell_lines_expression)
+```
+################################################################################################################################
+```{r}
+#okay, let's get together what else we found out about the liver cancer cell lines
+correlation_matrix_exp_ach = cor(prism.exp, prism.achilles)
+```
+```{r}
+new_prism.exp
+```
+```{r}
+new_prism.achilles
+```
+```{r}
+
+```
+
+```{r}
+#now we've set the rownames of the prism.cl dataframe (a copy of it) to match the cell line identificators
+#rownames(copy_prism.cl) = prism.cl[,1]
+#copy_prism.cl
+copy_achilles = prism.achilles
+```
+```{r}
+order_actual_achilles = rownames (copy_achilles)
+order_target_achilles = rownames(prism)
+new_prism.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+new_prism.achilles
+```
+
+```{r}
+#re-order prism.exp so that it matches the prism data frame order
+copy_prism.exp = prism.exp
+order_actual_exp = rownames (copy_prism.exp)
+order_target_exp = rownames(prism)
+new_prism.exp= copy_prism.exp[match(order_target_exp, order_actual_exp),]
+new_prism.exp
+```
+```{r}
+#Order the colnames of exp data frame alphabetically:
+
+sorted_column_names_exp = colnames(new_prism.exp)[order(colnames(new_prism.exp))]
+new_prism.exp = new_prism.exp[, sorted_column_names_exp]
+```
+
+```{r}
+
+#We cannot calculate a correlation because the dimensions of the matrices do not match!
+#We have to perform the correlation only on the common genes
+common_genes_exp_ach = intersect(colnames(new_prism.exp), colnames(new_prism.achilles))
+
+# We will only include the common genes in our analysis
+cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
+cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
+
+# Compute correlation matrix for these common genes
+#correlation_matrix_exp_ach = cor(cor_of_prism.exp, cor_of_prism.achilles, use = "pairwise.complete.obs")
+```
+
+
+```{r}
+#now we've set the rownames of the prism.cl dataframe (a copy of it) to match the cell line identificators
+#rownames(copy_prism.cl) = prism.cl[,1]
+#copy_prism.cl
+copy_achilles = prism.achilles
+```
+```{r}
+order_actual_achilles = rownames (copy_achilles)
+order_target_achilles = rownames(prism)
+new_prism.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+new_prism.achilles
+```
+
+```{r}
+#re-order prism.exp so that it matches the prism data frame order
+copy_prism.exp = prism.exp
+order_actual_exp = rownames (copy_prism.exp)
+order_target_exp = rownames(prism)
+new_prism.exp= copy_prism.exp[match(order_target_exp, order_actual_exp),]
+new_prism.exp
+```
+```{r}
+#Order the colnames of exp data frame alphabetically:
+
+sorted_column_names_exp = colnames(new_prism.exp)[order(colnames(new_prism.exp))]
+new_prism.exp = new_prism.exp[, sorted_column_names_exp]
+```
+
+
+
+```{r}
+#We cannot calculate a correlation because the dimensions of the matrices do not match!
+#We have to perform the correlation only on the common genes
+common_genes_exp_ach = intersect(colnames(new_prism.exp), colnames(new_prism.achilles))
+
+# We will only include the common genes in our analysis
+cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
+cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
+```
+
+
+```{r}
+dim(liver_cancer_cell_lines_expression)
+dim(not_liver_cancer_cell_lines_expression)
+```
+```{r}
+all(colnames(liver_cancer_cell_lines_expression) == colnames(not_liver_cancer_cell_lines_expression))
+```
+```{r}
+sum(is.na(liver_cancer_cell_lines_expression))
+sum(is.na(not_liver_cancer_cell_lines_expression))
+#adjust for NAs!(?)
+```
+
+
+#RUN THIS IN PARALLEL!!! IT TAKES VERY LONG!
+```{r}
+# Because this chunk takes very long, i want to track the progress of it
+# Determine the total number of iterations
+total_number_iterations = length(common_genes_exp_ach)
+
+# Now we will compute the correlation matrix for the common genes from the data frames achilles and expression
+#This correlation creates the link between gene expression and gene relevance! If the anti correlation is strong, it means that the genes taht are relevant for cell proliferation are also highly expressed and the genes less relevant also have a lower expression!
+#Let's first fill thsi matrix with NAs just tog et the dimensions right. Then we will fill it up with actual values hehehe
+correlation_matrix_exp_ach = matrix(NA, nrow = total_iterations, ncol = total_number_iterations,
+                                     dimnames = list(common_genes_exp_ach, common_genes_exp_ach))
+
+# Let's fill it up with correlation values! This is where the fun begins...
+for (i in 1:total_number_iterations) {
+  print(paste("Progress:", i, "/", total_number_iterations))
+  for (j in i:total_number_iterations) 
+  {
+    correlation_value = cor(cor_of_prism.exp[, i], cor_of_prism.achilles[, j], use = "pairwise.complete.obs")
+    correlation_matrix_exp_ach[i, j] = correlation_value
+    correlation_matrix_exp_ach[j, i] = correlation_value
+  }
+}
+
+# Voila!
+correlation_matrix_exp_ach
+```
+
+```{r}
+dim(correlation_matrix_exp_ach)
+```
+
+
+```{r}
+correlation_matrix_exp_ach[17000,17000]
+```
+
+```{r}
+correlation_matrix_exp_ach[17000:17008,17000:17008]
+
+```
+
+```{r}
+dim(correlation_matrix_exp_ach)
+length(common_genes_exp_ach)
+correlation_matrix_exp_ach[3000:3006,3000:3006]
+```
+
+```{r}
+mini_cor_mat_exp_ach = correlation_matrix_exp_ach[17000:17,17000:17008]
+heatmap(mini_cor_mat_exp_ach, 
+        col = colorRampPalette(c("blue", "white", "red"))(100),
+        main = "Mini Correlation Matrix",
+        xlab = "Genes",
+        ylab = "Genes")
+```
+
+
+
+
+
+```{r}
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/correlation matrix workspace.RData")
+```
+
+
+
+```{r}
+correlation_matrix_exp_ach[17000,17000]
+```
+```{r}
+# Let's choose some heatmap colors!
+#heatmap_colors = colorRampPalette(c("blue", "white", "red"))(100)
+
+#heatmap(correlation_matrix_exp_ach, col = heatmap_colors,
+ #       main = "Correlation Matrix Heatmap",
+ #       xlab = "Genes", ylab = "Genes",
+ #       cex.main = 1.2, cex.axis = 0.8, cex.lab = 0.8)
+
+```
+
+```{r}
+#I would like to run this heatmap now, but I am afraid it will take again 3-4 hours to compute, just like the correlation matrix. So I will run it at night:)))
+#I want to first create a sample and see the heatmap qualitatively. Let's randomly choose some genes
+sample_genes_for_cormat_indeces = sample(1:17767, 100)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+
+```
+
+```{r}
+install.packages("pheatmap")
+library(pheatmap)
+```
+
+```{r}
+number_included_sample = 100
+sample_genes_for_cormat_indeces = sample(1:17767, number_included_sample)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+heatmap_colors = colorRampPalette(c("blue", "white", "red"))(number_included_sample)
+
+# Create the heatmap
+pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
+         main = "Correlation Matrix Expression-Achilles",
+         xlab = "Genes", ylab = "Genes",
+         fontsize = 8, border_color = NA,
+         colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
+
+```
+```{r}
+number_included_sample = 500
+sample_genes_for_cormat_indeces = sample(1:17767, number_included_sample)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+heatmap_colors = colorRampPalette(c("blue", "white", "red"))(number_included_sample)
+
+# Create the heatmap
+pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
+         main = "Correlation Matrix Expression-Achilles",
+         xlab = "Genes", ylab = "Genes",
+         fontsize = 8, border_color = NA,
+         colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
+```
+
+
