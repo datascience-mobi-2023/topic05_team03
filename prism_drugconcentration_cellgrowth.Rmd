@@ -29,6 +29,7 @@ concentrations <- c(0.00061034, 0.0024414, 0.00976562, 0.0390625, 0.15625, 0.625
 all_drugs_grouped <- split(all_drug_names, rep(1:(length(all_drug_names)/8), each = 8))
 all_drugs_grouped
 
+
 # We select a random group to see if the function works:
 selected_group_1 <- all_drugs_grouped[[1]]
 selected_group_1
@@ -37,9 +38,13 @@ selected_group_1
 # plotting exercise using the selection method:
 
 concentrations_nM <- c(0.6, 2.4, 9.8, 39.1, 156.3, 625, 10000, 2500)
-y1 <- prism[1, selected_group_1]
+y1 <- c(t(prism[1, selected_group_1]))
 y1
 
+regression_model_1 <- lm(y1 ~ concentrations_nM)
+regression_model_1
+plot(concentrations_nM, y1, pch=16, cex=1.3, col="blue")
+abline(lm(y1 ~ concentrations_nM))
 
 plot(concentrations_nM, y1, main="ACH_007", xlab="concentrations of drugs in nM", ylab="cell growth rate", pch=20, cex=1.5, col="green" )  # it works :)
 
@@ -56,7 +61,7 @@ regression_results <- list()
 
 for (i in 1:length(all_drugs_grouped_)) {
   drug_group <- all_drugs_grouped_[[i]]
-  cell_growth_rates <- as.matrix(prism_for_liver[, all_drug_names])
+  cell_growth_rates <- c(t(prism_for_liver[, all_drug_names]))
   model <- lm(cell_growth_rates ~ concentrations_nM, data=drug_group)
   regression_results[[i]] <- summary(model)
 }
@@ -64,21 +69,18 @@ for (i in 1:length(all_drugs_grouped_)) {
 
 
 ```{r}
-# İlaç gruplarını döngü içinde ele almak için indeksler oluşturun
-all_drugs_grouped_ <- split.default(prism, rep(1:(ncol(prism)/8), each = 8))
-
 # For döngüsü
-for (i in 1:length(all_drugs_grouped_)) {
+for (i in 1:length(all_drugs_grouped)) {
   # İlaç grubuna ait verileri alın
-  drug_group <- all_drugs_grouped_[[i]]
+  ilaç_grubu <- all_drugs_grouped[[i]]
   
   # İlaç grubu adını yazdırın
-  cat("Drug group:", names(all_drugs_grouped_)[i], "\n")
+  cat("İlaç Grubu:", names(all_drugs_grouped)[i], "\n")
   
   # Linear regresyon analizini yapın
   for (j in 1:8) {
-    # İlgili ilaçın hücre büyüme değerlerine erişin
-    cell_growth_rates <- drug_group[, j]
+    # İlgili ilacın hücre büyüme değerlerine erişin
+    cell_growth_rates <- ilaç_grubu[, j]
     
     # İlaç konsantrasyonları
     concentrations_nM <- c(0.00061034, 0.0024414, 0.00976562, 0.0390625, 0.15625, 0.625, 10, 2.5)
@@ -87,16 +89,101 @@ for (i in 1:length(all_drugs_grouped_)) {
     regression_model <- lm(cell_growth_rates ~ concentrations_nM)
     
     # Regresyon sonuçlarını yazdırın
-    cat("Drug:", colnames(drug_group)[j], "\n")
+    cat("İlaç:", colnames(ilaç_grubu)[j], "\n")
     print(summary(regression_model))
     cat("\n")
   }
 }
 
-
-cell_growth_rates
 ```
 
+```{r}
+treatment_ids = unique(prism.treat$broad_id)
+treatment_ids
+
+test = t(prism[, grep("BRD-A00758722-001-04-9", colnames(prism))])
+test
+
+
+for (x in treatment_ids)
+  print(t(prism_for_liver[, grep(x, colnames(prism_for_liver))]))
+
+
+concentrations_in_nM = sub(".*::(.*?)::.*", "\\1", rownames(test))
+concentrations_in_nM
+
+sub(".*::(.*?)::.*", "\\1", colnames(prism))
+
+cell_growth_rates_ <- t(prism[, grep(x, colnames(prism))])
+cell_growth_rates_
+
+# Her bir ilaç için linear regresyon analizi yapın
+for (x in treatment_ids) {
+  
+  cell_growth_rates_each_treatment <- for (x in treatment_ids)
+    print(t(prism_for_liver[, grep(x, colnames(prism_for_liver))]))
+  
+  # Linear regresyon analizi
+  regression_model <- lm(cell_growth_rates_each_treatment ~ concentrations_in_nM)
+  
+  # İlaç adını yazdırın
+  cat("İlaç:", x, "\n")
+  
+  # Regresyon sonuçlarını yazdırın
+  print(summary(regression_model))
+  
+  cat("\n")
+}
+
+
+
+# Her bir ilaç için linear regresyon analizi yapın
+for (x in treatment_ids) {
+  
+  cell_growth_rates_each_treatment <- t(prism_for_liver[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # Linear regresyon analizi
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # İlaç adını yazdırın
+  cat("İlaç:", x, "\n")
+  
+  # Regresyon sonuçlarını yazdırın
+  print(summary(regression_model))
+  
+  cat("\n")
+}
+
+
+#For the cell line ACH-000217:
+
+prism_ACH_000221 <- prism_for_liver[2,]
+t(prism_ACH_000221)
+
+# Her bir ilaç için linear regresyon analizi yapın
+for (x in treatment_ids) {
+  
+  cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # Linear regresyon analizi
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # İlaç adını yazdırın
+  cat("İlaç:", x, "\n")
+  
+  # Regresyon sonuçlarını yazdırın
+  print(summary(regression_model))
+  
+  cat("\n")
+}
+
+
+plot(concentrations_in_nM, cell_growth_rates_each_treatment, pch=16, cex=1.3, col="blue")
+abline(lm(y1 ~ concentrations_nM))
+
+```
 
 
 # which drugs inhibit the cell growth rate in liver cancer cell lines?
