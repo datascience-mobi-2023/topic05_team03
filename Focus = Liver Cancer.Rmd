@@ -970,6 +970,38 @@ which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=T
 correlation_matrix_exp_ach[which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)]
 ```
 ```{r}
+#okay, but these are flattened indeces. We need the matrix indeces to get the gene names!
+flattened_indices = which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)
+```
+
+```{r}
+# I want to convert the flattened indeces to matrix indeces
+
+num_row_col = nrow(correlation_matrix_exp_ach)
+row_indices = (flattened_indices - 1) %/% num_row_col + 1
+col_indices = (flattened_indices - 1) %% num_row_col + 1
+
+row_indices
+col_indices
+
+```
+```{r}
+#Great! Let's check if this worked!
+relevant_anticorrelation_values2 = correlation_matrix_exp_ach[row_indices, col_indices]
+```
+
+```{r}
+relevant_anticorrelation_values == relevant_anticorrelation_values2
+```
+
+```{r}
+dim(relevant_anticorrelation_values2)
+```
+```{r}
+length(relevant_anticorrelation_values)
+```
+```{r}
+#ah okay, let's try sth else...
 
 ```
 
