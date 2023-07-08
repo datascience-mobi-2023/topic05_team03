@@ -1138,6 +1138,13 @@ relevant_anticorrelation_values == relevant_anticorrelation_values4
 relevant_anticorrelation_values2 == relevant_anticorrelation_values4
 relevant_anticorrelation_values3 == relevant_anticorrelation_values4
 ```
+```{r}
+#ok, now let's get the gene names of these relevant genes:)))
+names(relevant_anticorrelation_values4)
+```
+```{r}
+
+```
 
 
 
