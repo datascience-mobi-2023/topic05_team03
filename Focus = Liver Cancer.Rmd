@@ -1143,7 +1143,30 @@ relevant_anticorrelation_values3 == relevant_anticorrelation_values4
 names(relevant_anticorrelation_values4)
 ```
 ```{r}
-
+colnames(correlation_matrix_exp_ach)[1]
+rownames(correlation_matrix_exp_ach)[1]
+#a ok
+#rownames(correlation_matrix_exp_ach)[row_indices_matrix, col_indices_matrix]
+#exp_ach_genes = c()
+#for(i in length(flattened_indices))
+#{
+#  exp_ach_genes[i] = rownames(correlation_matrix_exp_ach)[row_indices_matrix[i], col_indices_matrix[i]]
+#}
+#exp_ach_genes
+```
+```{r}
+#colnames(correlation_matrix_exp_ach[row_indices_matrix[1], col_indices_matrix[1]])
+rownames(correlation_matrix_exp_ach)[row_indices_matrix]
+#rownames(correlation_matrix_exp_ach)[flattened_indices]
+#colnames(correlation_matrix_exp_ach)[,col_indices_matrix]
+rownames(correlation_matrix_exp_ach[row_indices_matrix,])
+colnames(correlation_matrix_exp_ach[,col_indices_matrix])
+colnames(correlation_matrix_exp_ach[,row_indices_matrix])
+sort(rownames(correlation_matrix_exp_ach[row_indices_matrix,])) == sort(colnames(correlation_matrix_exp_ach[,col_indices_matrix]))
+```
+```{r}
+relevant_genes_corexpach = rownames(correlation_matrix_exp_ach[row_indices_matrix,])
+relevant_genes_corexpach
 ```
 
 
