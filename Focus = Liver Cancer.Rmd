@@ -965,17 +965,22 @@ relevant_anticorrelation_values
 ```{r}
 #Yessssss! Now let's see what genes are important:
 which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)
+which(correlation_matrix_exp_ach %in% relevant_correlation_values, arr.ind=TRUE)
 ```
 ```{r}
 correlation_matrix_exp_ach[which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)]
+correlation_matrix_exp_ach[which(correlation_matrix_exp_ach %in% relevant_correlation_values, arr.ind=TRUE)]
 ```
 ```{r}
 #okay, but these are flattened indeces. We need the matrix indeces to get the gene names!
 flattened_indices = which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)
+flattened_indices_c = which(correlation_matrix_exp_ach %in% relevant_correlation_values, arr.ind=TRUE)
+
 ```
 
 ```{r}
 flattened_indices
+flattened_indices_c
 ```
 
 
@@ -992,6 +997,7 @@ row_indices
 col_indices
 
 ```
+
 ```{r}
 #Great! Let's check if this worked!
 relevant_anticorrelation_values2 = correlation_matrix_exp_ach[row_indices, col_indices]
@@ -1000,13 +1006,16 @@ relevant_anticorrelation_values2 = correlation_matrix_exp_ach[row_indices, col_i
 ```{r}
 #relevant_anticorrelation_values == relevant_anticorrelation_values2
 relevant_anticorrelation_values == correlation_matrix_exp_ach[flattened_indices]
+relevant_correlation_values == correlation_matrix_exp_ach[flattened_indices_c]
 ```
 
 ```{r}
 dim(relevant_anticorrelation_values2)
+dim(relevant_correlation_values)
 ```
 ```{r}
 length(relevant_anticorrelation_values)
+length(relevant_correlation_values)
 ```
 ```{r}
 #ah okay, let's try sth else...
@@ -1055,6 +1064,17 @@ all(correlation_matrix_exp_ach[!is.na(correlation_matrix_exp_ach)] == t(correlat
 row_indices = (flattened_indices ) %/% num_row_col + 1
 col_indices = (flattened_indices ) %% num_row_col 
 ```
+
+```{r}
+row_indices_c = (flattened_indices_c ) %/% num_row_col + 1
+col_indices_c = (flattened_indices_c ) %% num_row_col 
+```
+
+```{r}
+row_indices_c
+col_indices_c
+```
+
 
 ```{r}
 row_indices == row_indices2
@@ -1118,6 +1138,28 @@ row_indices_matrix
 col_indices_matrix
 
 ```
+
+```{r}
+row_indices_matrix_c = c()
+col_indices_matrix_c = c()
+for (i in 1:length(flattened_indices_c)){
+number_rows_columns = nrow(correlation_matrix_exp_ach)
+
+if(flattened_indices_c[i] %% number_rows_columns == 0)
+{
+  row_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns
+  col_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns + 1
+}else
+{
+  row_indices_matrix_c[i] = flattened_indices_c[i] %% number_rows_columns
+  col_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns + 1
+}
+}
+row_indices_matrix_c
+col_indices_matrix_c
+```
+
+
 ```{r}
 sort(row_indices_matrix) == sort(row_indices)
 row_indices_matrix == row_indices
@@ -1133,6 +1175,22 @@ for( i in 1:length(relevant_anticorrelation_values))
 }
 relevant_anticorrelation_values4
 ```
+
+```{r}
+#let's do it right this time!:)))
+relevant_correlation_values4 = c()
+for( i in 1:length(relevant_correlation_values))
+{
+  relevant_correlation_values4[i] = correlation_matrix_exp_ach[row_indices_matrix_c[i], col_indices_matrix_c[i]]
+}
+relevant_correlation_values4
+```
+
+```{r}
+relevant_correlation_values == relevant_correlation_values4
+```
+
+
 ```{r}
 relevant_anticorrelation_values == relevant_anticorrelation_values4
 relevant_anticorrelation_values2 == relevant_anticorrelation_values4
@@ -1171,5 +1229,8 @@ relevant_genes_corexpach_anticorrelation
 #So, these genes play an important role in cell proliferation. If they are knocked out, the proliferation rate diminishes. They are important for cancer cell lines as they promote cell proliferation. Therefore, they are also overexpressed. This is the correlation that this finding provides and the causality that could be implied (!) (correlation != causality, but still probable :))) )
  
 
-
+```{r}
+relevant_genes_corexpach_correlation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix_c,]))
+relevant_genes_corexpach_correlation
+```
 
