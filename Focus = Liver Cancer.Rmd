@@ -1165,11 +1165,11 @@ colnames(correlation_matrix_exp_ach[,row_indices_matrix])
 sort(rownames(correlation_matrix_exp_ach[row_indices_matrix,])) == sort(colnames(correlation_matrix_exp_ach[,col_indices_matrix]))
 ```
 ```{r}
-relevant_genes_corexpach = rownames(correlation_matrix_exp_ach[row_indices_matrix,])
-relevant_genes_corexpach
+relevant_genes_corexpach_anticorrelation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix,]))
+relevant_genes_corexpach_anticorrelation
 ```
-
-
+#So, these genes play an important role in cell proliferation. If they are knocked out, the proliferation rate diminishes. They are important for cancer cell lines as they promote cell proliferation. Therefore, they are also overexpressed. This is the correlation that this finding provides and the causality that could be implied (!) (correlation != causality, but still probable :))) )
+ 
 
 
 
