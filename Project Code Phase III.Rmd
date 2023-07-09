@@ -584,13 +584,15 @@ sum(is.na(new_prism.exp_wona))
 sum(is.na(new_prism.exp_wona))
 ```
 
+#Let's start with the clustering
+
 ```{r}
 # First we have to compute the optimal number of clusters
 #Elbow Method
 # make vector for within cluster sum of squares
 wcss = c()
 #let's try for 10 clusters first
-max_k = 10
+max_k = 13
 #ok perfrom kmeans
 for (k in 1:max_k) {
   kmeans_result = kmeans(new_prism.exp_wona, centers = k)
@@ -602,13 +604,27 @@ for (k in 1:max_k) {
 
 ```{r}
 # optimal number of clusters?
-difference_wcss = diff(wcss)
+#difference_wcss = diff(wcss)
 #elbow_index = which(difference_wcss < mean(difference_wcss))[length(which(difference_wcss < mean(difference_wcss)))]
-elbow_index = which( difference_wcss == min(difference_wcss[2:length(difference_wcss)]))
-elbow_index
-difference_wcss
-min(difference_wcss[2:length(difference_wcss)])
+#elbow_index = which( difference_wcss == min(difference_wcss[2:length(difference_wcss)]))
+#elbow_index
+#difference_wcss
+#min(difference_wcss[2:length(difference_wcss)])
 ```
+
+```{r}
+#Let's try this...
+difference_wcss = diff(wcss)
+difference_wcss
+difference2_wcss = diff(difference_wcss)
+difference2_wcss
+difference3_wcss = diff(difference2_wcss)
+difference3_wcss
+elbow_index = which(difference3_wcss == max(difference3_wcss)) + 1
+elbow_index
+#by calculating the differences we get a more exact number of clusters that is optimal
+```
+
 
 ```{r}
 #ok maybe also plot, let's visualize...
@@ -656,7 +672,7 @@ kmeans_result$centers
 kmeans_result$size
 ```
 ```{r}
-#ok perform now
+#ok perform kmeans on modified prism.exp now
 cluster_genes = kmeans(t(new_prism.exp_wona), centers = elbow_index)$cluster
 
 #store here 
@@ -668,6 +684,57 @@ dim(new_prism.exp_wona)
 length(cluster_genes)
 ```
 ```{r}
+# Let's check sth...
+cluster_genes_df
+dim(cluster_genes_df)
+```
+#Ok, let's put everything together!
+```{r}
+# First we have to compute the optimal number of clusters
+#Elbow Method
+# make vector for within cluster sum of squares
+wcss = c()
+#let's try for 10 clusters first
+max_k = 30
+#ok perfrom kmeans
+for (k in 1:max_k) {
+  kmeans_result = kmeans(new_prism.exp_wona, centers = k)
+  wcss[k] = kmeans_result$tot.withinss
+}
+
+
+#Let's try this...
+difference_wcss = diff(wcss)
+#difference_wcss
+difference2_wcss = diff(difference_wcss)
+#difference2_wcss
+difference3_wcss = diff(difference2_wcss)
+#difference3_wcss
+elbow_index = which(difference3_wcss == max(difference3_wcss)) + 2
+elbow_index
+#by calculating the differences we get a more exact number of clusters that is optimal
+
+
+
+#ok maybe also plot, let's visualize...
+plot(1:max_k, wcss, type = "b", pch = 19, xlab = "No of clusters", ylab = "WCSS",
+     main = "Elbow method clusters new_prism.exp_wona")
+lines(1:max_k, wcss, type = "l", col = "blue")
+
+# mark elbow point
+abline(v = elbow_index, lty = 2, col = "red")
+#YESSSSSS
+
+
+
+#ok perform kmeans on modified prism.exp now
+cluster_genes = kmeans(t(new_prism.exp_wona), centers = elbow_index)$cluster
+
+#store here 
+cluster_genes_df = data.frame(Gene = colnames(new_prism.exp_wona), Cluster = cluster_genes)
+
+
+
 # Let's check sth...
 cluster_genes_df
 dim(cluster_genes_df)
