@@ -778,7 +778,7 @@ total_number_iterations = length(common_genes_exp_ach)
 # Now we will compute the correlation matrix for the common genes from the data frames achilles and expression
 #This correlation creates the link between gene expression and gene relevance! If the anti correlation is strong, it means that the genes taht are relevant for cell proliferation are also highly expressed and the genes less relevant also have a lower expression!
 #Let's first fill thsi matrix with NAs just tog et the dimensions right. Then we will fill it up with actual values hehehe
-correlation_matrix_exp_ach = matrix(NA, nrow = total_iterations, ncol = total_number_iterations,
+correlation_matrix_exp_ach = matrix(NA, nrow = total_number_iterations, ncol = total_number_iterations,
                                      dimnames = list(common_genes_exp_ach, common_genes_exp_ach))
 
 # Let's fill it up with correlation values! This is where the fun begins...
