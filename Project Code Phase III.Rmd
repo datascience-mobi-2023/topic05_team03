@@ -558,4 +558,118 @@ for (i in 1:total_number_iterations4) {
 correlation_matrix_exp_cnv
 ```
 
+#################################################################################################################################################################################
+
+###Now, let's look a bit at the variation of the dataset!
+#Perform clustering on the gene expression data frame
+
+#Processing the data, cleaning etc
+```{r}
+sum(is.na(new_prism.exp))
+sum(!complete.cases(new_prism.exp))
+```
+```{r}
+new_prism.exp_wona = new_prism.exp[complete.cases(new_prism.exp), ]
+```
+
+```{r}
+dim(new_prism.exp)
+dim(new_prism.exp_wona)
+```
+```{r}
+sum(is.na(new_prism.exp_wona))
+#okay, it worked. Let's check for prism.cnv
+```
+```{r}
+sum(is.na(new_prism.exp_wona))
+```
+
+```{r}
+# First we have to compute the optimal number of clusters
+#Elbow Method
+# make vector for within cluster sum of squares
+wcss = c()
+#let's try for 10 clusters first
+max_k = 10
+#ok perfrom kmeans
+for (k in 1:max_k) {
+  kmeans_result = kmeans(new_prism.exp_wona, centers = k)
+  wcss[k] = kmeans_result$tot.withinss
+}
+
+
+```
+
+```{r}
+# optimal number of clusters?
+difference_wcss = diff(wcss)
+#elbow_index = which(difference_wcss < mean(difference_wcss))[length(which(difference_wcss < mean(difference_wcss)))]
+elbow_index = which( difference_wcss == min(difference_wcss[2:length(difference_wcss)]))
+elbow_index
+difference_wcss
+min(difference_wcss[2:length(difference_wcss)])
+```
+
+```{r}
+#ok maybe also plot, let's visualize...
+plot(1:max_k, wcss, type = "b", pch = 19, xlab = "No of clusters", ylab = "WCSS",
+     main = "Elbow method clusters new_prism.exp_wona")
+lines(1:max_k, wcss, type = "l", col = "blue")
+
+# mark elbow point
+abline(v = elbow_index, lty = 2, col = "red")
+#YESSSSSS
+```
+
+```{r}
+diff(wcss)
+mean(diff_wcss)
+min(diff_wcss[2:length(diff_wcss)])
+elbow_index
+```
+
+```{r}
+diff_wcss
+which(diff_wcss < mean(diff_wcss))
+mean(diff_wcss)
+elbow_index = which(diff_wcss < mean(diff_wcss))[2]+1
+elbow_index
+```
+```{r}
+kmeans_result
+```
+
+```{r}
+kmeans_result = kmeans(new_prism.exp_wona, centers = 3)
+```
+```{r}
+kmeans_result
+```
+```{r}
+kmeans_result$betweenss
+kmeans_result$totss
+kmeans_result$betweenss/kmeans_result$totss
+kmeans_result$tot.withinss
+kmeans_result$iter
+kmeans_result$cluster
+kmeans_result$centers
+kmeans_result$size
+```
+```{r}
+#ok perform now
+cluster_genes = kmeans(t(new_prism.exp_wona), centers = elbow_index)$cluster
+
+#store here 
+cluster_genes_df = data.frame(Gene = colnames(new_prism.exp_wona), Cluster = cluster_genes)
+
+```
+```{r}
+dim(new_prism.exp_wona)
+length(cluster_genes)
+```
+```{r}
+# Let's check sth...
+cluster_genes_df
+dim(cluster_genes_df)
+```
 
