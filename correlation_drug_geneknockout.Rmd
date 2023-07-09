@@ -914,25 +914,43 @@ data_lc_target_genes_prism.achilles_highvar = highvar(data_lc_target_genes_prism
 
 
 ```{r}
+data = t(highvar(data_prism.achilles, 0.95))
 
-data = highvar(data_prism.achilles, 0.95)
+elbow <- function(data){
 #scale 
 data_scaled = scale(data)
-
-#
-```
-
-```{r}
 #find out how many clusters are needed
 fviz_nbclust(data_scaled, kmeans, method = "wss") +
   labs(subtitle = "elbow method")
+}
+elbow(data)
 ```
 
 ```{r}
-km.out <- kmeans(data, centers = 4, nstart = 100)
+km.out <- kmeans(data, centers = 3, nstart = 100)
 km.clusters <- km.out$cluster
 fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+km.out
 ```
+
+```{r}
+cluster1 = which(km.out$cluster == 1)
+cluster2 = which(km.out$cluster == 2)
+cluster3 = which(km.out$cluster == 3)
+names_cluster1 = names(cluster1)
+names_cluster2 = names(cluster2)
+names_cluster3 = names(cluster3)
+```
+
+```{r}
+mean(apply(prism.achilles[,names_cluster1],2, mean, na.rm = TRUE))
+mean(apply(prism.achilles[,names_cluster2],2, mean, na.rm = TRUE))
+mean(apply(prism.achilles[,names_cluster3],2, mean, na.rm = TRUE))
+```
+#these genes are clustered by their importance for cell growth
+#t test if they significantly differ from each orher could make sense
+
+
 ```{r}
 km.clusters <- km.out$cluster
 fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
@@ -976,7 +994,7 @@ fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
 
 ```{r}
 
-data = highvar(data_prism.achilles, 0.95)
+data = t(highvar(data_prism.achilles, 0.95))
 #scale 
 data_scaled = scale(data)
 
@@ -990,15 +1008,12 @@ fviz_nbclust(data_scaled, kmeans, method = "wss") +
 ```
 
 ```{r}
-km.out <- kmeans(data, centers = 4, nstart = 100)
+km.out <- kmeans(data, centers = 3, nstart = 100)
 km.clusters <- km.out$cluster
 fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
 km.out
 ```
-```{r}
-km.clusters <- km.out$cluster
-fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
-```
+
 
 
 
@@ -1016,6 +1031,45 @@ fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
 
 
 ENTRY TEST AREA 51 - WHAT HAPPENS HERE STAYS HERE
+```{r}
+
+
+copy_dataset1 = prism_venetoclax
+dataset2 = prism.exp
+order_actual_dataset1 = rownames(copy_dataset1)
+order_target_dataset1 = rownames(dataset2)
+new_dataset1= copy_dataset1[match(order_target_dataset1, order_target_dataset1),]
+y = dataset2[,"BCL2"]
+#correlation_test <- function(dataset1, dataset3){
+
+cor_dataset1_dataset2 <- apply(new_dataset1, 2, function(x){ #first loop iterates through all columns of prism
+    y = dataset2[,"BCL2"]
+  #second loop iterates through all columns of prsim.achilles for each gene
+     #fist remove all NAs
+    x.remove = which(is.na(x)) #detecting the postitions of the drugs scores with missing values
+    y.remove = which(is.na(y))#detecting the postitions of the gene knockout scores with missing values
+    y_cleaned = y[c(-y.remove, -x.remove)] #vector with CCls removed that had NA eitherr in y or x
+    x_cleaned = x[c(-y.remove, -x.remove)]#vector with CCls removed that had NA eitherr in y or x
+  cor(y_cleaned,x_cleaned, method = "spearman")
+  
+   
+}
+)
+cor_dataset1_dataset2
+```
+
+```{r} 
+#trying to remodel resuts from paper
+Venetoclax_drugs = rownames(prism.treat)[which(prism.treat$name == "venetoclax")]
+Venetoclax_drugs
+prism_venetoclax = prism[,Venetoclax_drugs]
+
+prism.exp_BCL2 <- prism.exp[,"BCL2"]
+
+cors = correlation_test(prism_venetoclax,prism.exp_BCL2)
+cors
+```
+
 
 ```{r}
 x = rownames(highcor_prism_exp)[5]
@@ -1268,4 +1322,6 @@ ggplot(data, aes(x = prism.exp$colnames(data)[1], y = prism.exp$colnames(data)[2
   labs(color = "Cluster") +
   theme_minimal()
 ```
+
+
 
