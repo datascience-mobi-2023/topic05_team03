@@ -695,10 +695,10 @@ dim(cluster_genes_df)
 # make vector for within cluster sum of squares
 wcss = c()
 #let's try for 10 clusters first
-max_k = 30
+max_k = 10
 #ok perfrom kmeans
 for (k in 1:max_k) {
-  kmeans_result = kmeans(new_prism.exp_wona, centers = k)
+  kmeans_result = kmeans(t(new_prism.exp_wona), centers = k,iter.max = 1000)
   wcss[k] = kmeans_result$tot.withinss
 }
 
@@ -710,7 +710,7 @@ difference2_wcss = diff(difference_wcss)
 #difference2_wcss
 difference3_wcss = diff(difference2_wcss)
 #difference3_wcss
-elbow_index = which(difference3_wcss == max(difference3_wcss)) + 2
+elbow_index = which(difference2_wcss == max(difference3_wcss)) + 1
 elbow_index
 #by calculating the differences we get a more exact number of clusters that is optimal
 
@@ -728,7 +728,7 @@ abline(v = elbow_index, lty = 2, col = "red")
 
 
 #ok perform kmeans on modified prism.exp now
-cluster_genes = kmeans(t(new_prism.exp_wona), centers = elbow_index)$cluster
+cluster_genes = kmeans(t(new_prism.exp_wona), centers = 3,iter.max = 1000)$cluster
 
 #store here 
 cluster_genes_df = data.frame(Gene = colnames(new_prism.exp_wona), Cluster = cluster_genes)
@@ -738,5 +738,54 @@ cluster_genes_df = data.frame(Gene = colnames(new_prism.exp_wona), Cluster = clu
 # Let's check sth...
 cluster_genes_df
 dim(cluster_genes_df)
+```
+
+```{r}
+kmeans_result$betweenss / kmeans_result$totss
+```
+```{r}
+save(cluster_genes_df, file= "clustering prism.exp genes, k=3.RData")
+```
+```{r}
+save(plot(1:max_k, wcss, type = "b", pch = 19, xlab = "No of clusters", ylab = "WCSS",
+     main = "Elbow method clusters new_prism.exp_wona"),
+lines(1:max_k, wcss, type = "l", col = "blue"),
+
+# mark elbow point
+abline(v = elbow_index, lty = 2, col = "red"), file="elbow clustering prism.exp genes, k=3.RData")
+```
+```{r}
+load("correlation_matrix_exp_ach.RData")
+```
+```{r}
+install.packages("pheatmap")
+```
+```{r}
+library("pheatmap")
+```
+```{r}
+load("correlation_matrix_exp_cnv.RData")
+```
+
+```{r}
+dim(correlation_matrix_exp_cnv)
+```
+
+
+
+```{r}
+number_included_sample = 100
+sample_genes_for_cormat_indeces = sample(1:18559, number_included_sample)
+sample_cormat_exp_cnv = correlation_matrix_exp_cnv[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+heatmap_colors = colorRampPalette(c("blue", "white", "red"))(number_included_sample)
+
+# Create the heatmap
+pheatmap(sample_cormat_exp_cnv, col = heatmap_colors,
+         main = "Correlation Matrix Expression-Copy Number Variations",
+         xlab = "Genes", ylab = "Genes",
+         fontsize = 8, border_color = NA,
+         colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
+
 ```
 
