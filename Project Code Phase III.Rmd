@@ -488,6 +488,9 @@ relevant_genes_corexpach_correlation
 ```{r}
 correlation_matrix_exp_ach[1]
 ```
+
+
+##############################################################################################################################################
 ```{r}
 prism.cnv
 
@@ -510,7 +513,49 @@ new_prism.cnv
 ```
 ```{r}
 # Get the common genes between prism.cnv and prism.exp
-common_genes_exp_cnv = intersect(colnames(prism.cnv), colnames(prism.exp))
+common_genes_exp_cnv = intersect(colnames(new_prism.cnv), colnames(new_prism.exp))
 common_genes_exp_cnv
 ```
+```{r}
+dim(new_prism.cnv)
+dim(new_prism.exp)
+```
+```{r}
+load("new_prism.exp.RData")
+```
+
+```{r}
+# make subset...
+common_prism.cnv = new_prism.cnv[,common_genes_exp_cnv]
+common_prism.exp = new_prism.exp[,common_genes_exp_cnv]
+
+```
+
+
+```{r}
+# Because this chunk takes very long, i want to track the progress of it
+# Determine the total number of iterations
+total_number_iterations4 = length(common_genes_exp_cnv)
+
+# Now we will compute the correlation matrix for the common genes from the data frames copy number variation and expression
+#This correlation creates the link between gene expression and gene copy numbers! If the correlation is strong, it means that the more copy number a gene has, the higher it is expressed, and the fewer copy number a gene has, the lower it is expressed. Note that AMPLIFICATION is a common cancer hallmark of genetic instability!!!
+#Let's first fill this matrix with NAs just to get the dimensions right. Then we will fill it up with actual values hehehe (hehehe:))) )
+correlation_matrix_exp_cnv = matrix(NA, nrow = total_number_iterations4, ncol = total_number_iterations4,
+                                     dimnames = list(common_genes_exp_cnv, common_genes_exp_cnv))
+
+# Let's fill it up with correlation values! This is where the fun begins...
+for (i in 1:total_number_iterations4) {
+  print(paste("Progress:", i, "/", total_number_iterations4))
+  for (j in i:total_number_iterations4) 
+  {
+    correlation_value4 = cor(common_prism.exp[, i], common_prism.cnv[, j], use = "pairwise.complete.obs")
+    correlation_matrix_exp_cnv[i, j] = correlation_value4
+    correlation_matrix_exp_cnv[j, i] = correlation_value4
+  }
+}
+
+# Voila!
+correlation_matrix_exp_cnv
+```
+
 
