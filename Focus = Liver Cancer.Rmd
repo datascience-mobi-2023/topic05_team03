@@ -39,8 +39,11 @@ liver_cancer_cell_lines
 
 ```{r}
 liver_cancer_expression = new_prism.exp[liver_cancer_cell_lines, ]
-sum(liver_cancer_expression == liver_cancer_cell_lines_expression)
+
+#sum(liver_cancer_expression == liver_cancer_cell_lines_expression)
 #so liver_cancer_cell_lines_expression gives the expression rates of the genes of the liver cancer cell lines
+
+#liver_cancer_cell_lines_expression = liver_cancer_expression
 ```
 
 
@@ -584,3 +587,651 @@ for(gene in normality_genes[which(normality_genes %in% significant_genes_liver_c
 }
 ```
 
+
+Ok, so the liver cancer genes are not normally distributed, let's see how else we can filter out the differential genes
+```{r}
+liver_cancer_cell_lines_expression
+```
+```{r}
+not_liver_cancer_cell_lines_expression
+```
+```{r}
+#how do I analyze the differential expressed genes if the data is not normally distributed?
+```
+
+
+##########################################################################################################################
+
+###DIFFERENTIALLY EXPRESSED GENES###
+
+
+```{r}
+#To analyse the differentially expressed genes in liver cancer, we have to perform Wilcox Sum Tests on the expression of each gene
+#reason: as we have previously seen, the distribution of the gene expression values does seldom correspond to a normal distribution
+wilcox_test_for_liver_cancer_genes = vector("list", ncol(liver_cancer_cell_lines_expression))
+
+for (i in 1:ncol(liver_cancer_cell_lines_expression)) {
+  gene = as.numeric(liver_cancer_cell_lines_expression[, i])
+  not_liver_cancer_gene = as.numeric(na.omit(not_liver_cancer_cell_lines_expression[, i]))
+#The reason I am setting these vectors to numerical ones is because I encountered problems with the ways the values were accessed in a list. Maybe it had sth to do with the fact that I previously used the function apply and not the problem doesn't exist anymore, but better to be safe
+  
+  wilcox_test_for_liver_cancer_genes[[i]] = wilcox.test(gene, not_liver_cancer_gene, alternative = "two.sided")
+}
+
+# Let's extract the p.values so we can select the Wilcox tests with significant p.values
+p_values_wilcox_tests_liver_genes = sapply(wilcox_test_for_liver_cancer_genes, function(result) {
+  result$p.value
+})
+
+# Adjust p.values...
+adjusted_p_values_wilcox_tests_liver_genes = p.adjust(p_values_wilcox_tests_liver_genes, method = "BH")
+
+# Let's select the significant genes! Significance level: 5%
+differentially_expressed_genes_in_liver_cancer = names(liver_cancer_cell_lines_expression)[adjusted_p_values_wilcox_tests_liver_genes < 0.05]
+
+differentially_expressed_genes_in_liver_cancer
+#Beautieeeeees!!! :)))
+```
+
+################################################################################################################################
+
+```{r}
+is.numeric(not_liver_cancer_gene)
+is.numeric(liver_cancer_cell_lines_expression)
+```
+
+```{r}
+wilcox_test_for_liver_cancer_genes
+
+```
+
+```{r}
+which(differentially_expressed_genes_in_liver_cancer %in% c("ARL5B", "VIPAS39","ZNF148") )
+```
+
+```{r}
+differentially_expressed_genes_in_liver_cancer
+```
+
+```{r}
+ncol(liver_cancer_cell_lines_expression)
+```
+################################################################################################################################
+```{r}
+#okay, let's get together what else we found out about the liver cancer cell lines
+correlation_matrix_exp_ach = cor(prism.exp, prism.achilles)
+```
+```{r}
+new_prism.exp
+```
+```{r}
+new_prism.achilles
+```
+```{r}
+
+```
+
+```{r}
+#now we've set the rownames of the prism.cl dataframe (a copy of it) to match the cell line identificators
+#rownames(copy_prism.cl) = prism.cl[,1]
+#copy_prism.cl
+copy_achilles = prism.achilles
+```
+```{r}
+order_actual_achilles = rownames (copy_achilles)
+order_target_achilles = rownames(prism)
+new_prism.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+new_prism.achilles
+```
+
+```{r}
+#re-order prism.exp so that it matches the prism data frame order
+copy_prism.exp = prism.exp
+order_actual_exp = rownames (copy_prism.exp)
+order_target_exp = rownames(prism)
+new_prism.exp= copy_prism.exp[match(order_target_exp, order_actual_exp),]
+new_prism.exp
+```
+```{r}
+#Order the colnames of exp data frame alphabetically:
+
+sorted_column_names_exp = colnames(new_prism.exp)[order(colnames(new_prism.exp))]
+new_prism.exp = new_prism.exp[, sorted_column_names_exp]
+```
+
+```{r}
+
+#We cannot calculate a correlation because the dimensions of the matrices do not match!
+#We have to perform the correlation only on the common genes
+common_genes_exp_ach = intersect(colnames(new_prism.exp), colnames(new_prism.achilles))
+
+# We will only include the common genes in our analysis
+cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
+cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
+
+# Compute correlation matrix for these common genes
+#correlation_matrix_exp_ach = cor(cor_of_prism.exp, cor_of_prism.achilles, use = "pairwise.complete.obs")
+```
+
+
+```{r}
+#now we've set the rownames of the prism.cl dataframe (a copy of it) to match the cell line identificators
+#rownames(copy_prism.cl) = prism.cl[,1]
+#copy_prism.cl
+copy_achilles = prism.achilles
+```
+```{r}
+order_actual_achilles = rownames (copy_achilles)
+order_target_achilles = rownames(prism)
+new_prism.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
+new_prism.achilles
+```
+
+```{r}
+#re-order prism.exp so that it matches the prism data frame order
+copy_prism.exp = prism.exp
+order_actual_exp = rownames (copy_prism.exp)
+order_target_exp = rownames(prism)
+new_prism.exp= copy_prism.exp[match(order_target_exp, order_actual_exp),]
+new_prism.exp
+```
+```{r}
+#Order the colnames of exp data frame alphabetically:
+
+sorted_column_names_exp = colnames(new_prism.exp)[order(colnames(new_prism.exp))]
+new_prism.exp = new_prism.exp[, sorted_column_names_exp]
+```
+
+
+
+```{r}
+#We cannot calculate a correlation because the dimensions of the matrices do not match!
+#We have to perform the correlation only on the common genes
+common_genes_exp_ach = intersect(colnames(new_prism.exp), colnames(new_prism.achilles))
+
+# We will only include the common genes in our analysis
+cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
+cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
+```
+
+
+```{r}
+dim(liver_cancer_cell_lines_expression)
+dim(not_liver_cancer_cell_lines_expression)
+```
+```{r}
+all(colnames(liver_cancer_cell_lines_expression) == colnames(not_liver_cancer_cell_lines_expression))
+```
+```{r}
+sum(is.na(liver_cancer_cell_lines_expression))
+sum(is.na(not_liver_cancer_cell_lines_expression))
+#adjust for NAs!(?)
+```
+
+
+#RUN THIS IN PARALLEL!!! IT TAKES VERY LONG!
+```{r}
+# Because this chunk takes very long, i want to track the progress of it
+# Determine the total number of iterations
+total_number_iterations = length(common_genes_exp_ach)
+
+# Now we will compute the correlation matrix for the common genes from the data frames achilles and expression
+#This correlation creates the link between gene expression and gene relevance! If the anti correlation is strong, it means that the genes taht are relevant for cell proliferation are also highly expressed and the genes less relevant also have a lower expression!
+#Let's first fill thsi matrix with NAs just tog et the dimensions right. Then we will fill it up with actual values hehehe
+correlation_matrix_exp_ach = matrix(NA, nrow = total_number_iterations, ncol = total_number_iterations,
+                                     dimnames = list(common_genes_exp_ach, common_genes_exp_ach))
+
+# Let's fill it up with correlation values! This is where the fun begins...
+for (i in 1:total_number_iterations) {
+  print(paste("Progress:", i, "/", total_number_iterations))
+  for (j in i:total_number_iterations) 
+  {
+    correlation_value = cor(cor_of_prism.exp[, i], cor_of_prism.achilles[, j], use = "pairwise.complete.obs")
+    correlation_matrix_exp_ach[i, j] = correlation_value
+    correlation_matrix_exp_ach[j, i] = correlation_value
+  }
+}
+
+# Voila!
+correlation_matrix_exp_ach
+```
+
+```{r}
+dim(correlation_matrix_exp_ach)
+```
+
+
+```{r}
+correlation_matrix_exp_ach[17000,17000]
+```
+
+```{r}
+correlation_matrix_exp_ach[17000:17008,17000:17008]
+
+```
+
+```{r}
+dim(correlation_matrix_exp_ach)
+length(common_genes_exp_ach)
+correlation_matrix_exp_ach[3000:3006,3000:3006]
+```
+
+```{r}
+mini_cor_mat_exp_ach = correlation_matrix_exp_ach[17000:17,17000:17008]
+heatmap(mini_cor_mat_exp_ach, 
+        col = colorRampPalette(c("blue", "white", "red"))(100),
+        main = "Mini Correlation Matrix",
+        xlab = "Genes",
+        ylab = "Genes")
+```
+
+
+
+
+
+```{r}
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/correlation matrix workspace.RData")
+```
+
+
+
+```{r}
+correlation_matrix_exp_ach[17000,17000]
+```
+```{r}
+# Let's choose some heatmap colors!
+#heatmap_colors = colorRampPalette(c("blue", "white", "red"))(100)
+
+#heatmap(correlation_matrix_exp_ach, col = heatmap_colors,
+ #       main = "Correlation Matrix Heatmap",
+ #       xlab = "Genes", ylab = "Genes",
+ #       cex.main = 1.2, cex.axis = 0.8, cex.lab = 0.8)
+
+```
+
+```{r}
+#I would like to run this heatmap now, but I am afraid it will take again 3-4 hours to compute, just like the correlation matrix. So I will run it at night:)))
+#I want to first create a sample and see the heatmap qualitatively. Let's randomly choose some genes
+sample_genes_for_cormat_indeces = sample(1:17767, 100)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+
+```
+
+```{r}
+install.packages("pheatmap")
+library(pheatmap)
+```
+
+```{r}
+number_included_sample = 100
+sample_genes_for_cormat_indeces = sample(1:17767, number_included_sample)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+heatmap_colors = colorRampPalette(c("blue", "white", "red"))(number_included_sample)
+
+# Create the heatmap
+pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
+         main = "Correlation Matrix Expression-Achilles",
+         xlab = "Genes", ylab = "Genes",
+         fontsize = 8, border_color = NA,
+         colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
+
+```
+```{r}
+number_included_sample = 500
+sample_genes_for_cormat_indeces = sample(1:17767, number_included_sample)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+heatmap_colors = colorRampPalette(c("blue", "white", "red"))(number_included_sample)
+
+# Create the heatmap
+pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
+         main = "Correlation Matrix Expression-Achilles",
+         xlab = "Genes", ylab = "Genes",
+         fontsize = 8, border_color = NA,
+         colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
+```
+
+```{r}
+save(differentially_expressed_genes_in_liver_cancer, file="differentially_expressed_genes_in_liver_cancer.RData")
+```
+```{r}
+save(correlation_matrix_exp_ach, file = "correlation_matrix_exp_ach.RData")
+```
+```{r}
+save(new_prism.exp, file="new_prism.exp.RData")
+```
+```{r}
+save(new_prism.achilles, file="new_prism.achilles.RData")
+```
+###########################################################################################################################
+```{r}
+#ok, so it's as if l hadn't run the code with the cormat for liver...
+#Do that overnight
+#1. heatmap all
+#2. cormat expach liver
+```
+
+
+```{r}
+#let's select important correlation scores
+#note that: anticorrelation = gene that relevant for cell proliferation promotion is highly expressed = exp up, if KO prolif down
+#correlation = gene that relevant for cell prolif promotion is lowly expressed or gene that inhibits prolif is highly expressed= exp up, if KO prolif up
+
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/correlation_matrix_exp_ach.RData")
+```
+```{r}
+correlation_matrix_exp_ach[17000,17000]
+```
+```{r}
+str(correlation_matrix_exp_ach)
+```
+```{r}
+sum(is.na(correlation_matrix_exp_ach))
+```
+```{r}
+sum(is.na(new_prism.exp))
+sum(is.na(new_prism.achilles))
+```
+```{r}
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/new_prism.exp.RData")
+load("C:/Users/Alex/Documents/GitHub/topic05_team03/new_prism.achilles.RData")
+```
+
+```{r}
+range(correlation_matrix_exp_ach, na.rm=TRUE)
+```
+```{r}
+max(correlation_matrix_exp_ach, na.rm=TRUE)
+min(correlation_matrix_exp_ach, na.rm=TRUE)
+```
+```{r}
+threshold = 0.9 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+relevant_correlation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach>threshold)]
+```
+
+```{r}
+relevant_correlation_values
+```
+```{r}
+threshold_anticor = 0.9 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+relevant_anticorrelation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach<threshold_anticor)]
+```
+
+```{r}
+relevant_anticorrelation_values
+```
+```{r}
+#Yessssss! Now let's see what genes are important:
+which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)
+which(correlation_matrix_exp_ach %in% relevant_correlation_values, arr.ind=TRUE)
+```
+```{r}
+correlation_matrix_exp_ach[which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)]
+correlation_matrix_exp_ach[which(correlation_matrix_exp_ach %in% relevant_correlation_values, arr.ind=TRUE)]
+```
+```{r}
+#okay, but these are flattened indeces. We need the matrix indeces to get the gene names!
+flattened_indices = which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)
+flattened_indices_c = which(correlation_matrix_exp_ach %in% relevant_correlation_values, arr.ind=TRUE)
+
+```
+
+```{r}
+flattened_indices
+flattened_indices_c
+```
+
+
+```{r}
+# I want to convert the flattened indices to matrix indices
+
+num_row_col = nrow(correlation_matrix_exp_ach)
+
+#A matrix is filled column-wise, so by using integer division we know 
+row_indices = (flattened_indices ) %/% num_row_col + 1
+col_indices = (flattened_indices ) %% num_row_col
+
+row_indices
+col_indices
+
+```
+
+```{r}
+#Great! Let's check if this worked!
+relevant_anticorrelation_values2 = correlation_matrix_exp_ach[row_indices, col_indices]
+```
+
+```{r}
+#relevant_anticorrelation_values == relevant_anticorrelation_values2
+relevant_anticorrelation_values == correlation_matrix_exp_ach[flattened_indices]
+relevant_correlation_values == correlation_matrix_exp_ach[flattened_indices_c]
+```
+
+```{r}
+dim(relevant_anticorrelation_values2)
+dim(relevant_correlation_values)
+```
+```{r}
+length(relevant_anticorrelation_values)
+length(relevant_correlation_values)
+```
+```{r}
+#ah okay, let's try sth else...
+relevant_anticorrelation_values2 = c()
+for( i in 1:length(relevant_anticorrelation_values))
+{
+  relevant_anticorrelation_values2[i] = correlation_matrix_exp_ach[row_indices[i], col_indices[i]]
+}
+relevant_anticorrelation_values2
+```
+```{r}
+relevant_anticorrelation_values == relevant_anticorrelation_values2
+#ok, so the indeces do indeed show the same elements!!! Great!
+# ah wait but actually i did it wrong. Why did it work still???
+```
+
+```{r}
+#can it be that it actually works because of the symmetrical character of the matrix?
+relevant_anticorrelation_values3 = c()
+for( i in 1:length(relevant_anticorrelation_values))
+{
+  relevant_anticorrelation_values3[i] = correlation_matrix_exp_ach[col_indices[i], row_indices[i]]
+}
+relevant_anticorrelation_values3
+```
+
+```{r}
+relevant_anticorrelation_values == relevant_anticorrelation_values3
+
+relevant_anticorrelation_values3 == relevant_anticorrelation_values2
+
+#ok, so it works because the matrix is symmetrical
+```
+```{r}
+#let's check
+all(correlation_matrix_exp_ach == t(correlation_matrix_exp_ach))
+```
+
+```{r}
+all(correlation_matrix_exp_ach[!is.na(correlation_matrix_exp_ach)] == t(correlation_matrix_exp_ach)[!is.na(t(correlation_matrix_exp_ach))])
+#ok, so the matrix is symmetrical
+```
+
+
+```{r}
+row_indices = (flattened_indices ) %/% num_row_col + 1
+col_indices = (flattened_indices ) %% num_row_col 
+```
+
+```{r}
+row_indices_c = (flattened_indices_c ) %/% num_row_col + 1
+col_indices_c = (flattened_indices_c ) %% num_row_col 
+```
+
+```{r}
+row_indices_c
+col_indices_c
+```
+
+
+```{r}
+row_indices == row_indices2
+col_indices == col_indices2
+```
+row_indices2 = (flattened_indices - 1) %/% num_row_col + 1
+col_indices2 = (flattened_indices - 1) %% num_row_col + 1
+
+```{r}
+mat = matrix(501:600,nrow=10,  ncol=10)
+mat
+which(mat%%17 == 0)
+mat[mat%%17 == 0]
+```
+```{r}
+#ok, so the columns are being numbered column wise
+#let's take the index 44 for example. I want to get its row and column number
+#total rows=10
+#44 %/% 10 is 4, so row 4
+#44 %% 10 + 1 is 5, so column 5
+#yes.
+#but what about index 7? mat[7] is 507
+#7 %/% 10 is 0 so row 0
+#7 %% 10 + 1 is 8 column 8. no.
+
+#but the other way around
+#44 %% 10 is 4, so row 4 (because the indeces start at 1)
+#and 44 %/% 10 is 4 +1 is 5, so column 5
+#yes.
+#but what baout index 7? mat[7] is 507
+#7 %% 10 is 7, so row 7
+#7 %/% 10 is 0 + 1 column 1, so row 7 column 1. yes.
+
+#ok, what about index 10, mat[10] is 510
+#10 %% 10 is 0, so row 0
+#10 %/% 10 is 1, so column 1
+
+#index 20:
+#20 %% 10 is 0
+#20 %/% 10 is 2
+
+#so
+
+#okay, let's see if this works:
+row_indices_matrix = c()
+col_indices_matrix = c()
+for (i in 1:length(flattened_indices)){
+number_rows_columns = nrow(correlation_matrix_exp_ach)
+
+if(flattened_indices[i] %% number_rows_columns == 0)
+{
+  row_indices_matrix[i] = flattened_indices[i] %/% number_rows_columns
+  col_indices_matrix[i] = flattened_indices[i] %/% number_rows_columns + 1
+}else
+{
+  row_indices_matrix[i] = flattened_indices[i] %% number_rows_columns
+  col_indices_matrix[i] = flattened_indices[i] %/% number_rows_columns + 1
+}
+}
+row_indices_matrix
+col_indices_matrix
+
+```
+
+```{r}
+row_indices_matrix_c = c()
+col_indices_matrix_c = c()
+for (i in 1:length(flattened_indices_c)){
+number_rows_columns = nrow(correlation_matrix_exp_ach)
+
+if(flattened_indices_c[i] %% number_rows_columns == 0)
+{
+  row_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns
+  col_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns + 1
+}else
+{
+  row_indices_matrix_c[i] = flattened_indices_c[i] %% number_rows_columns
+  col_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns + 1
+}
+}
+row_indices_matrix_c
+col_indices_matrix_c
+```
+
+
+```{r}
+sort(row_indices_matrix) == sort(row_indices)
+row_indices_matrix == row_indices
+#okay...
+
+```
+```{r}
+#let's do it right this time!:)))
+relevant_anticorrelation_values4 = c()
+for( i in 1:length(relevant_anticorrelation_values))
+{
+  relevant_anticorrelation_values4[i] = correlation_matrix_exp_ach[row_indices_matrix[i], col_indices_matrix[i]]
+}
+relevant_anticorrelation_values4
+```
+
+```{r}
+#let's do it right this time!:)))
+relevant_correlation_values4 = c()
+for( i in 1:length(relevant_correlation_values))
+{
+  relevant_correlation_values4[i] = correlation_matrix_exp_ach[row_indices_matrix_c[i], col_indices_matrix_c[i]]
+}
+relevant_correlation_values4
+```
+
+```{r}
+relevant_correlation_values == relevant_correlation_values4
+```
+
+
+```{r}
+relevant_anticorrelation_values == relevant_anticorrelation_values4
+relevant_anticorrelation_values2 == relevant_anticorrelation_values4
+relevant_anticorrelation_values3 == relevant_anticorrelation_values4
+```
+```{r}
+#ok, now let's get the gene names of these relevant genes:)))
+names(relevant_anticorrelation_values4)
+```
+```{r}
+colnames(correlation_matrix_exp_ach)[1]
+rownames(correlation_matrix_exp_ach)[1]
+#a ok
+#rownames(correlation_matrix_exp_ach)[row_indices_matrix, col_indices_matrix]
+#exp_ach_genes = c()
+#for(i in length(flattened_indices))
+#{
+#  exp_ach_genes[i] = rownames(correlation_matrix_exp_ach)[row_indices_matrix[i], col_indices_matrix[i]]
+#}
+#exp_ach_genes
+```
+```{r}
+#colnames(correlation_matrix_exp_ach[row_indices_matrix[1], col_indices_matrix[1]])
+rownames(correlation_matrix_exp_ach)[row_indices_matrix]
+#rownames(correlation_matrix_exp_ach)[flattened_indices]
+#colnames(correlation_matrix_exp_ach)[,col_indices_matrix]
+rownames(correlation_matrix_exp_ach[row_indices_matrix,])
+colnames(correlation_matrix_exp_ach[,col_indices_matrix])
+colnames(correlation_matrix_exp_ach[,row_indices_matrix])
+sort(rownames(correlation_matrix_exp_ach[row_indices_matrix,])) == sort(colnames(correlation_matrix_exp_ach[,col_indices_matrix]))
+```
+```{r}
+relevant_genes_corexpach_anticorrelation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix,]))
+relevant_genes_corexpach_anticorrelation
+```
+#So, these genes play an important role in cell proliferation. If they are knocked out, the proliferation rate diminishes. They are important for cancer cell lines as they promote cell proliferation. Therefore, they are also overexpressed. This is the correlation that this finding provides and the causality that could be implied (!) (correlation != causality, but still probable :))) )
+#The result shows the following relationship: if the proliferation promoting genes are overexpressed, KO proliferation goes down and so normal proliferation without KO goes up. If they are underexpressed, KO proliferation goes up and so normal proliferation without KO goes down
+ 
+
+```{r}
+relevant_genes_corexpach_correlation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix_c,]))
+relevant_genes_corexpach_correlation
+```
+#These genes are important cell proliferation inhibitors. So, when they are knocked out, the cell proliferates stronger. The result shows the following relationship: if the proliferation inhibiting genes are overexpressed, KO proliferation goes up and so normal proliferation without KO goes down. If they are underexpressed, KO proliferation goes down and so normal proliferation without KO goes up

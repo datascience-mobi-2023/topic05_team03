@@ -1192,7 +1192,7 @@ cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
 cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
 
 # Compute correlation matrix for these common genes
-correlation_matrix_exp_ach = cor(cor_of_prism.exp, cor_of_prism.achilles)
+correlation_matrix_exp_ach = cor(cor_of_prism.exp, cor_of_prism.achilles, use = "pairwise.complete.obs")
 ```
 
 ```{r}
@@ -1202,19 +1202,27 @@ correlation_matrix_exp_ach
 ```
 
 ```{r}
-cor_of_prism.exp
+#cor_of_prism.exp
+#which(is.na(cor_of_prism.exp))
 ```
 ```{r}
 cor_of_prism.achilles
 ```
 ```{r}
-correlation_matrix_exp_ach_dataframe = as.data.frame(correlation_matrix_exp_ach)
+correlation_matrix_exp_ach_dataframe = as.data.frame(correlation_matrix_exp_ach, use = "pairwise.complete.obs")
+#correlation_matrix_exp_ach_dataframe = as.data.frame(correlation_matrix_exp_ach)
 ```
 ```{r}
 1+1
 ```
+
 ```{r}
-correlation_matrix_exp_ach_dataframe
+correlation_matrix_exp_ach
+```
+
+
+```{r}
+head(correlation_matrix_exp_ach_dataframe)
 #ok it gives me NAs, check later
 #histogramm, check later
 ```
