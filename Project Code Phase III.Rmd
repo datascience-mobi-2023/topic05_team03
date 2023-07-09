@@ -789,3 +789,100 @@ pheatmap(sample_cormat_exp_cnv, col = heatmap_colors,
 
 ```
 
+```{r}
+#oook, so we notice here something at the diagonal:))) nice! Let's extract these values :)))
+genes_cor_exp_cnv = correlation_matrix_exp_cnv[1:18559,1:18559]
+```
+
+```{r}
+length(genes_cor_exp_cnv)
+#ok, this doesn't seem to work. Let's try sth else
+18559 * 18559
+```
+
+```{r}
+genes_cor_exp_cnv = diag(correlation_matrix_exp_cnv)
+genes_cor_exp_cnv
+```
+
+
+```{r}
+max(genes_cor_exp_cnv,na.rm=TRUE)
+```
+```{r}
+genes_cor_exp_cnv[which(genes_cor_exp_cnv > 0.75 * max(genes_cor_exp_cnv, na.rm=TRUE))]
+```
+
+
+```{r}
+plot(genes_cor_exp_cnv)
+```
+
+
+```{r}
+mean(genes_cor_exp_cnv, na.rm=TRUE)
+median(genes_cor_exp_cnv, na.rm=TRUE)
+
+```
+
+#linear regression model?
+```{r}
+all(colnames(correlation_matrix_exp_cnv) == rownames(correlation_matrix_exp_cnv))
+```
+```{r}
+#new_prism.exp_wona[,colnames(correlation_matrix_exp_cnv)] should be described by #new_prism.cnv[,colnames(correlation_matrix_exp_cnv)]
+```
+
+```{r}
+expression_of_genes = new_prism.exp[,colnames(correlation_matrix_exp_cnv)]
+copy_number_variations_of_genes = new_prism.cnv[,colnames(correlation_matrix_exp_cnv)]
+```
+
+```{r}
+dim(expression_of_genes)
+dim(copy_number_variations_of_genes)
+```
+
+```{r}
+head(expression_of_genes)
+```
+
+
+```{r}
+prediction_model_exp_cnv = lm(expression_of_genes$KRAS~copy_number_variations_of_genes$KRAS)
+summary(prediction_model_exp_cnv)
+```
+```{r}
+summary(prediction_model_exp_cnv)$adj.r.squared
+```
+```{r}
+
+plot(copy_number_variations_of_genes$A1BG,expression_of_genes$A1BG,
+     xlab = "cnv", ylab = "exp",
+     main = "Gene")
+
+# Add the predicted values line
+abline(prediction_model_exp_cnv, col = "red")
+
+```
+```{r}
+prediction_model_exp_cnv = lm(expression_of_genes$KRAS~copy_number_variations_of_genes$KRAS)
+summary(prediction_model_exp_cnv)
+plot(copy_number_variations_of_genes$DDX3Y ,expression_of_genes$DDX3Y,
+     xlab = "cnv", ylab = "exp",
+     main = "Gene")
+
+# Add the predicted values line
+abline(prediction_model_exp_cnv, col = "red")
+```
+
+
+
+
+
+##############################################################################################################################
+```{r}
+genes_cor_exp_ach = diag(correlation_matrix_exp_ach)
+genes_cor_exp_ach
+```
+
