@@ -976,6 +976,49 @@ which(diag(correlation_matrix_exp_ach)< threshold_anticor)
 ```
 #so these are actually the genes correlated with themselves...
 #set other thresholds:)))
+```{r}
+threshold_correlation90 = 0.9 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+#relevant_correlation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach>threshold)]
+```
+
+```{r}
+#relevant_correlation_values
+```
+```{r}
+threshold_anticorrelation90 = 0.9 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+#relevant_anticorrelation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach<threshold_anticor)]
+```
+
+```{r}
+which(diag(correlation_matrix_exp_ach) > threshold_correlation90)
+which(diag(correlation_matrix_exp_ach)< threshold_anticorrelation90)
+```
+```{r}
+threshold_correlation80 = 0.8 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+threshold_anticorrelation80 = 0.8 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+which(diag(correlation_matrix_exp_ach) > threshold_correlation80)
+which(diag(correlation_matrix_exp_ach)< threshold_anticorrelation80)
+```
+
+```{r}
+threshold_correlation75 = 0.75 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+threshold_anticorrelation75 = 0.75 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+which(diag(correlation_matrix_exp_ach) > threshold_correlation75)
+which(diag(correlation_matrix_exp_ach)< threshold_anticorrelation75)
+```
+```{r}
+threshold_correlation70 = 0.70 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+threshold_anticorrelation70 = 0.70 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+which(diag(correlation_matrix_exp_ach) > threshold_correlation70)
+which(diag(correlation_matrix_exp_ach)< threshold_anticorrelation70)
+```
+```{r}
+threshold_correlation50 = 0.50 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+threshold_anticorrelation50 = 0.50 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+which(diag(correlation_matrix_exp_ach) > threshold_correlation50)
+which(diag(correlation_matrix_exp_ach)< threshold_anticorrelation50)
+```
+
 
 
 ```{r}
