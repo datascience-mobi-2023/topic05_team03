@@ -1075,7 +1075,7 @@ which(diag(correlation_matrix_exp_ach) > threshold_correlation50)
 which(diag(correlation_matrix_exp_ach)< threshold_anticorrelation50)
 ```
 
-
+###summarize all these as results now
 
 ```{r}
 length(genes_cor_exp_ach)
