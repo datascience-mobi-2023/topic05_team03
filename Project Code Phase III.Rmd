@@ -941,6 +941,15 @@ copy_cormatexpach = correlation_matrix_exp_ach[row_indices_matrix_c,col_indices_
 ```
 
 ```{r}
+copy_cormatexpach_anticor = correlation_matrix_exp_ach[row_indices_matrix,col_indices_matrix]
+```
+
+```{r}
+copy_cormatexpach_anticor
+```
+
+
+```{r}
 copy_cormatexpach[ourvals] = "red"
 ```
 
@@ -948,6 +957,29 @@ copy_cormatexpach[ourvals] = "red"
 copy_cormatexpach
 diag(copy_cormatexpach)
 ```
+
+
+```{r}
+diag(copy_cormatexpach_anticor)
+```
+```{r}
+rownames(copy_cormatexpach_anticor) == colnames(copy_cormatexpach_anticor)
+#here we have some TRUEs :)))
+which(rownames(copy_cormatexpach_anticor) == colnames(copy_cormatexpach_anticor))
+rownames(copy_cormatexpach_anticor)[which(rownames(copy_cormatexpach_anticor) == colnames(copy_cormatexpach_anticor))]
+#these ones are also the highest in self correlation...
+```
+#Besides, HNF1B expression inhibits cell proliferation through unknown mechanisms. Here, we demonstrated that HNF1B inhibited the proliferation rate of prostate cancer cells. Overexpression of HNF1B in prostate cancer cells led to the arrest of G1 cell cycle and decreased Cyclin D1 expression.
+Lu W, Sun J, Zhou H, Wang F, Zhao C, Li K, Fan C, Ding G, Wang J. HNF1B inhibits cell proliferation via repression of SMAD6 expression in prostate cancer. J Cell Mol Med. 2020 Dec;24(24):14539-14548. doi: 10.1111/jcmm.16081. Epub 2020 Nov 10. PMID: 33174391; PMCID: PMC7754016.
+
+
+
+#SOX10 promotes proliferation
+Cronin JC, Watkins-Chow DE, Incao A, Hasskamp JH, Schönewolf N, Aoude LG, Hayward NK, Bastian BC, Dummer R, Loftus SK, Pavan WJ. SOX10 ablation arrests cell cycle, induces senescence, and suppresses melanomagenesis. Cancer Res. 2013 Sep 15;73(18):5709-18. doi: 10.1158/0008-5472.CAN-12-4620. Epub 2013 Aug 1. PMID: 23913827; PMCID: PMC3803156.
+
+
+
+
 ```{r}
 rownames(copy_cormatexpach) == colnames(copy_cormatexpach)
 ```
@@ -963,6 +995,21 @@ unique(copy_cormatexpach[ourvals])
 all(rownames(correlation_matrix_exp_ach) == colnames(correlation_matrix_exp_ach))
 ```
 so it seems that the expression of one is correlated with the relevance for cell proliferation of the other...
+#INFO:
+
+
+we see interdependencies: cds1 and cds2 are the only enzymes charged with the regulation of the amount of phosphatidylinositol available for signaling by catalyzing the conversion of phosphatidic acid to CDP-diacylglycerol. SO when one is underexpressed and the other KOd, the cell proliferation rate goes down
+
+TP53 and EDA2R: Brosh R, Sarig R, Natan EB, Molchadsky A, Madar S, Bornstein C, Buganim Y, Shapira T, Goldfinger N, Paus R, Rotter V. p53-dependent transcriptional regulation of EDA2R and its involvement in chemotherapy-induced hair loss. FEBS Lett. 2010 Jun 3;584(11):2473-7. doi: 10.1016/j.febslet.2010.04.058. Epub 2010 Apr 29. PMID: 20434500.
+both charged with cell death and interconnected
+
+FERMT1 and FERMT2 https://www.biorxiv.org/content/10.1101/2022.10.31.514453v1.full
+
+
+
+
+
+
 
 #Let's check diagonal values
 ```{r}
@@ -1012,6 +1059,15 @@ threshold_anticorrelation70 = 0.70 * min(correlation_matrix_exp_ach, na.rm=TRUE)
 which(diag(correlation_matrix_exp_ach) > threshold_correlation70)
 which(diag(correlation_matrix_exp_ach)< threshold_anticorrelation70)
 ```
+p63 is a suppressor of tumorigenesis and metastasis interacting with mutant p53 | Cell Death & Differentiation.
+Melino, G. p63 is a suppressor of tumorigenesis and metastasis interacting with mutant p53. Cell Death Differ 18, 1487–1499 (2011). https://doi.org/10.1038/cdd.2011.81
+
+
+
+Unlike p53, which is frequently mutated or inactivated during tumorigenesis (in over 50% of human tumors), p63 and p73 are rarely mutated in human cancers (<1%), thus excluding them as classic Knudson-type tumor suppressor genes (Melino et al. 2002; Melino et al. 2003).
+
+
+
 ```{r}
 threshold_correlation50 = 0.50 * max(correlation_matrix_exp_ach, na.rm=TRUE)
 threshold_anticorrelation50 = 0.50 * min(correlation_matrix_exp_ach, na.rm=TRUE)
