@@ -919,9 +919,93 @@ sort(relevant_genes_corexpach_anticorrelation)
 all(sort(unique(colnames(correlation_matrix_exp_ach[,col_indices_matrix]))) == sort(relevant_genes_corexpach_anticorrelation))
 #YESSSS! The same!
 ```
+but maybe not correlated with each other...
+
+```{r}
+correlation_matrix_exp_ach[row_indices_matrix,col_indices_matrix]
+```
+
+```{r}
+correlation_matrix_exp_ach[row_indices_matrix_c,col_indices_matrix_c]
+```
+```{r}
+ourvals = which(correlation_matrix_exp_ach[row_indices_matrix_c,col_indices_matrix_c] ==  correlation_matrix_exp_ach[flattened_indices_c])
+```
+
+```{r}
+ourvals
+```
+
+```{r}
+copy_cormatexpach = correlation_matrix_exp_ach[row_indices_matrix_c,col_indices_matrix_c]
+```
+
+```{r}
+copy_cormatexpach[ourvals] = "red"
+```
+
+```{r}
+copy_cormatexpach
+diag(copy_cormatexpach)
+```
+```{r}
+rownames(copy_cormatexpach) == colnames(copy_cormatexpach)
+```
+
+```{r}
+rownames(copy_cormatexpach)
+colnames(copy_cormatexpach)
+copy_cormatexpach[ourvals]
+unique(copy_cormatexpach[ourvals])
+```
+
+```{r}
+all(rownames(correlation_matrix_exp_ach) == colnames(correlation_matrix_exp_ach))
+```
+so it seems that the expression of one is correlated with the relevance for cell proliferation of the other...
+
 #Let's check diagonal values
 ```{r}
 genes_cor_exp_ach = diag(correlation_matrix_exp_ach)
 genes_cor_exp_ach
+```
+
+
+
+
+```{r}
+length(genes_cor_exp_ach)
+```
+```{r}
+#correlation_matrix_exp_ach[which(genes_cor_exp_ach)>0.9*max(correlation_matrix_exp_ach),which(genes_cor_exp_ach)>0.9*max(correlation_matrix_exp_ach)]
+indiceseses = which(correlation_matrix_exp_ach[names(genes_cor_exp_ach),names(genes_cor_exp_ach)]>0.9*max(correlation_matrix_exp_ach,na.rm=TRUE))
+#correlation_matrix_exp_ach[which(correlation_matrix_exp_ach[names(genes_cor_exp_ach),names(genes_cor_exp_ach)]>0.9*max(correlation_matrix_exp_ach,na.rm=TRUE))]
+```
+
+```{r}
+rowindiceseses = c()
+colindiceseses = c()
+for (i in 1:length(indiceseses)){
+number_rows_columns = nrow(correlation_matrix_exp_ach)
+
+if(indiceseses[i] %% number_rows_columns == 0)
+{
+  rowindiceseses[i] = indiceseses[i] %/% number_rows_columns
+  colindiceseses[i] = indiceseses[i] %/% number_rows_columns + 1
+}else
+{
+  rowindiceseses[i] = indiceseses[i] %% number_rows_columns
+  colindiceseses[i] = indiceseses[i] %/% number_rows_columns + 1
+}
+}
+rowindiceseses
+colindiceseses
+
+```
+```{r}
+correlation_matrix_exp_ach[rowindiceseses,colindiceseses]
+```
+```{r}
+
 ```
 
