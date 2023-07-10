@@ -970,7 +970,12 @@ genes_cor_exp_ach = diag(correlation_matrix_exp_ach)
 genes_cor_exp_ach
 ```
 
-
+```{r}
+which(diag(correlation_matrix_exp_ach) > 0.5)
+which(diag(correlation_matrix_exp_ach)< threshold_anticor)
+```
+#so these are actually the genes correlated with themselves...
+#set other thresholds:)))
 
 
 ```{r}
