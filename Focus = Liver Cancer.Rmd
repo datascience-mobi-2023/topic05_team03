@@ -797,6 +797,11 @@ correlation_matrix_exp_ach
 ```
 
 ```{r}
+load("correlation_matrix_exp_ach.RData")
+```
+
+
+```{r}
 dim(correlation_matrix_exp_ach)
 ```
 
@@ -817,7 +822,7 @@ correlation_matrix_exp_ach[3000:3006,3000:3006]
 ```
 
 ```{r}
-mini_cor_mat_exp_ach = correlation_matrix_exp_ach[17000:17,17000:17008]
+mini_cor_mat_exp_ach = correlation_matrix_exp_ach[17000:17008,17000:17008]
 heatmap(mini_cor_mat_exp_ach, 
         col = colorRampPalette(c("blue", "white", "red"))(100),
         main = "Mini Correlation Matrix",

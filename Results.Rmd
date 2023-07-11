@@ -1,0 +1,238 @@
+---
+title: "Results"
+author: "Robert Schwarz"
+date: "2023-07-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+### CORRELATION MATRIX EXPRESSION X ACHILLES
+
+The correlation matrix between prism.exp and prism.achilles was done on the common columns of the two, as we are only interested on the genes that both data frames cover and so provide information for
+```{r}
+#We cannot calculate a correlation because the dimensions of the matrices do not match!
+#We have to perform the correlation only on the common genes
+common_genes_exp_ach = intersect(colnames(new_prism.exp), colnames(new_prism.achilles))
+
+# We will only include the common genes in our analysis
+cor_of_prism.exp = new_prism.exp[, common_genes_exp_ach]
+cor_of_prism.achilles = new_prism.achilles[, common_genes_exp_ach]
+```
+
+Now this has to be run in a parallel panel, as it takes very long to finish (~4h !)
+```{r}
+# Because this chunk takes very long, i want to track the progress of it
+# Determine the total number of iterations
+total_number_iterations = length(common_genes_exp_ach)
+
+# Now we will compute the correlation matrix for the common genes from the data frames achilles and expression
+#This correlation creates the link between gene expression and gene relevance! If the anti correlation is strong, it means that the genes taht are relevant for cell proliferation are also highly expressed and the genes less relevant also have a lower expression!
+#Let's first fill thsi matrix with NAs just tog et the dimensions right. Then we will fill it up with actual values hehehe
+correlation_matrix_exp_ach = matrix(NA, nrow = total_number_iterations, ncol = total_number_iterations,
+                                     dimnames = list(common_genes_exp_ach, common_genes_exp_ach))
+
+# Let's fill it up with correlation values! This is where the fun begins...
+for (i in 1:total_number_iterations) {
+  print(paste("Progress:", i, "/", total_number_iterations))
+  for (j in i:total_number_iterations) 
+  {
+    correlation_value = cor(cor_of_prism.exp[, i], cor_of_prism.achilles[, j], use = "pairwise.complete.obs")
+    correlation_matrix_exp_ach[i, j] = correlation_value
+    correlation_matrix_exp_ach[j, i] = correlation_value
+  }
+}
+
+# Voila!
+correlation_matrix_exp_ach
+```
+
+```{r}
+load("correlation_matrix_exp_ach.RData")
+```
+
+Here are some visualization attempts of the correlation matrix between the scores of the gene's expression and their scores in Achilles
+
+```{r}
+mini_cor_mat_exp_ach = correlation_matrix_exp_ach[17000:17008,17000:17008]
+heatmap(mini_cor_mat_exp_ach, 
+        col = colorRampPalette(c("blue", "white", "red"))(100),
+        main = "Mini Correlation Matrix",
+        xlab = "Genes",
+        ylab = "Genes")
+```
+
+```{r}
+install.packages("pheatmap")
+library(pheatmap)
+```
+
+
+```{r}
+number_included_sample = 100
+sample_genes_for_cormat_indeces = sample(1:17767, number_included_sample)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+heatmap_colors = colorRampPalette(c("blue", "white", "red"))(number_included_sample)
+
+# Create the heatmap
+pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
+         main = "Correlation Matrix Expression-Achilles",
+         xlab = "Genes", ylab = "Genes",
+         fontsize = 8, border_color = NA,
+         colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
+
+```
+
+```{r}
+number_included_sample = 500
+sample_genes_for_cormat_indeces = sample(1:17767, number_included_sample)
+sample_cormat_exp_ach = correlation_matrix_exp_ach[sample_genes_for_cormat_indeces, sample_genes_for_cormat_indeces]
+
+heatmap_colors = colorRampPalette(c("blue", "white", "red"))(number_included_sample)
+
+# Create the heatmap
+pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
+         main = "Correlation Matrix Expression-Achilles",
+         xlab = "Genes", ylab = "Genes",
+         fontsize = 8, border_color = NA,
+         colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
+```
+
+1. Filter out the relevant correlation values and the relevant anticorrelation values
+
+```{r}
+#Set thresholds for relevance
+#Correlation:
+threshold_correlation = 0.9 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+relevant_correlation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach>threshold_correlation)]
+```
+
+```{r}
+#Anti-correlation
+threshold_anticorrelation = 0.9 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+relevant_anticorrelation_values = correlation_matrix_exp_ach[which(correlation_matrix_exp_ach<threshold_anticorrelation)]
+```
+
+```{r}
+#These values can be found at the following positions in the original correlation_matrix_exp_ach:
+
+#Correlation:
+flattened_indices_c = which(correlation_matrix_exp_ach %in% relevant_correlation_values, arr.ind=TRUE)
+
+#Anti-correlation:
+flattened_indices = which(correlation_matrix_exp_ach %in% relevant_anticorrelation_values, arr.ind=TRUE)
+```
+
+Keep in mind that the prism.achilles data frame captures cell proliferation rates after the Knock Out of the gene of interest. The values describe whether or not after gene KO the proliferation rate of the cell line has increased or decreased. This is inversely proportional to the gene's influence on cell proliferation. E.g. if a gene promotes cell proliferation, a KO of this gene will lead to the cells proliferating at a lower rate, so the prism.achilles score will be LOWER. So LOWER values mean HIGHER relevance in prism.achilles!
+
+```{r}
+# In order to access the names of the genes for these values, we have to convert the flattened indices to matrix indices (row and column numbers)
+
+#Correlation:
+row_indices_matrix = c()
+col_indices_matrix = c()
+for (i in 1:length(flattened_indices)){
+number_rows_columns = nrow(correlation_matrix_exp_ach)
+
+if(flattened_indices[i] %% number_rows_columns == 0)
+{
+  row_indices_matrix[i] = flattened_indices[i] %/% number_rows_columns
+  col_indices_matrix[i] = flattened_indices[i] %/% number_rows_columns + 1
+}else
+{
+  row_indices_matrix[i] = flattened_indices[i] %% number_rows_columns
+  col_indices_matrix[i] = flattened_indices[i] %/% number_rows_columns + 1
+}
+}
+row_indices_matrix
+col_indices_matrix
+
+#Anti-correlation:
+row_indices_matrix_c = c()
+col_indices_matrix_c = c()
+for (i in 1:length(flattened_indices_c)){
+number_rows_columns = nrow(correlation_matrix_exp_ach)
+
+if(flattened_indices_c[i] %% number_rows_columns == 0)
+{
+  row_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns
+  col_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns + 1
+}else
+{
+  row_indices_matrix_c[i] = flattened_indices_c[i] %% number_rows_columns
+  col_indices_matrix_c[i] = flattened_indices_c[i] %/% number_rows_columns + 1
+}
+}
+row_indices_matrix_c
+col_indices_matrix_c
+```
+```{r}
+#We calculate the so obtained relevant correlation and anti-correlation values
+
+#Correlation
+relevant_correlation_values4 = c()
+for( i in 1:length(relevant_correlation_values))
+{
+  relevant_correlation_values4[i] = correlation_matrix_exp_ach[row_indices_matrix_c[i], col_indices_matrix_c[i]]
+}
+relevant_correlation_values4
+```
+
+```{r}
+#Anti-correlation
+relevant_anticorrelation_values4 = c()
+for( i in 1:length(relevant_anticorrelation_values))
+{
+  relevant_anticorrelation_values4[i] = correlation_matrix_exp_ach[row_indices_matrix[i], col_indices_matrix[i]]
+}
+relevant_anticorrelation_values4
+```
+
+```{r}
+#And now we check if we have successfully performed the indices transformation to access the same data:
+all(relevant_correlation_values == relevant_correlation_values4)
+all(relevant_anticorrelation_values == relevant_anticorrelation_values4)
+```
+2. Select the relevant gene pairs that correspond to the afore-mentioned values
+
+These are the relevant genes involved in the strong correlation/anti-correlation
+```{r}
+#CORRELATION
+relevant_genes_corexpach_correlation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix_c,]))
+relevant_genes_corexpach_correlation
+```
+
+```{r}
+#ANTICORRELATION
+relevant_genes_corexpach_anticorrelation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix,]))
+relevant_genes_corexpach_anticorrelation
+```
+
+
+
+
+
