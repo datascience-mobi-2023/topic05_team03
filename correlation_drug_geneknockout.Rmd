@@ -186,9 +186,9 @@ highly_correlated_drugs
 correlation_highcor <- function(data, pre_data2){
 copy_data = data[, highly_correlated_drugs]
 actual_data = rownames(data)
-target_data = rownames(data2)
+target_data = rownames(pre_data2)
 data_matched = copy_data[match(actual_data, target_data),]
-same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+same_rownames = rownames(data[which(rownames(data) %in% rownames(pre_data2)),])
 data_organized = data_matched[same_rownames,]
 data2 = pre_data2[same_rownames,]
 
@@ -283,9 +283,9 @@ names_correlations_above_threshold_geneknockout
 correlation_highcor_ACHILLES <- function(data, pre_data2){
 copy_data = data[,names_correlations_above_threshold_geneknockout]
 actual_data = rownames(data)
-target_data = rownames(data2)
+target_data = rownames(pre_data2)
 data_matched = copy_data[match(actual_data, target_data),]
-same_rownames = rownames(data[which(rownames(data) %in% rownames(data2)),])
+same_rownames = rownames(data[which(rownames(data) %in% rownames(pre_data2)),])
 data_organized = data_matched[same_rownames,]
 data2 = pre_data2[same_rownames,]
 
@@ -362,14 +362,14 @@ for (m in (1:dim(correlation_matrix)[1])){
 
 
 ```{r}
-#AUTOMATISIERUNG
+#XXXXAUTOMATISIERUNG
 #lets find some biomarkers, that are linked with drug sensitivity of CCLs 
 
 # first we want to extract the drug gene pairs that are highly correlated 
 
 T = 0.8 #setting a threshold
 
-copy_prism
+copy_prism = prism
 actual_prism = rownames(prism)
 target_prism = rownames(prism.exp)
 treatment_prism = copy_prism[match(actual_prism, target_prism),]
@@ -425,15 +425,6 @@ apply(cor_drug_gene, function(p){ #p is one correlation value
     )
 }
 )
-```
-
-```{r}
-#CORRELATION DRUG SENSITIVITY/ CNV
-
-copy_prism.cnv = copy(prism.cnv)
-actual_prism.cnv = rownames(prism.cnv)
-target_prism.cnv = rownames(prism_achilles_congruent)
-prism.achilles_clean = copy_prism.cnv[match(actual_prism.cnv, target_prism.cnv),]
 ```
 
 
@@ -497,10 +488,6 @@ Liver_cancer_target_genes_all = important_drugs_livercancer.treat$target
 
 ```
 
-```{r}
-
-```
-
 
 ```{r}
 table(Liver_cancer_target_genes)
@@ -508,14 +495,13 @@ table(Liver_cancer_target_genes)
 ```
 
 ```{r}
-#WICH DRUGS OF THE DRUG/GENE PAIRS DO HAVE THE SAME TARGETS AS THE IMPORTANT LIVER GENES----THIS STEP IS PRETTY UNNECESSARY AS IT CAN BE FOUND OUT IN A MUCH EASIER WAY!!
+#XXXXXXXXXWICH DRUGS OF THE DRUG/GENE PAIRS DO HAVE THE SAME TARGETS AS THE IMPORTANT LIVER GENES----THIS STEP IS PRETTY UNNECESSARY AS IT CAN BE FOUND OUT IN A MUCH EASIER WAY!!
 names_highly_correlated_drugs = names(highly_correlated_drugs)
 prism.treat_highly_correlated_drugs_targets = prism.treat[names_highly_correlated_drugs,]$target
 length(prism.treat_highly_correlated_drugs_targets)
+#we found the targets of the drugs, that have an effect on cell growth of liver cancer celllines 
 
-
-same_targetsB = which(Liver_cancer_target_genes %in% prism.treat_highly_correlated_drugs) 
-#same_targetsB = which(prism.treat_highly_correlated_drugs_targets %in% Liver_cancer_target_genes) 
+same_targetsB = which(Liver_cancer_target_genes %in% prism.treat_highly_correlated_drugs) #looking for same targets of liver cancer teraget genes and targets of the drugs that inhibit lc celline growth effectively
 length(same_targetsB)
 #same_targetsB
 Liver_cancer_target_genes[same_targetsB]
@@ -602,7 +588,7 @@ prims_liver_cancer_unexpected_drugs
 na.mean <- function(dataframe){
   apply(dataframe, 2,function(x){
     meanval = mean(na.omit(x))
-    x <- ifelse(x=NA, meanval, x)
+    x <- ifelse(is.na(x) == TRUE, meanval, x)
   } )
 }
 ```
@@ -747,6 +733,18 @@ biomarkers_with_highcor = names(biomarker_correlations)
 ```
 
 ```{r}
+#now lets see if these biomarkers are biomarkers of liver cancer!
+indices_same_biomarkers = which(differentially_expressed_genes_in_liver_cancer %in% biomarkers_with_highcor)
+liver_cancer_biomarkers_with_highcors = differentially_expressed_genes_in_liver_cancer[indices_same_biomarkers]
+liver_cancer_biomarkers_with_highcors
+```
+```{r}
+druggenes_biomarkers_highcor = biomarker_correlations[biomarkers_with_highcor]
+```
+
+
+
+```{r}
 ##################################find the drug/gene pairs  does not work !!!!!!!!!!!!
 Ä = 0.15 #threshold
 #df_drug_gene_pairs = data.frame(matrix(ncol = 2, nrow = 0))  
@@ -765,7 +763,7 @@ druggens
 #>>>>><<<<<<####not sure if it  works with the apply function
 
 #find the drug/gene pairs 
-Ä = 0.3 #threshold
+Ä = 0.15 #threshold
 df_drug_gene_pairs = data.frame(matrix(ncol = 0, nrow = 3))  
 rownames(df_drug_gene_pairs) <- c("drug", "gene_knockout", "correlation value")
 for (x in 1:dim(cor_drugs_genes)[1]){
@@ -784,14 +782,18 @@ for (x in 1:dim(cor_drugs_genes)[1]){
 df_drug_gene_pairs
 ```
 
+
+
 ```{r}
+#modes of action of the drugs of the drug gene pairs 
 highcor_drugs = df_drug_gene_pairs[1,]
 highcor_drugs_vector <- unlist(as.vector(highcor_drugs))
 highcor_drugs_vector_unique <- unique(highcor_drugs_vector)
 length(highcor_drugs_vector_unique)
 
 #lets see their moa
-prism.treat[highcor_drugs_vector, "moa"]
+moa_effective_drugs = prism.treat[highcor_drugs_vector, "moa"]
+table(moa_effective_drugs)
 ```
 
 ```{r}
@@ -829,14 +831,15 @@ length(which(highcor_gen_vector_unique %in% Liver_cancer_target_genes))
 #result_list
 drugs_genes_biomarker <- data.frame(matrix(nrow = 3, ncol=0))
 rownames(drugs_genes_biomarker) <- c("biomarker", "drug", "gene")
-for (x in 1:length(biomarker_correlations)){
+for (x in biomarkers_with_highcor){
   
     biomarker_drugs_highcor = biomarker_correlations[[x]][1]
     biomarker_geneknockouts_highcor = biomarker_correlations[[x]][2]
     for (y in 1: ncol(df_drug_gene_pairs)){
-    drug_ofdruggenepair = df_drug_gene_pairs[1,y]
-    geneknockout_ofdruggenepair = df_drug_gene_pairs[2,y]
-    
+    #drug_ofdruggenepair = df_drug_gene_pairs[1,y]
+   # geneknockout_ofdruggenepair = df_drug_gene_pairs[2,y]
+      drug_ofdruggenepair = unlist(as.vector(df_drug_gene_pairs["drug",]))[y]
+      geneknockout_ofdruggenepair = unlist(as.vector(df_drug_gene_pairs["gene_knockout",]))[y]
     same_drugs = which(biomarker_drugs_highcor %in% drug_ofdruggenepair)
     same_geneknockouts = which(biomarker_geneknockouts_highcor %in% geneknockout_ofdruggenepair)
     
@@ -855,16 +858,36 @@ for (x in 1:length(biomarker_correlations)){
     
 }
 }
+```
 
-drugs_genes_biomarker
 
+```{r}
+#lastly i want to see which  drugs have correlations with multiple gene knockouts
+#>>>>><<<<<<####not sure if it  works with the apply function
+
+#find the drug/gene pairs 
+Ä = 0.15 #threshold
+list_drug_gene_correlations = list()
+for (x in colnames(cor_drugs_genes)){
+ indices_highcor_geneknockouts = which(cor_drugs_genes[,x]>Ä)
+ output = cor_drugs_genes[,x][indices_highcor_geneknockouts]
+list_drug_gene_correlations[[x]] <- output
+}
+
+
+list_drug_gene_correlations
 
 ```
 
 
 ```{r}
-drugs_genes_biomarker
+number_of_correlations_drug = unlist(lapply(list_drug_gene_correlations,length))
+hist(number_of_correlations_drug, breaks = 200)
+summary(number_of_correlations_drug)
+length(which(number_of_correlations_drug == 0))
+length(colnames(cor_drugs_genes))
 ```
+
 
 ##########################CLUSTERING########################
 
@@ -947,6 +970,7 @@ mean(apply(prism.achilles[,names_cluster1],2, mean, na.rm = TRUE))
 mean(apply(prism.achilles[,names_cluster2],2, mean, na.rm = TRUE))
 mean(apply(prism.achilles[,names_cluster3],2, mean, na.rm = TRUE))
 ```
+
 #these genes are clustered by their importance for cell growth
 #t test if they significantly differ from each orher could make sense
 
@@ -964,7 +988,7 @@ lc_gene
 
 ```{r}
 
-data = highvar(data_prism.cnv, 0.95)
+data = t(highvar(data_prism.cnv, 0.95))
 #scale 
 data_scaled = scale(data)
 
@@ -994,7 +1018,7 @@ fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
 
 ```{r}
 
-data = t(highvar(data_prism.achilles, 0.95))
+data = (highvar(data_prism.exp, 0.95))
 #scale 
 data_scaled = scale(data)
 
@@ -1008,6 +1032,20 @@ fviz_nbclust(data_scaled, kmeans, method = "wss") +
 ```
 
 ```{r}
+km.out <- kmeans(data, centers = 4, nstart = 100)
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+km.out
+```
+
+###########prism clustering################
+
+
+```{r}
+elbow(na.aggregate(highvar((prism), 0.9)))
+```
+```{r}
+data = na.aggregate(highvar(prism, 0.9))
 km.out <- kmeans(data, centers = 3, nstart = 100)
 km.clusters <- km.out$cluster
 fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
@@ -1015,12 +1053,39 @@ km.out
 ```
 
 
+```{r}
+elbow(t(highvar(na.aggregate(prism), 0.9)))
+```
+
+```{r}
+data = t(highvar(na.aggregate(prism), 0.9))
+km.out <- kmeans(data, centers = 3, nstart = 100)
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+km.out
+```
+
+ I want to cluster the prism scores by mode of actrion of the drugs######
 
 
+```{r}
+
+dataset1 = t(prism.treat)
+dataset2 = prism
+order_actual_dataset1 = colnames(dataset1)
+order_target_dataset1 = colnames(dataset2)
+new_dataset1= dataset1[,match(order_target_dataset1, order_actual_dataset1,)]
+new_dataset1
+```
+
+```{r}
+modes_of_action = unique(prism.treat$moa)
+modes_of_action_all
+copy_prism = prism
+colnames(copy_prism) <- modes_of_action_all
 
 
-
-
+```
 
 
 
@@ -1267,18 +1332,20 @@ dim(highvar(prism.exp, 0.1))
 A = c(1,2,3,4,5,6,7,8)
 B = c(2,3)
 C = c(4,5,3,4,5,4,43,4)
-#G = which( A %in% B)
-#G
-#H = which(B %in% A)
-#H
+G = which( A %in% B)
+G
+H = which(B %in% A)
+H
 ```
 
 ```{r}
 testlist <- list(x1= list(A,fef3), x2 = B, x3 = C)
 #testlist <- list(x1= A, x2 = B, x3 = C)
 
-testlist
-lapply(testlist, mean)
+#testlist
+#lapply(testlist, mean)
+
+testlist[c(1,2)]
 ```
 
 
@@ -1324,4 +1391,12 @@ ggplot(data, aes(x = prism.exp$colnames(data)[1], y = prism.exp$colnames(data)[2
 ```
 
 
+
+```{r}
+df = prism[1:10, 1:10]
+colnames(df) <- c(1,2,3,4,5,6,7,8,9,10)
+colnames(df)
+```
+```{r}
+testlist[[1]]
 

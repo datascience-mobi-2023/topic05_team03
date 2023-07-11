@@ -1,0 +1,43 @@
+WE WANT TO PERFORM A CLUSTER ANALYSIS
+
+```{r}
+install.packages("factoextra")
+library(factoextra)
+```
+
+
+```{r}
+#DATACLEANING
+data_prism.achilles = na.omit(prism.achilles)
+data_prism.exp = na.omit(prism.exp)
+data_prism.cnv = na.omit(prism.cnv)
+```
+
+```{r}
+
+data = highvar(data_prism.achilles, 0.95)
+#scale 
+data_scaled = scale(data)
+
+#
+```
+
+```{r}
+#find out how many clusters are needed
+fviz_nbclust(data_scaled, kmeans, method = "wss") +
+  labs(subtitle = "elbow method")
+```
+
+```{r}
+km.out <- kmeans(data, centers = 4, nstart = 100)
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+```
+```{r}
+km.clusters <- km.out$cluster
+fviz_cluster(list(data = data, cluster = km.clusters), geom = "points")
+```
+```{r}
+lc_gene
+```
+
