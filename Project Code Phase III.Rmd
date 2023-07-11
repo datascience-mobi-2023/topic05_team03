@@ -997,7 +997,6 @@ all(rownames(correlation_matrix_exp_ach) == colnames(correlation_matrix_exp_ach)
 so it seems that the expression of one is correlated with the relevance for cell proliferation of the other...
 #INFO:
 
-
 we see interdependencies: cds1 and cds2 are the only enzymes charged with the regulation of the amount of phosphatidylinositol available for signaling by catalyzing the conversion of phosphatidic acid to CDP-diacylglycerol. SO when one is underexpressed and the other KOd, the cell proliferation rate goes down
 
 TP53 and EDA2R: Brosh R, Sarig R, Natan EB, Molchadsky A, Madar S, Bornstein C, Buganim Y, Shapira T, Goldfinger N, Paus R, Rotter V. p53-dependent transcriptional regulation of EDA2R and its involvement in chemotherapy-induced hair loss. FEBS Lett. 2010 Jun 3;584(11):2473-7. doi: 10.1016/j.febslet.2010.04.058. Epub 2010 Apr 29. PMID: 20434500.
@@ -1007,6 +1006,49 @@ FERMT1 and FERMT2 https://www.biorxiv.org/content/10.1101/2022.10.31.514453v1.fu
 
 
 
+```{r}
+plot(new_prism.achilles$SOX10)
+plot(new_prism.achilles$CAPN3)
+
+plot(new_prism.exp$SOX10)
+plot(new_prism.exp$CAPN3)
+```
+```{r}
+which(new_prism.exp$SOX10 >6)
+```
+```{r}
+mean(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)],na.rm=TRUE)
+min(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)],na.rm=TRUE)
+#new_prism.achilles$CAPN3[which(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)] < 0.9*min(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)],na.rm=TRUE))]
+xc = which(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)] < 0.9*min(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)],na.rm=TRUE))
+xc
+new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)]
+new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)[xc]]
+```
+```{r}
+#Is this liver??
+which(new_prism.achilles$CAPN3 %in% new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)[xc]])
+xcc = new_prism.achilles$CAPN3[which(new_prism.achilles$CAPN3 %in% new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)[xc]])]
+rownames(new_prism.achilles[xcc,])
+
+```
+```{r}
+rownames(new_prism.achilles[210,])
+rownames(new_prism.achilles[262,])
+rownames(new_prism.achilles[357,])
+```
+```{r}
+liver_cancer_cell_lines_data
+#no it's not liver
+```
+
+
+
+
+```{r}
+#copy_cormatexpach_anticorrelation
+copy_cormatexpach_anticor
+```
 
 
 
