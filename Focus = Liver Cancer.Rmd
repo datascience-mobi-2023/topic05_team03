@@ -797,6 +797,11 @@ correlation_matrix_exp_ach
 ```
 
 ```{r}
+load("correlation_matrix_exp_ach.RData")
+```
+
+
+```{r}
 dim(correlation_matrix_exp_ach)
 ```
 
@@ -817,7 +822,7 @@ correlation_matrix_exp_ach[3000:3006,3000:3006]
 ```
 
 ```{r}
-mini_cor_mat_exp_ach = correlation_matrix_exp_ach[17000:17,17000:17008]
+mini_cor_mat_exp_ach = correlation_matrix_exp_ach[17000:17008,17000:17008]
 heatmap(mini_cor_mat_exp_ach, 
         col = colorRampPalette(c("blue", "white", "red"))(100),
         main = "Mini Correlation Matrix",
@@ -1235,3 +1240,8 @@ relevant_genes_corexpach_correlation = unique(rownames(correlation_matrix_exp_ac
 relevant_genes_corexpach_correlation
 ```
 #These genes are important cell proliferation inhibitors. So, when they are knocked out, the cell proliferates stronger. The result shows the following relationship: if the proliferation inhibiting genes are overexpressed, KO proliferation goes up and so normal proliferation without KO goes down. If they are underexpressed, KO proliferation goes down and so normal proliferation without KO goes up
+##############################################################################################################################################
+
+
+
+

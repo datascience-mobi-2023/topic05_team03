@@ -292,6 +292,15 @@ moa_values_data_frame
 ```
 
 ```{r}
+save(moa_values_data_frame, file=("Mechanisms of action and all mean scores.RData"))
+```
+
+```{r}
+save(molecule_values_data_frame, file=("Drug molecules and all mean score.RData"))
+```
+
+
+```{r}
 #Molecules.Scores = matrix(,nrow=length(drug_molecules), ncol=1)
 #for(r in (1:dim(molecule_values_data_frame)[1]))
 #{
@@ -309,6 +318,15 @@ Moa.Scores=as.data.frame(Moa.Scores)
 colnames(Moa.Scores) = "Mean effect on cell growth"
 Moa.Scores
 ```
+
+```{r}
+save(Moa.Scores, file = ("Mechanisms of action.RData"))
+```
+
+```{r}
+save(Molecules.Scores, file = ("Drug molecules.RData"))
+```
+
 
 ```{r}
 #these are the treatments
