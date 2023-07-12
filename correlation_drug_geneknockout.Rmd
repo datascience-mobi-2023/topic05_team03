@@ -965,6 +965,12 @@ names_cluster2 = names(cluster2)
 names_cluster3 = names(cluster3)
 ```
 
+
+```{r}
+genes_cluster <- list(names_cluster1, names_cluster2, names_cluster3)
+save(genes_cluster, file = "genes_cluster.RData")
+```
+
 ```{r}
 mean(apply(prism.achilles[,names_cluster1],2, mean, na.rm = TRUE))
 mean(apply(prism.achilles[,names_cluster2],2, mean, na.rm = TRUE))
