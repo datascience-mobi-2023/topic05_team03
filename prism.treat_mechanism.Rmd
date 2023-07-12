@@ -1,0 +1,126 @@
+
+
+K-means clustering:
+
+```{r}
+# Load the required libraries for K-means clustering
+library(cluster)
+
+# Select the columns of interest (e.g., mechanism of action)
+drug_data <- new_prism.treat$moa
+
+# Determine the number of unique data points
+num_unique <- length(unique(drug_data))
+num_unique
+
+# Perform K-means analysis
+# Let's assume we want to create x clusters
+kmeans_result <- kmeans(drug_data, centers = num_unique)
+
+# Visualize the clustering results
+plot(drug_data, col = kmeans_result$cluster, pch = 16)
+
+```
+
+
+
+Target analysis:
+```{r}
+# Load the required libraries
+library(dplyr)
+library(ggplot2)
+
+# Load the drug data (using the prism.treat table)
+drug_data <- new_prism.treat
+
+# Count the frequency of each target
+target_counts <- drug_data %>% count(target)
+
+# Sort the target counts in descending order
+target_counts <- target_counts[order(-target_counts$n), ]
+
+# Plot the target distribution
+ggplot(target_counts, aes(x = reorder(target, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  xlab("Target") +
+  ylab("Frequency") +
+  ggtitle("Distribution of Drug Targets")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+count(target)
+target_counts
+drug_data_target <- as.factor(drug_data$target)
+drug_data_target
+summary(drug_data_target)
+```
+
+
+Determining Therapeutic Strategies: 
+The most frequently occurring targets can be used to determine therapeutic strategies, such as in cancer treatment. These targets can target therapeutic agents and drugs that may be effective in specific types of cancer.
+```{r}
+#How frequent do the targets occur?
+## top 5 targets:
+drug_data_target <- as.factor(drug_data$target)
+target_summary <- summary(drug_data_target)
+top_targets <- head(target_summary, 5)
+#top_targets
+
+
+# Filter the top 20 most frequently occurring targets
+top_20_targets <- head(summary(drug_data_target), 20)
+top_20_targets
+
+# Plot the histogram
+barplot(top_20_targets, main = "Top 20 Most Frequent Targets",
+        xlab = "Target", ylab = "Frequency", las = 2,
+        col = "skyblue", border = "white", horiz = FALSE)
+
+
+```
+
+
+Mechanism of actions:
+```{r}
+drug_data_moa <- as.factor(drug_data$moa)
+moa_summary <- summary(drug_data_moa)
+top_moas <- head(moa_summary, 5)
+top_moas
+```
+
+
+
+
+```{r}
+# Load the required libraries
+library(dplyr)
+library(ggplot2)
+
+# Load the drug data (using the prism.treat table)
+drug_data <- new_prism.treat
+
+# Define the mechanism variable as a factor
+drug_data$mechanism <- as.factor(drug_data$moa)
+
+# Count the frequency of each mechanism
+mechanism_counts <- drug_data %>% count(moa)
+
+# Sort the mechanism counts in descending order
+mechanism_counts <- mechanism_counts[order(-mechanism_counts$n), ]
+
+# Plot the mechanism distribution
+ggplot(mechanism_counts, aes(x = reorder(moa, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  xlab("Mechanism") +
+  ylab("Frequency") +
+  ggtitle("Distribution of Drug Mechanisms") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+
+
+
+
+
+
+

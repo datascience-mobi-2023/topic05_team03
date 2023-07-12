@@ -12,9 +12,9 @@ BRD_A00077618_236_07_6 = c(t(cell_growth_rate_BRD_A00077618_236_07_6))
 BRD_A00758722_001_04_9 = c(t(cell_growth_rate_BRD_A00758722_001_04_9))
 
 
-
 plot(concentrations_nM, cell_growth_rate_BRD_A00758722_001_04_9, main="ACH_007", xlab="concentrations of drugs in nM", ylab="cell growth rate", pch=20, cex=1.5, col="green" )
 points(concentration_nM, cell_growth_rate_BRD_A00077618_236_07_6, pch=20, cex=1.5, col="red")
+
 
 cor(BRD_A00077618_236_07_6, BRD_A00758722_001_04_9, method = "pearson")
 
@@ -98,8 +98,12 @@ for (i in 1:length(all_drugs_grouped)) {
 ```
 
 ```{r}
+# print all the names of drugs
+
 treatment_ids = unique(prism.treat$broad_id)
 treatment_ids
+
+# transpose the matrix 
 
 test = t(prism[, grep("BRD-A00758722-001-04-9", colnames(prism))])
 test
@@ -116,25 +120,6 @@ sub(".*::(.*?)::.*", "\\1", colnames(prism))
 
 cell_growth_rates_ <- t(prism[, grep(x, colnames(prism))])
 cell_growth_rates_
-
-# Her bir ilaç için linear regresyon analizi yapın
-for (x in treatment_ids) {
-  
-  cell_growth_rates_each_treatment <- for (x in treatment_ids)
-    print(t(prism_for_liver[, grep(x, colnames(prism_for_liver))]))
-  
-  # Linear regresyon analizi
-  regression_model <- lm(cell_growth_rates_each_treatment ~ concentrations_in_nM)
-  
-  # İlaç adını yazdırın
-  cat("İlaç:", x, "\n")
-  
-  # Regresyon sonuçlarını yazdırın
-  print(summary(regression_model))
-  
-  cat("\n")
-}
-
 
 
 # Her bir ilaç için linear regresyon analizi yapın
@@ -156,32 +141,166 @@ for (x in treatment_ids) {
 }
 
 
-#For the cell line ACH-000217:
+#For the cell line ACH-000221:
 
 prism_ACH_000221 <- prism_for_liver[2,]
 t(prism_ACH_000221)
 
-# Her bir ilaç için linear regresyon analizi yapın
+# do the linear regression for each drug
 for (x in treatment_ids) {
   
   cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
   concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
   
-  # Linear regresyon analizi
+  # regression analyse
   regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
   
-  # İlaç adını yazdırın
+  # print the drug name
   cat("İlaç:", x, "\n")
   
-  # Regresyon sonuçlarını yazdırın
+  # print the regression results
   print(summary(regression_model))
   
   cat("\n")
 }
 
+cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
 
 plot(concentrations_in_nM, cell_growth_rates_each_treatment, pch=16, cex=1.3, col="blue")
 abline(lm(y1 ~ concentrations_nM))
+```
+
+
+```{r}
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+```
+
+```{r}
+# Perform linear regression for each drug
+selected_drugs_ACH_000221 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000221 <- c(selected_drugs_ACH_000221, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000221, "\n")
+```
+
+```{r}
+for (x in selected_drugs_ACH_000221) {
+  
+   cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+   concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+   
+   # regression analyse
+   regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+   
+   # print the drug name
+   cat("İlaç:", x, "\n")
+   
+   # print the regression results
+   print(summary(regression_model))
+   
+   cat("\n")
+}
+
+```
+
+```{r}
+
+#cell_growth = b0 + b1 * concentrations_in_nM
+
+
+for (x in selected_drugs_ACH_000221) {
+  
+   cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+   concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+
+   # Linear regression analysis
+   regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+   
+   plot(concentrations_in_nM, cell_growth_rates_each_treatment, pch=16, cex=1.3, col="blue", main = x)
+   abline(lm(cell_growth_rates_each_treatment ~ concentrations_nM))
+
+  cat("The concentration value that most effectively inhibits cell growth:", x, inhibition_concentration, "\n")
+}
+
+
+```
+
+```{r}
+ # Get the regression coefficients
+b0 <- coef(regression_model)[1]
+b1 <- coef(regression_model)[2]
+
+  # Calculate the concentration for maximum inhibition of cell growth
+inhibition_concentration <-
+```
+
+
+Dose-Response Analysis: 
+We can perform dose-response analysis to evaluate the effects of drugs at different concentrations. In this analysis, we use data that shows the drug's effects on cell growth at different dosages to assess how the drug's effectiveness changes with dose. The drug's effect may increase with dosage or reach saturation after a certain point. From the analysis results, we can determine the most effective dosage of the drug.
+
+```{r}
+## Dose-dependent analysis:
+
+# Her bir ilaç için doz-bağımlı analiz yapın
+for (x in selected_drugs_ACH_000221) {
+  # İlgili ilacın konsantrasyonlarını ve hücre büyüme değerlerini alın
+  concentrations <- concentrations_in_nM
+  cell_growth <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+
+  # Doz-bağımlı analiz yapın (örneğin, inhibisyon yüzdesini hesaplayın)
+  inhibition_percentage <- 100 * (1 - cell_growth / cell_growth[1])
+
+  # Sonuçları görselleştirin
+  plot(concentrations, inhibition_percentage, type = "b", 
+       xlab = "Konsantrasyon (nM)", ylab = "İnhibisyon Yüzdesi", 
+       main = paste("Doz-Bağımlı Analiz -", x))
+}
+
+
 
 ```
 
@@ -281,6 +400,9 @@ which(new_prism.treat[inhibiting_drugs_liver_cancer,])
 ```
 
 
+
+Personal Component Analysis:
+
 ```{r}
 # PCA:
 
@@ -307,4 +429,29 @@ plot(1:length(pca_variances_for_liver), pca_variances_for_liver, type = "b", yla
 plot(pca_values_for_liver[,1],pca_values_for_liver[,2], xlab = "PC1", ylab = "PC2")
 
 ```
+
+
+```{r}
+# prism tablosunu transpoze etme
+prism_transposed <- t(prism)
+
+# Sayısal değerlere dönüştürme (varsayılan olarak karakter verileri sayısal veriye dönüştürülmez)
+prism_numeric <- as.data.frame(sapply(prism_transposed, as.numeric))
+
+# Eksik değerleri doldurma (gerektiğinde)
+prism_filled <- na.omit(prism_numeric)  # Eksik değerleri olan satırları çıkarır
+
+# PCA analizi için gerekli veri seti
+prism_pca_data <- prism_filled
+
+# PCA analizi yapma
+pca_result <- prcomp(prism_pca_data)
+
+# PCA sonuçlarını inceleme
+
+summary(pca_result)
+```
+
+
+
 

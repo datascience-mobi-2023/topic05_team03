@@ -1,0 +1,1063 @@
+
+
+ACH-000221:
+```{r}
+prism_ACH_000221 <- prism_for_liver[2,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000221 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000221[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000221 <- c(selected_drugs_ACH_000221, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000221, "\n")
+
+```
+
+
+ACH-000316:
+```{r}
+prism_ACH_000316 <- prism_for_liver[3,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000316[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000316 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000316[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000316 <- c(selected_drugs_ACH_000316, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000316, "\n")
+
+```
+
+
+ACH-000361
+```{r}
+prism_ACH_000361 <- prism_for_liver[4,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000361[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000361 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000361[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000361 <- c(selected_drugs_ACH_000361, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000361, "\n")
+
+```
+
+ACH-000393:
+```{r}
+prism_ACH_000393 <- prism_for_liver[5,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000393[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000393 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000393[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000393 <- c(selected_drugs_ACH_000393, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000393, "\n")
+
+```
+
+ACH-000420:
+```{r}
+prism_ACH_000420 <- prism_for_liver[6,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000420[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000420 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000420[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000420 <- c(selected_drugs_ACH_000420, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000420, "\n")
+
+```
+
+ACH-000471:
+```{r}
+prism_ACH_000471 <- prism_for_liver[7,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000471[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000471 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000471[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000471 <- c(selected_drugs_ACH_000471, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000471, "\n")
+
+```
+
+ACH-000476
+```{r}
+prism_ACH_000476 <- prism_for_liver[8,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000476[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000476 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000476[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000476 <- c(selected_drugs_ACH_000476, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000476, "\n")
+
+```
+
+ACH-000480
+```{r}
+prism_ACH_000480 <- prism_for_liver[9,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000480[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000480 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000480[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000480 <- c(selected_drugs_ACH_000480, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000480, "\n")
+
+```
+
+ACH-000493:
+```{r}
+prism_ACH_000493 <- prism_for_liver[10,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000493[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000493 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000493[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000493 <- c(selected_drugs_ACH_000493, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000493, "\n")
+
+```
+
+ACH-000537:
+```{r}
+prism_ACH_000537 <- prism_for_liver[11,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000537[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000537 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000537[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000537 <- c(selected_drugs_ACH_000537, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000537, "\n")
+
+```
+
+ACH-000620
+```{r}
+prism_ACH_000620 <- prism_for_liver[12,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000620[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000620 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000620[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000620 <- c(selected_drugs_ACH_000620, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000620, "\n")
+
+```
+
+ACH-000625:
+```{r}
+prism_ACH_000625 <- prism_for_liver[13,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000625[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000625 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000625[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000625 <- c(selected_drugs_ACH_000625, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000625, "\n")
+
+```
+
+ACH-000671:
+```{r}
+prism_ACH_000671 <- prism_for_liver[14,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000671[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000671 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000671[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000671 <- c(selected_drugs_ACH_000671, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000671, "\n")
+
+```
+
+ACH-000734:
+```{r}
+prism_ACH_000734 <- prism_for_liver[15,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000734[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000734 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000734[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000734 <- c(selected_drugs_ACH_000734, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000734, "\n")
+
+```
+
+ACH-000848:
+```{r}
+prism_ACH_000848 <- prism_for_liver[16,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000848[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000848 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000848[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000848 <- c(selected_drugs_ACH_000848, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_000848, "\n")
+
+```
+
+ACH-001318:
+```{r}
+prism_ACH_001318 <- prism_for_liver[17,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_001318[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_001318 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_001318[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_001318 <- c(selected_drugs_ACH_001318, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of r^2-value:\n")
+cat(selected_drugs_ACH_001318, "\n")
+
+```
+
+```{r}
+selected_drugs_liver_all <- c(selected_drugs_ACH_000221, selected_drugs_ACH_000316, selected_drugs_ACH_000361, selected_drugs_ACH_000393, selected_drugs_ACH_000420, selected_drugs_ACH_000471, selected_drugs_ACH_000476, selected_drugs_ACH_000476, selected_drugs_ACH_000480, selected_drugs_ACH_000493, selected_drugs_ACH_000537, selected_drugs_ACH_000620, selected_drugs_ACH_000625, selected_drugs_ACH_000671, selected_drugs_ACH_000734, selected_drugs_ACH_000848, selected_drugs_ACH_001318)
+selected_drugs_liver_all
+
+
+summary(as.factor(selected_drugs_liver_all))
+```
+
+```{r}
+most_efficient_drug <- "BRD-K70358946-001-15-7::0.00061034::HTS002"
+prism_indice_drug <- which(colnames(prism)==most_efficient_drug)
+print(prism_indice_drug)
+
+prism_BRD_K70358946_001_15_7 <-prism_for_liver[,8441:8448]
+prism_BRD_K70358946_001_15_7
+```
+
+```{r}
+
+for (x in liver_cancer_cell_lines ) {
+  
+   cell_growth_rates_each_cell_line <- prism_BRD_K70358946_001_15_7[x,]
+   concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", )
+
+   # Linear regression analysis
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+   
+   plot(concentrations_in_nM, cell_growth_rates_each_cell_line, pch=16, cex=1.3, col="blue", main = x)
+   abline(lm(cell_growth_rates_each_cell_line ~ concentrations_nM))
+
+  cat("The concentration value that most effectively inhibits cell growth:", x, inhibition_concentration, "\n")
+}
+```
+
+```{r}
+
+for (x in liver_cancer_cell_lines) {
+  cell_growth_rates_each_cell_line <- t(prism_for_liver[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_cell_line))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_cell_line ~ as.numeric(concentrations_in_nM))
+  
+  # Plot
+  plot(as.numeric(concentrations_in_nM), cell_growth_rates_each_cell_line, pch=16, cex=1.3, col="blue", main = x)
+  abline(regression_model)
+
+
+  # Find the concentration that most effectively inhibits cell growth
+  inhibition_concentration <- concentrations_in_nM[which.max(cell_growth_rates_each_cell_line)]
+  cat("The concentration value that most effectively inhibits cell growth:", x, inhibition_concentration, "\n")
+}
+
+```
+
+```{r}
+
+for (x in liver_cancer_cell_lines) {
+
+cell_growth_rates <- c(t(prism_BRD_K70358946_001_15_7[x,]))
+cell_growth_rates
+
+# Linear regression analysis
+  regression_model <- lm(cell_growth_rates ~ concentrations_nM)
+  
+  # Plot
+  plot(concentrations_nM, cell_growth_rates, pch=16, cex=1.3, col="blue", main = x)
+  abline(regression_model)
+}
+```
+
+cell lines with most reliable linear regression models because of high r^2 values:
+1318, 625, 537, 480, 476, 471, 393
+
+
+```{r}
+cell_growth_rates_ACH_000393 <- c(t(prism_BRD_K70358946_001_15_7[5,]))
+cell_growth_rates_ACH_000471 <- c(t(prism_BRD_K70358946_001_15_7[7,]))
+cell_growth_rates_ACH_000476 <- c(t(prism_BRD_K70358946_001_15_7[8,]))
+cell_growth_rates_ACH_000480 <- c(t(prism_BRD_K70358946_001_15_7[9,]))
+cell_growth_rates_ACH_000537 <- c(t(prism_BRD_K70358946_001_15_7[11,]))
+cell_growth_rates_ACH_000625 <- c(t(prism_BRD_K70358946_001_15_7[13,]))
+cell_growth_rates_ACH_001318 <- c(t(prism_BRD_K70358946_001_15_7[17,]))
+
+# Linear regression analysis
+regression_model_393 <- lm(cell_growth_rates_ACH_000393 ~ concentrations_nM)
+regression_model_471 <- lm(cell_growth_rates_ACH_000471 ~ concentrations_nM)
+regression_model_476 <- lm(cell_growth_rates_ACH_000476 ~ concentrations_nM)
+regression_model_480 <- lm(cell_growth_rates_ACH_000480 ~ concentrations_nM)
+regression_model_537 <- lm(cell_growth_rates_ACH_000537 ~ concentrations_nM)
+regression_model_625 <- lm(cell_growth_rates_ACH_000625 ~ concentrations_nM)
+regression_model_1318 <- lm(cell_growth_rates_ACH_001318 ~ concentrations_nM)
+
+cell_growth_rates_ACH_000393
+
+  # Plot
+plot(concentrations_nM, cell_growth_rates_ACH_000393, pch=16, cex=1.3, col="blue", main="", xlab="concentrations of drugs in nM", ylab="cell growth rate",)
+points(concentrations_nM, cell_growth_rates_ACH_000471, pch=16, cex=1.3, col="red")
+
+plot(concentrations_nM, cell_growth_rates_ACH_000393, main="BRD_K70358946_001_15_7", xlab="concentrations of drugs in nM", ylab="cell growth rate", pch=20, cex=1.5, col="green" )
+abline(regression_model_393)
+points(concentration_nM, cell_growth_rates_ACH_000476, pch=20, cex=1.5, col="red")
+abline(regression_model_476)
+
+
+plot(concentrations_nM, cell_growth_rates_ACH_000471, main="BRD_K70358946_001_15_7", xlab="concentrations of drugs in nM", ylab="cell growth rate", pch=20, cex=1.5, col="red" )
+
+```
+
+
+
+
+
+
+
