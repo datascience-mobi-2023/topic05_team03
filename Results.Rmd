@@ -231,8 +231,143 @@ relevant_genes_corexpach_correlation
 relevant_genes_corexpach_anticorrelation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix,]))
 relevant_genes_corexpach_anticorrelation
 ```
+Let us see how they pair up to form the relevant values we filtered out:
+
+```{r}
+#Correlation:
+correlation_matrix_exp_ach[row_indices_matrix_c,col_indices_matrix_c]
+```
+
+```{r}
+#Anti-correlation:
+correlation_matrix_exp_ach[row_indices_matrix,col_indices_matrix]
+```
+
+```{r}
+#Now let's see if our selected values are indeed the diagonals
+
+#Correlation:
+copy_cormatexpach_correlation = correlation_matrix_exp_ach[row_indices_matrix_c,col_indices_matrix_c] 
+copy_cormatexpach_correlation[which(copy_cormatexpach_correlation == correlation_matrix_exp_ach[flattened_indices_c])] = "RELEVANT"
+copy_cormatexpach_correlation
+```
+```{r}
+#Anti-correlation:
+copy_cormatexpach_anticorrelation = correlation_matrix_exp_ach[row_indices_matrix,col_indices_matrix] 
+copy_cormatexpach_anticorrelation[which(copy_cormatexpach_anticorrelation == correlation_matrix_exp_ach[flattened_indices])] = "RELEVANT"
+copy_cormatexpach_anticorrelation
+#The reason for the RELEVANT here not to be written only on the diagonals is that some columns are in duplicates.
+```
+
+Yes, they are diagonals indeed. This means that:
+
+*i) in correlation pairs: the expression of the one gene is strongly correlated with the proliferation of the cell after the KO of the other gene. E.g. one cell proliferates strongly after CDS1 is knocked out and CDS2 is overexpressed. AND: one cell proliferates weakly after CDS1 is knocked out and CDS2 is underexpressed. This can hint at opposite roles of the two genes and their respective products in cell proliferation.*
+
+Hypothesis model: 
+May a cancer cell proliferate strongly when GENE1 is knocked out and have a high expression score of GENE2. This suggests that GENE1 normally inhibits cell proliferation when it isn't knocked out and GENE2 must have a product that promotes cell proliferation, as it is in the cancer cell's interest to upregulate genes that would enhance its spread. So, the effect of GENE1 and GENE2 on cell proliferation must be OPPOSITE.
+
+```{r}
+# CORRELATION pairs:
+rownames(copy_cormatexpach_correlation)
+colnames(copy_cormatexpach_correlation)
+```
+*INFO:*
+
+This is indeed true for FERMT1 and FERMT2
+FERMT1 - negative regulation of stem cell proliferation
+https://amigo.geneontology.org/amigo/term/GO:2000647
 
 
+FERMT2 - positive regulation of stem cell proliferation
+https://amigo.geneontology.org/amigo/term/GO:1902462
+
+We actually expected TP53 and EDA2R to have opposite functions. However, their function is similar. Normally, this would contradict our hypothesis, but we found out that these two genes directly influence each other: TP53 activates the transcription of EDA2R. This is consistent with the strong correlation of the data for the two genes:
+Brosh R, Sarig R, Natan EB, Molchadsky A, Madar S, Bornstein C, Buganim Y, Shapira T, Goldfinger N, Paus R, Rotter V. p53-dependent transcriptional regulation of EDA2R and its involvement in chemotherapy-induced hair loss. FEBS Lett. 2010 Jun 3;584(11):2473-7. doi: 10.1016/j.febslet.2010.04.058. Epub 2010 Apr 29. PMID: 20434500.
+Hypothesis: The expression of one of the genes promotes the expression of the other. So, even though the gene is KO'd, the other one can act as a substitute for the function of the KO'd gene=> upon KO of EDA2R, the cell proliferates weaker because TP53 is still expressed, even if underexpressed. OR: TP53 is KO'd and the cell still proliferates weaker because EDA2R is still expressed, even if underexpressed
+
+RPP25L and RPP25 also interact with each other. However, the effect on cell proliferation is yet unclear:
+RPP25 - negative regulation of cell proliferation
+Xiao D, Wu J, Zhao H, Jiang X, Nie C. RPP25 as a Prognostic-Related Biomarker That Correlates With Tumor Metabolism in Glioblastoma. Front Oncol. 2022 Jan 12;11:714904. doi: 10.3389/fonc.2021.714904. PMID: 35096558; PMCID: PMC8790702.
+
+RPP25L - function unclear, but interacts with RPP25
+Köferle, Anna et al.,Interrogation of cancer gene dependencies reveals paralog interactions of autosome and sex chromosome-encoded genes
+Cell Reports, Volume 39, Issue 2, 110636
+
+CDS1 and CDS2 do not have any yet described effect on cell proliferation
+
+With this model, we can predict up to a certain level how two paired genes act in respect to each other: similarly or oppositely. Upon additional information of interaction, we can say whether or not they activate each other.
+*=> If the function of specific genes in the group is known, this model can be used to up to a certain extent to predict the functions of the unknown genes they strongly anti-correlate to in the matrix.*
+
+
+```{r}
+plot(new_prism.achilles$TP53)
+plot(new_prism.exp$TP53)
+
+plot(new_prism.achilles$EDA2R)
+plot(new_prism.exp$EDA2R)
+
+plot(new_prism.achilles$RPP25)
+plot(new_prism.exp$RPP25)
+
+plot(new_prism.achilles$RPP25L)
+plot(new_prism.exp$RPP25L)
+```
+
+
+
+
+
+*ii) in anti-correlation pairs: the expression of the one gene is strongly anti-correlated with the proliferation of the cell after the KO of the other gene. E.g. one cell proliferates weakly after SOX10 is knocked out and CAPN3 is overexpressed. AND: one cell proliferates strongly after SOX10 is knocked out and CAPN3 is underexpressed. This can hint at similar roles of the two genes and their products in cell proliferation.*
+
+Hypothesis model: 
+May a cancer cell proliferate strongly when GENE1 is knocked out and have a low expression score of GENE2. This suggests that GENE1 normally inhibits cell proliferation when it isn't knocked out and GENE2 must have a product that inhibits cell proliferation, as the cancer cell wouldn't promote genes that would inhibit its spread. So, the effect of GENE1 and GENE2 on cell proliferation must be SIMILAR.
+
+```{r}
+# ANTICORRELATION pairs:
+rownames(copy_cormatexpach_anticorrelation)
+colnames(copy_cormatexpach_anticorrelation)
+```
+*INFO:*
+
+Example of hypothesis for the genes:
+SOX10 promotes cancer cell proliferation:
+Cronin JC, Watkins-Chow DE, Incao A, Hasskamp JH, Schönewolf N, Aoude LG, Hayward NK, Bastian BC, Dummer R, Loftus SK, Pavan WJ. SOX10 ablation arrests cell cycle, induces senescence, and suppresses melanomagenesis. Cancer Res. 2013 Sep 15;73(18):5709-18. doi: 10.1158/0008-5472.CAN-12-4620. Epub 2013 Aug 1. PMID: 23913827; PMCID: PMC3803156.
+
+Depletion of CAPN3 inhibits cell proliferation (so CAPN3 important for cell proliferation promotion):
+"In the absence of CAPN3, immune cell influx is attenuated and expression of pro-myogenic factors is reduced. As a result, cell proliferation and myogenic differentiation is compromised, contributing to a growth deficit under reloading conditions observed in C3KO mice." cited from:
+Irina Kramerova and others, Calpain 3 and CaMKIIβ signaling are required to induce HSP70 necessary for adaptive muscle growth after atrophy, Human Molecular Genetics, Volume 27, Issue 9, 01 May 2018, Pages 1642–1653, https://doi.org/10.1093/hmg/ddy071
+
+CPN1 promotes cell proliferation:
+Yang S, Yang H, Grisafi P, Sanchatjate S, Fink GR, Sun Q, Hua J. The BON/CPN gene family represses cell death and promotes cell growth in Arabidopsis. Plant J. 2006 Jan;45(2):166-79. doi: 10.1111/j.1365-313X.2005.02585.x. PMID: 16367962.
+
+DCT promotes cell proliferation:
+Jiao Z, Zhang ZG, Hornyak TJ, Hozeska A, Zhang RL, Wang Y, Wang L, Roberts C, Strickland FM, Chopp M. Dopachrome tautomerase (Dct) regulates neural progenitor cell proliferation. Dev Biol. 2006 Aug 15;296(2):396-408. doi: 10.1016/j.ydbio.2006.06.006. Epub 2006 Jun 8. PMID: 16857183.
+
+But also: CAPN3 inhibits cell proliferation
+Moretti D, Del Bello B, Allavena G, Corti A, Signorini C, Maellaro E. Calpain-3 impairs cell proliferation and stimulates oxidative stress-mediated cell death in melanoma cells. PLoS One. 2015 Feb 6;10(2):e0117258. doi: 10.1371/journal.pone.0117258. PMID: 25658320; PMCID: PMC4319969.
+=> result may still be unclear at some points
+
+```{r}
+plot(new_prism.achilles$SOX10)
+plot(new_prism.exp$SOX10)
+
+plot(new_prism.achilles$CAPN3)
+plot(new_prism.exp$CAPN3)
+
+plot(new_prism.achilles$CPN1)
+plot(new_prism.exp$CPN1)
+
+plot(new_prism.achilles$DCT)
+plot(new_prism.exp$DCT)
+```
+
+```{r}
+new_prism.exp$SOX10[which(new_prism.exp$SOX10 >6)[which(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)] < 0.9*min(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)],na.rm=TRUE))]]
+new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)[which(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)] < 0.9*min(new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)],na.rm=TRUE))]]
+
+#This line of code shows that even for the outliers of the gene expression of SOX10, the outliers of the proliferation after KO of CAPN3 match in magnitude
+```
+*=> If the function of specific genes in the group is known, this model can be used to up to a certain extent to predict the functions of the unknown genes they strongly anti-correlate to in the matrix.*
 
 
 
