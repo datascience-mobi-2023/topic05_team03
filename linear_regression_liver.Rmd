@@ -1046,16 +1046,47 @@ plot(concentrations_nM, cell_growth_rates_ACH_000393, pch=16, cex=1.3, col="blue
 points(concentrations_nM, cell_growth_rates_ACH_000471, pch=16, cex=1.3, col="red")
 
 plot(concentrations_nM, cell_growth_rates_ACH_000393, main="BRD_K70358946_001_15_7", xlab="concentrations of drugs in nM", ylab="cell growth rate", pch=20, cex=1.5, col="green" )
-abline(regression_model_393)
+lines(regression_model_393)
 points(concentration_nM, cell_growth_rates_ACH_000476, pch=20, cex=1.5, col="red")
-abline(regression_model_476)
+lines(regression_model_476)
+```
 
 
-plot(concentrations_nM, cell_growth_rates_ACH_000471, main="BRD_K70358946_001_15_7", xlab="concentrations of drugs in nM", ylab="cell growth rate", pch=20, cex=1.5, col="red" )
+```{r}
+plot(concentrations_nM, cell_growth_rates_ACH_000393, pch = 16, col = "red", xlim = c(min(concentrations_nM), max(concentrations_nM)), ylim = c(min(cell_growth_rates_ACH_000393, cell_growth_rates_ACH_000471, cell_growth_rates_ACH_000476), max(cell_growth_rates_ACH_000393, cell_growth_rates_ACH_000471, cell_growth_rates_ACH_000476)), xlab = "x", ylab = "y")
+points(concentrations_nM, cell_growth_rates_ACH_000471, pch = 16, col = "blue")
+points(concentrations_nM, cell_growth_rates_ACH_000476, pch = 16, col = "green")
+abline(regression_model_393, col = "black")
+abline(regression_model_471, col = "black")
+abline(regression_model_476, col = "black")
+
+# Ekstra ayarlamalar
+legend("bottomleft", legend = c("Model 1", "Model 2", "Model 3"), col = c("red", "blue", "green"), pch = 16, lty = 1)
+title(main = "Multiple Regression Models")
+
 
 ```
 
 
+```{r}
+# Regresyon modellerini oluşturun
+model1 <- lm(y1 ~ x)
+model2 <- lm(y2 ~ x)
+model3 <- lm(y3 ~ x)
+
+# Grafik oluşturma ve regresyon doğrularını plotlama
+plot(x, y1, pch = 16, col = "red", xlim = c(min(x), max(x)), ylim = c(min(y1, y2, y3), max(y1, y2, y3)), xlab = "x", ylab = "y")
+points(x, y2, pch = 16, col = "blue")
+points(x, y3, pch = 16, col = "green")
+abline(model1, col = "red")
+abline(model2, col = "blue")
+abline(model3, col = "green")
+
+# Ekstra ayarlamalar
+legend("topleft", legend = c("Model 1", "Model 2", "Model 3"), col = c("red", "blue", "green"), pch = 16, lty = 1)
+title(main = "Multiple Regression Models")
+
+```
 
 
 
