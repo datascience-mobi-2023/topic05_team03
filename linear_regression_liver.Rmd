@@ -1015,6 +1015,7 @@ cell_growth_rates
   plot(concentrations_nM, cell_growth_rates, pch=16, cex=1.3, col="blue", main = x)
   abline(regression_model)
 }
+
 ```
 
 cell lines with most reliable linear regression models because of high r^2 values:
@@ -1039,7 +1040,7 @@ regression_model_537 <- lm(cell_growth_rates_ACH_000537 ~ concentrations_nM)
 regression_model_625 <- lm(cell_growth_rates_ACH_000625 ~ concentrations_nM)
 regression_model_1318 <- lm(cell_growth_rates_ACH_001318 ~ concentrations_nM)
 
-cell_growth_rates_ACH_000393
+regression_model_393
 
   # Plot
 plot(concentrations_nM, cell_growth_rates_ACH_000393, pch=16, cex=1.3, col="blue", main="", xlab="concentrations of drugs in nM", ylab="cell growth rate",)
@@ -1064,6 +1065,14 @@ abline(regression_model_476, col = "black")
 legend("bottomleft", legend = c("Model 1", "Model 2", "Model 3"), col = c("red", "blue", "green"), pch = 16, lty = 1)
 title(main = "Multiple Regression Models")
 
+
+```
+
+
+```{r}
+plot(x = concentrations_nM, y = cell_growth_rates_ACH_000393, col = "blue");abline(lm(regression_model_393), col = "blue")
+points(x = concentrations_nM, y = cell_growth_rates_ACH_000471, col = "orange");abline(lm(regression_model_471), col = "orange")
+points(x = concentrations_nM, y = cell_growth_rates_ACH_000476, col = "green");abline(lm(regression_model_476), col = "green")
 
 ```
 

@@ -9,47 +9,149 @@ Report
 Methods:
 Developing a Linear Regression Model
 
-By examining the impact of drugs on cell growth at various concentrations, we have gained valuable insights into their potential as cancer treatments. Through linear regression analysis we have been able to determine the relationship between concentrations of several drugs and their effects on cell growth. We used the built-in function lm to do the training. This allows us to estimate how different concentrations may effect cell growth and identify the optimal concentration for inhibiting cancer cell growth. By combining this knowledge with information on the mechanisms of action and target sites of these drugs, we can explore potential solutions for cancer treatment. This approach enables us to identify promising drug candidates and optimize their dosage strategies, with the aim of maximizing their efficacy while minimizing adverse effects, offering new possiblities in the field of cancer therapy.
+By examining the impact of drugs on cell growth at various concentrations, we have gained valuable insights into their potential as cancer treatments. Through linear regression analysis we have been able to determine the relationship between concentrations of several drugs and their effects on cell growth. We used the built-in function lm to do the training. This allows us to estimate how different concentrations may effect cell growth and identify the optimal concentration for inhibiting cancer cell growth. By combining this knowledge with information on the mechanisms of action and target sites of these drugs, we can explore potential solutions for cancer treatment. This approach enables us to identify promising drug candidates and optimize their dosage strategies, with the aim of maximizing their efficacy while minimizing adverse effects, offering new possibilities in the field of cancer therapy.
 
 
 
 Results:
 
+Developing a Linear Regression Model
+
+To move on with the linear regression, we determined an optimal threshold for the R-squared value for each cell line which served as a criterion for assessing the reliability of linear regression analysis. We set the optimal threshold value as 99% of the maximum R-squared value obtained from the linear regression analysis. For each distinct liver cancer cell line, we filtered the drugs that met the reliability criterion, resulting in a subset of drugs with reliable regression models. To filter these drugs for each cell line we used a for loop:
+
+Here is an example for the cell line ACH-000393:
+
+```{r}
+prism_ACH_000393 <- prism_for_liver[5,]
+
+# Perform linear regression for each drug
+r_squared_values <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000393[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  r_squared_values <- c(r_squared_values, r_squared)
+}
+
+# Determine the optimal threshold value
+optimal_threshold <- max(r_squared_values) * 0.99
+
+# Print the optimal threshold value
+cat("Optimal threshold value:", optimal_threshold, "\n")
+
+
+###
+
+# Perform linear regression for each drug
+selected_drugs_ACH_000393 <- c()
+
+# perform the linear regression for each drug
+for (x in treatment_ids) {
+ cell_growth_rates_each_treatment <- t(prism_ACH_000393[, grep(x, colnames(prism_for_liver))])
+  concentrations_in_nM <- sub(".*::(.*?)::.*", "\\1", rownames(cell_growth_rates_each_treatment))
+  
+  # regression analyse
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Linear regression analysis
+  regression_model <- lm(cell_growth_rates_each_treatment ~ as.numeric(concentrations_in_nM))
+  
+  # Get the R-squared value
+  r_squared <- summary(regression_model)$r.squared
+  
+  # Check if the R-squared value is above the threshold
+  if (r_squared >= optimal_threshold) {
+    selected_drugs_ACH_000393 <- c(selected_drugs_ACH_000393, x)
+  }
+}
+
+# Print the selected drugs
+cat("Drugs above the threshold of R-squared value for the cell line ACH-000393:\n")
+cat(selected_drugs_ACH_000393, "\n")
+
+```
+
+Our output visualizes the optimal threshold value is the optimal R-squared value of the drugs for a specific cell line and the drugs above this threshold are listed below.
+
+We then examined the frequency of occurrence for these reliable drugs across the different liver cancer cell lines. By identifying the most frequently occurring drug, we obtained the linear regression results with the highest consistency and reliability. In our case, for the liver cancer cell lines, our analyses resulted that the drug "BRD_K70358946_001_15_7" occur 7 times (ACH-000393, ACH-000471, ACH-000476, ACH-000480, ACH-000537, ACH-000625, ACH-001318) in 16 cancer cell lines which is almost the half of all, which was also the case in our example for the cell line ACH-000393. All of these cell lines are affected in the same way by this drug and demonstrate the equal cell growth rates with higher concentrations which results with a strengthened negative slope. Here is a linear regression model of the drug "BRD_K70358946_001_15_7" for these 7 liver cancer cell lines:
+
+```{r}
+plot(x = concentrations_nM, y = cell_growth_rates_all, col = "blue", pch=16, ylab = "Cell Growth Rate", xlab = "Concentration", main = "Effect of the Drug BRD-K70358946-001-15-7 on the Cell Growth" );abline(lm(regression_model_393), col = "black")
+
+regression_model_all
+```
+Although we don't observe high inhibition rates, we recieve a linear regression model which has a high R-squared value. This is much more important than having high inhibition rates as we are able to predict the concentrations for a desired inhibition rate without doubt.
+
+The y-axis intercept and the slope of the linear straight line are also indicated in the output of the code. With the help of these values we get a linear equation, in which we can predict the cell growth rate of the cells when we give them a different concentration (other than the 8 concentrations on the prism table) of this drug which doesn't exist on our prism table. Our equation of the line is:
+
+y = -0,1743x + 0,4022
+
+
+
+
 Determining Therapeutic Strategies: 
 By analyzing the information in the "prism.treat", we can identify the targets of each drug and determine which targets are more frequently observed. This knowledge provides us with valuable insights for drug repurposing in cancer therapy.
 ```{r}
-drug_data_target <- as.factor(prism.treat$target)
+selected_drugs_liver <- unique(selected_drugs_liver_all)
+selected_drugs_liver_prism.treat <- prism.treat[prism.treat$broad_id %in% selected_drugs_liver, ]
+liver_target <- as.factor(selected_drugs_liver_prism.treat$target)
+liver_moa <- as.factor(selected_drugs_liver_prism.treat$moa)
 
-top_20_targets <- head(summary(drug_data_target), 20)
-top_20_targets
 
+#target
+top_20_targets_liver <- head(summary(liver_target), 20)
 
-barplot(top_20_targets, main = "Top 20 Most Frequent Targets",
+barplot(top_20_targets_liver, main = "Top 20 Most Frequent Targets",
         xlab = "Target", ylab = "Frequency", las = 2,
-        col = "skyblue", border = "white", horiz = FALSE)
+        col = "skyblue", border = "white", horiz = FALSE, cex.names = 0.5)
 
+
+#mechanism of action
+top_10_targets_moa <- head(summary(liver_moa), 10)
+
+barplot(top_10_targets_moa, main = "Top 10 Most Frequent Mechanism of Action",
+        xlab = "Mechanism of Action", ylab = "Frequency", las = 2,
+        col = "skyblue", border = "white", horiz = FALSE, cex.names = 0.3)
 
 ```
-Understanding which targets are more commonly targeted by drugs allows us to identify potential opportunities for repurposing existing drugs for cancer treatment. If a specific target is highly frequent among different drugs, it suggests that this target might play cruical role in cancer biology. By leveraging the knowledge of highly targeted proteins or molecules, we can focus our efforts on designing novel treatment strategies that specifically aim to modulate these targets. It helps us to identify key pathways and biological processes that are commonly dysregulated in cancer cells. This knowledge can guide the development of targeted therapies that disrupt specific pathways or processes critical for cancer cell survival and growth.
+
+Through the filtering of drugs with high R-square values using linear regression analysis, we have identified a set of reliable drugs for liver cancer cell lines. By examining the targets and mechanisms of action of these drugs, we can gain insights into how they affect cell growth in the context of liver cancer.
+
+Among the most frequently occurring targets in liver cancer cell lines are ABL1,BCR, ATP1A1, BCL2, EGFR, HDAC1, MTOR and MAPK8. 
 
 MTOR (mechanistic target of rapamycin) and EGFR (epidermal growth factor receptor) are two of the most frequently targeted proteins in cancer therapy due to their critical roles in promoting cancer cell growth and survival. 
 
 The MTOR pathway is a key regulator of cell growth, proliferation and metabolism, and its dysregulation has been implicated in various cancer types. Activation of the MTOR pathway stimulates protein synthesis and cell cycle progression, promoting uncontrolled cell growth and tumor development. Targeting MTOR signaling has shown promising results in inhibiting cancer cell proliferation and inducing cell death.
 
-EGFR, a receptor tyrosine kinase, is frequently overexpressed or mutated in various cancers. Its aberrant activation leads to increased cell proliferation, survival and metastasis, contributing to tumor progressiond and resistance to therapy. Targeting EGFR with specific inhibitors has demonstrated significant clinical benefits in several cancer types, particularly in non-smell cell lung cancer and colorectal cancer. Inhibition of EGFR signaling pathways impedes cancer cell growth and survival and combination therapies involving EGFR have shown enhanced efficacy in certain patient populations.
+EGFR, a receptor tyrosine kinase, is frequently overexpressed or mutated in various cancers. Its aberrant activation leads to increased cell proliferation, survival and metastasis, contributing to tumor progressiond and resistance to therapy. Targeting EGFR with specific inhibitors has demonstrated significant clinical benefits in several cancer types, particularly in non-smell cell lung cancer and colorectal cancer. Inhibition of EGFR can potentially disrupt these pathways and inhibit the growth of liver cancer cells.
+
+The involvement of HDAC1 (Histone Deacetylase 1) in liver cancer is noteworthy as well. HDAC1 is an enzyme that regulates chromatin structure and gene expression. In liver cancer, dysregulation of HDAC1 has been linked to aberrant gene expression patterns, promoting tumor growth and survival. Inhibiting HDAC1 activity can lead to the reaction of tumor-suppressive genes and hinder the growth and survival of liver cancer cells. When we look at the secon bar plot it is clear that in terms of mechanism of action (moa) HDAC inhibitors are highly prevalent as drugs which appears as one of the most frequent mechanism of action. 
+
+Another most frequent mechanism of action in these selected drugs with high R^2-value for liver cancer cell lines is the adrenergic receptor antagonist which acts by blocking the interaction of adrenergic receptors with their ligands. They can affect downstream signaling pathways involved in cell growth and proliferation.
 
 
 
 Developing a Linear Regression Model
-
 To move on with the linear regression, we determined an optimal threshold for the R^2 value which served as a criterion for assessing the reliability of linear regression analyses. Drugs that exhibited an R^2 value above this threshold were considered reliable in terms of their efficacy. For each distinct liver cancer cell line, we filtered the drugs that met the reliablity criterion, resulting in a subset of drugs with reliable regression models. We then examined the frequency of occurence for these reliable drugs across the different liver cancer cell lines. By identifying the most frquently occuring drug, we obtained the linear regression results with the highest consistency and reliability. In our case, for the liver cancer cell lines, our analyses resulted that the drug "BRD_K70358946_001_15_7" occur 8 times in 17 cancer cell lines which is almost the half of them.
 
 
 
 Discussion:
+Developing a Linear Regression Model
 Plotting the linear regression results for this drug allowed us to visualize its impact on cell growth in liver cancer. This integrated approach, combining regression analysis, filtering based on reliability, and examining drug frequencies, provides insights into the drugs that exhibit strong regression relationships and their potential for effective treatment in liver cancer. By predicting the most efficient concentrations for a stronger inhibition, we can have different therapy possibilities for cancer.
 
 
+
+Determining Therapeutic Strategies
+Understanding which targets are more commonly targeted by drugs allows us to identify potential opportunities for repurposing existing drugs for cancer treatment. If a specific target is highly frequent among different drugs, it suggests that this target might play cruical role in cancer biology. By leveraging the knowledge of highly targeted proteins or molecules, we can focus our efforts on designing novel treatment strategies that specifically aim to modulate these targets. It helps us to identify key pathways and biological processes that are commonly dysregulated in cancer cells. This knowledge can guide the development of targeted therapies that disrupt specific pathways or processes critical for cancer cell survival and growth.
 
 
 

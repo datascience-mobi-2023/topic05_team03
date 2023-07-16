@@ -60,11 +60,12 @@ The most frequently occurring targets can be used to determine therapeutic strat
 ```{r}
 #How frequent do the targets occur?
 ## top 5 targets:
-drug_data_target <- as.factor(drug_data$target)
+ 
 target_summary <- summary(drug_data_target)
 top_targets <- head(target_summary, 5)
 #top_targets
 
+drug_data_target
 
 # Filter the top 20 most frequently occurring targets
 top_20_targets <- head(summary(drug_data_target), 20)
@@ -77,6 +78,41 @@ barplot(top_20_targets, main = "Top 20 Most Frequent Targets",
 
 
 ```
+
+```{r}
+selected_drugs_liver <- unique(selected_drugs_liver_all)
+
+# Filtreleme işlemi
+selected_drugs_liver_prism.treat <- prism.treat[prism.treat$broad_id %in% selected_drugs_liver, ]
+
+selected_drugs_liver_prism.treat
+
+
+#target
+liver_target <- as.factor(selected_drugs_liver_prism.treat$target)
+
+top_20_targets_liver <- head(summary(liver_target), 20)
+top_20_targets_liver
+
+
+barplot(top_20_targets_liver, main = "Top 20 Most Frequent Targets",
+        xlab = "Target", ylab = "Frequency", las = 2,
+        col = "skyblue", border = "white", horiz = FALSE, cex.names = 0.5)
+
+
+#mechanism of action
+liver_moa <- as.factor(selected_drugs_liver_prism.treat$moa)
+
+top_10_targets_moa <- head(summary(liver_moa), 10)
+top_10_targets_moa
+
+barplot(top_10_targets_moa, main = "Top 10 Most Frequent Mechanism of Action",
+        xlab = "Mechanism of Action", ylab = "Frequency", las = 2,
+        col = "skyblue", border = "white", horiz = FALSE, cex.names = 0.3)
+
+```
+
+
 
 
 Mechanism of actions:
@@ -119,6 +155,32 @@ ggplot(mechanism_counts, aes(x = reorder(moa, -n), y = n)) +
 
 
 
+```{r}
+# Hedef bölgelerin analizine odaklanmak için prism.treat tablosunu kullanın
+# İlaçların mechanism of action ve target bilgilerini içeren sütunları seçin
+target_data <- new_prism.treat[, c("moa", "target")]
+target_data
+
+# Her bir sütunun eksik değerlerini en çok tekrar eden değerle doldurma
+for (col in colnames(target_data)) {
+  col_values <- target_data[, col]
+  most_frequent_value <- names(which.max(table(col_values)))
+  col_values[is.na(col_values)] <- most_frequent_value
+  target_data[, col] <- col_values
+}
+
+# Mekanizma ve hedef bölgeleri faktör olarak tanımlayın
+target_data_moa <- as.factor(target_data$moa)
+target_data_target <- as.factor(target_data$target)
+
+# Mekanizma ve hedef bölgelerine göre etkili konsantrasyonları analiz edin
+result <- tapply(rownames(target_data), list(target_data_moa, target_data_target), mean)
+
+# Elde edilen analiz sonuçlarını görselleştirin
+heatmap(result, Rowv = NA, Colv = NA, col = cm.colors(256))
+
+
+```
 
 
 
