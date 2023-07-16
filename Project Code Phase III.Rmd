@@ -1239,4 +1239,7 @@ plot(new_prism.exp$TP63)
 mean(new_prism.exp$TP63, na.rm=TRUE)
 
 ```
+```{r}
+save(new_prism.cnv, file="new_prism.cnv.RData")
+```
 
