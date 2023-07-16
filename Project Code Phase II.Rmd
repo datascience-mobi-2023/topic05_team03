@@ -109,19 +109,38 @@ order_target_achilles = rownames(prism)
 new_prism.achilles= copy_achilles[match(order_target_achilles, order_actual_achilles),]
 new_prism.achilles
 ```
+
+```{r}
+save(new_prism.achilles, file="new_prism.achilles.RData")
+```
+
 ```{r}
 liver_cancer_cell_lines
 ```
 ```{r}
 #Which mutations do liver cancer cell lines have?
 #prism.snv$DepMap_ID[which(prism.snv$DepMap_ID == liver_cancer_cell_lines)]
-liver_cancer_cell_lines_mutations = prism.snv[which(prism.snv$DepMap_ID == liver_cancer_cell_lines),]
+liver_cancer_cell_lines_mutations = prism.snv[which(prism.snv$DepMap_ID %in% liver_cancer_cell_lines),]
 
 ```
+
+```{r}
+liver_cancer_cell_lines_mutations
+```
+
+
 ```{r}
 #length(unique(liver_cancer_cell_lines_mutations$DepMap_ID))
 #ok, they are 17, all good
+length(unique(liver_cancer_cell_lines_mutations$DepMap_ID))
+
 ```
+
+```{r}
+save("liver_cancer_cell_lines_mutations", file="All mutations in liver cancer.RData")
+```
+
+
 ```{r}
 #goal: see if the mutation show any effect on gene expression
 #1. count the total mutations for each cell line and compare with the expression scores
@@ -136,6 +155,12 @@ for (i in 1:length(liver_cancer_cell_lines))
 names(liver_cancer_cell_lines_total_mutation_numbers) = liver_cancer_cell_lines
 liver_cancer_cell_lines_total_mutation_numbers
 ```
+
+```{r}
+sum(liver_cancer_cell_lines_total_mutation_numbers)
+save(liver_cancer_cell_lines_total_mutation_numbers, file="liver_cancer_cell_lines_total_mutation_numbers.RData")
+```
+
 
 ```{r}
 #re-order prism.exp so that it matches the prism data frame order
@@ -165,6 +190,7 @@ liver_cancer_cell_lines_expression
 ```{r}
 #all mutations of the first liver cancer cell line
 liver_cancer_cell_lines_mutations[1:liver_cancer_cell_lines_total_mutation_numbers[1],]
+unique(liver_cancer_cell_lines_mutations$DepMap_ID[1:liver_cancer_cell_lines_total_mutation_numbers[1]])
 ```
 ```{r}
 #I want to plot each gene of the cell line against its expression score
@@ -901,6 +927,15 @@ cl_most_mutations = as.data.frame(sort(table(prism.snv$DepMap_ID), decreasing = 
 cl_most_mutations
 
 ```
+
+```{r}
+#liver_cancer_cell_lines_mutations
+#which(table(liver_cancer_cell_lines_mutations$DepMap_ID)>0)
+#table(liver_cancer_cell_lines_mutations$DepMap_ID)[which(table(liver_cancer_cell_lines_mutations$DepMap_ID)>0)]
+sum(table(liver_cancer_cell_lines_mutations$DepMap_ID)[which(table(liver_cancer_cell_lines_mutations$DepMap_ID)>0)])
+dim(liver_cancer_cell_lines_mutations)
+```
+
 ```{r}
 #which liver cancer cell lines have the most mutations?
 which(sort(table(liver_cancer_cell_lines_mutations$DepMap_ID), decreasing=TRUE)!=0)
@@ -940,8 +975,15 @@ mutated_genes
 #sum(table(liver_cancer_cell_lines_mutations$Hugo_Symbol)>1) this is 10
 liver_mutated_genes = sort(table(liver_cancer_cell_lines_mutations$Hugo_Symbol), decreasing=TRUE)[which(sort(table(liver_cancer_cell_lines_mutations$Hugo_Symbol), decreasing = TRUE)!=0)]
 liver_mutated_genes
+#sum(liver_mutated_genes) is 8482
 #length(liver_mutated_genes) this is 487
 ```
+
+```{r}
+save(liver_mutated_genes, file="most_frequently_mutated_genes_in_liver_cancer.RData")
+save(mutated_genes, file="most_frequently_mutated_genes.RData")
+```
+
 
 ```{r}
 #Now let's visualize the data and plot the distributions of the mutations of the genes in each case we calculated:
