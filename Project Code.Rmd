@@ -401,6 +401,14 @@ colnames(important_drugs_dataframe)="Mean effect on cell growth"
 important_drugs_dataframe
 ```
 ```{r}
+save(our_target_genes, file = "relevant genes for cell survival, targets.RData")
+save(drugs_scores, file = "drugs that target relevant genes for cell survival and their scores on every cell line.RData")
+save(important_drugs_dataframe, file = "mean of values over all cell lines for drugs that target genes important for cell survival.RData")
+```
+
+
+
+```{r}
 #Now I want to check which drugs have a negative effect on the cell growth of liver cancer cell lines
 #let's order the prism.cl first so that it matches the prism table order:
 #order_actual = rownames (prism.cl)
@@ -427,6 +435,13 @@ order_target_cl = rownames(prism)
 new_prism.cl= copy_prism.cl[match(order_target_cl, order_actual_cl),]
 new_prism.cl
 ```
+
+```{r}
+save(new_prism.treat, file="new_prism.treat.RData")
+save(new_prism.cl, file="new_prism.cl.RData")
+```
+
+
 ```{r}
 #Let's check which cell lines are marked by liver cancer
 liver_cancer_cl_indices = which(new_prism.cl$disease == "Liver Cancer")
@@ -438,6 +453,10 @@ liver_cancer_cl_indices
 rownames(new_prism.cl[liver_cancer_cl_indices,])
 liver_cancer_cell_lines = rownames(new_prism.cl[liver_cancer_cl_indices,])
 ```
+```{r}
+save(liver_cancer_cell_lines, file="liver_cancer_cell_lines.RData")
+```
+
 ```{r}
 which ( rownames(prism) %in% liver_cancer_cell_lines) == liver_cancer_cl_indices
 liver_cancer_cell_lines_scores = prism[liver_cancer_cl_indices,]

@@ -890,6 +890,7 @@ relevant_genes_corexpach_anticorrelation
 #The result shows the following relationship: if the proliferation promoting genes are overexpressed, KO proliferation goes down and so normal proliferation without KO goes up. If they are underexpressed, KO proliferation goes up and so normal proliferation without KO goes down
  
 
+
 ```{r}
 relevant_genes_corexpach_correlation = unique(rownames(correlation_matrix_exp_ach[row_indices_matrix_c,]))
 relevant_genes_corexpach_correlation
@@ -1003,7 +1004,42 @@ TP53 and EDA2R: Brosh R, Sarig R, Natan EB, Molchadsky A, Madar S, Bornstein C, 
 both charged with cell death and interconnected
 
 FERMT1 and FERMT2 https://www.biorxiv.org/content/10.1101/2022.10.31.514453v1.full
+Yes, they are diagonals indeed. This means that:
 
+i) in correlation pairs: the expression of the one gene is strongly correlated with the proliferation of the cell after the KO of the other gene. E.g. one cell proliferates strongly after CDS1 is knocked out and CDS2 is overexpressed. AND: one cell proliferates weakly after CDS1 is knocked out and CDS2 is underexpressed. This can hint at complementary roles between genes and their products. Hypothesis model: May GENE1 be a gene which function is important in cell proliferation. If GENE1 is knocked out, overexpressed GENE2 can fulfill its function and the cancer cell continues to proliferate. If GENE1 is knocked out but GENE2 is underexpressed, then the function of GENE1 is not being sufficiently accounted for, so the cell proliferates at a lower rate. 
+
+
+```{r}
+# CORRELATION pairs:
+rownames(copy_cormatexpach_correlation)
+colnames(copy_cormatexpach_correlation)
+```
+INFO:
+
+We see interdependencies:
+
+CDS1 and CDS2 are the only enzymes charged with the regulation of the amount of phosphatidylinositol available for signaling by catalyzing the conversion of phosphatidic acid to CDP-diacylglycerol. SO when one is underexpressed and the other KO'd, the cell proliferation rate goes down
+
+TP53 and EDA2R: Brosh R, Sarig R, Natan EB, Molchadsky A, Madar S, Bornstein C, Buganim Y, Shapira T, Goldfinger N, Paus R, Rotter V. p53-dependent transcriptional regulation of EDA2R and its involvement in chemotherapy-induced hair loss. FEBS Lett. 2010 Jun 3;584(11):2473-7. doi: 10.1016/j.febslet.2010.04.058. Epub 2010 Apr 29. PMID: 20434500.
+both charged with cell death and interconnected
+
+FERMT1 and FERMT2 https://www.biorxiv.org/content/10.1101/2022.10.31.514453v1.full
+
+EDA2R promotes cell proliferation...
+Wang B, Liang Y, Chai X, Chen S, Ye Z, Li R, Li X, Kong G, Li Y, Zhang X, Che Z, You Y, Ye S, Li L, Lin B, Huang J, Huang M, Zhang X, Qiu X, Zeng J. Ectodysplasin A receptor (EDAR) promotes colorectal cancer cell proliferation via regulation of the Wnt/β-catenin signaling pathway. Exp Cell Res. 2020 Oct 1;395(1):112170. doi: 10.1016/j.yexcr.2020.112170. Epub 2020 Jul 17. PMID: 32682783.
+
+but TP53 inhibits cell proliferation
+
+ii) in anti-correlation pairs: the expression of the one gene is strongly anti-correlated with the proliferation of the cell after the KO of the other gene. E.g. one cell proliferates weakly after SOX10 is knocked out and CAPN3 is overexpressed. AND: one cell proliferates strongly after SOX10 is knocked out and CAPN3 is underexpressed. This can hint at opposite roles between genes and their products.
+
+Hypothesis model: 
+May GENE1 be a gene whose function promotes cell proliferation. May GENE2 be a gene whose function acts inhibitory on cell proliferation. If GENE1 is knocked out then the cell proliferates at a lower rate. Thus, in cancer cells, GENE2 must be underexpressed, so they can proliferate.
+
+
+
+May GENE1 be a gene which function is important in cell proliferation. If GENE1 is knocked out, overexpressed GENE2 can better inhibit the effect produced by GENE1 and the cell line stops proliferating. If GENE1 is knocked out but GENE2 is underexpressed, then the function of GENE1 is not being sufficiently inhibited, so the cell proliferates at a higher rate because they may be other effects that can account for the function of GENE1 for which GENE2 is not expressed strongly enough to be able to block.
+
+We actually expected SOX10 to be mostly overexpressed (which it is strongly, but only in specific cell lines) and CAPN3 KO values to be mostly above 0 (which they are, but only in specific cell lines). However, the anti-correlation holds true. And for the cells in which SOX10 is overexpressed (values above 6 !), the KO scores of the CAPN3 KO reach the lower limit of the distribution (~ -0,4).
 
 
 ```{r}
@@ -1043,7 +1079,20 @@ liver_cancer_cell_lines_data
 ```
 
 
+```{r}
+plot(new_prism.achilles$TP53)
+plot(new_prism.exp$TP53)
 
+plot(new_prism.achilles$EDA2R)
+plot(new_prism.exp$EDA2R)
+
+cor(new_prism.exp$TP53[!is.na(new_prism.exp$TP53)], new_prism.exp$EDA2R[!is.na(new_prism.exp$EDA2R)])
+cor(new_prism.achilles$TP53[!is.na(new_prism.achilles$TP53)[1:(length(!is.na(new_prism.achilles$TP53)))]], new_prism.achilles$EDA2R[!is.na(new_prism.achilles$EDA2R)])
+length(new_prism.achilles$TP53[!is.na(new_prism.achilles$TP53)])
+length(new_prism.achilles$EDA2R[!is.na(new_prism.achilles$EDA2R)])
+length(new_prism.achilles$TP53[!is.na(new_prism.achilles$TP53)[2:(length(!is.na(new_prism.achilles$TP53)))]])
+
+```
 
 ```{r}
 #copy_cormatexpach_anticorrelation
@@ -1153,5 +1202,44 @@ correlation_matrix_exp_ach[rowindiceseses,colindiceseses]
 ```
 ```{r}
 
+```
+
+```{r}
+plot(new_prism.achilles$HNF1B)
+mean(new_prism.achilles$HNF1B, na.rm=TRUE)
+
+plot(new_prism.achilles$IRF4)
+mean(new_prism.achilles$IRF4, na.rm=TRUE)
+
+plot(new_prism.achilles$PAX8)
+mean(new_prism.achilles$PAX8, na.rm=TRUE)
+
+plot(new_prism.achilles$SOX10)
+mean(new_prism.achilles$SOX10, na.rm=TRUE)
+
+plot(new_prism.achilles$TP63)
+mean(new_prism.achilles$TP63, na.rm=TRUE)
+
+```
+
+```{r}
+plot(new_prism.exp$HNF1B)
+mean(new_prism.exp$HNF1B, na.rm=TRUE)
+
+plot(new_prism.exp$IRF4)
+mean(new_prism.exp$IRF4, na.rm=TRUE)
+
+plot(new_prism.exp$PAX8)
+mean(new_prism.exp$PAX8, na.rm=TRUE)
+
+plot(new_prism.exp$SOX10)
+mean(new_prism.exp$SOX10, na.rm=TRUE)
+
+plot(new_prism.exp$TP63)
+mean(new_prism.exp$TP63, na.rm=TRUE)
+
+```
+```{r}
+save(new_prism.cnv, file="new_prism.cnv.RData")
 ```
 
