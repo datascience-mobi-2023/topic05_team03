@@ -60,11 +60,21 @@ In order to successfully analyze the data sets, the matching order of the cell i
 
 The prism table provides the sensitivity values of the cell lines to different drugs. The data frames "molecule_indeces_data_frame" and "moa_indeces_data_frame" contain all active molecules present in drugs and their respective mechanisms of action and the column positions of the drugs they are found in in the prism data frame. Below you can see a sample of these data frames
 
-*introduce head of the 2 molecule and moa data frames*
+*Table 1.1 and Table 1.2: active molecules and mechanisms of action in drugs, introduce head of the 2 molecule and moa data frames*
 
+The eight different positions of the same molecule or mechanism of action refer to the eight different concentrations in which a drug is present at. If sixteen positions are being shown, it means that the molecule or mechanism of action is present in two different drug types.
 
+From all the 481 cell lines present in the prism data frame, the 17 cell lines involved in liver cancer are identified below:
 
+*Table 1.3 introduce liver_cancer_cell_lines*
 
+Mutagenesis is a driving factor of cancer development and progression. Below are the numbers of mutations identified in each of the liver cancer cell lines 
+
+*Table 1.4 introduce "liver_cancer_cell_lines_total_mutation_numbers"*
+
+#General Results
+
+The prism.achilles data frame
 
 #Developing a Linear Regression Model
 
