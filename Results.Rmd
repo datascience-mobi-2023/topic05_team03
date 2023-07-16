@@ -296,7 +296,7 @@ Cell Reports, Volume 39, Issue 2, 110636
 CDS1 and CDS2 do not have any yet described effect on cell proliferation
 
 With this model, we can predict up to a certain level how two paired genes act in respect to each other: similarly or oppositely. Upon additional information of interaction, we can say whether or not they activate each other.
-*=> If the function of specific genes in the group is known, this model can be used to up to a certain extent to predict the functions of the unknown genes they strongly anti-correlate to in the matrix.*
+*=> If the function of specific genes in the group is known, this model can be used to up to a certain extent to predict the functions of the unknown genes they strongly correlate to in the matrix.*
 
 
 ```{r}
@@ -465,3 +465,11 @@ CORRELATION:
 
 We see no relevant correlation bacause a correlation for the these datasets would mean contradicting effects on cell proliferation for the same genes.
 (1 gene at 70% LTO1?)
+
+
+```{r}
+pheatmap(copy_cormatexpach_correlation)
+copy_cormatexpach_anticorrelation = correlation_matrix_exp_ach[row_indices_matrix,col_indices_matrix]
+pheatmap(copy_cormatexpach_anticorrelation)
+```
+
