@@ -1242,6 +1242,59 @@ relevant_genes_corexpach_correlation
 #These genes are important cell proliferation inhibitors. So, when they are knocked out, the cell proliferates stronger. The result shows the following relationship: if the proliferation inhibiting genes are overexpressed, KO proliferation goes up and so normal proliferation without KO goes down. If they are underexpressed, KO proliferation goes down and so normal proliferation without KO goes up
 ##############################################################################################################################################
 
+#Make plot/histogramm etc of the distribution of mutation types
+```{r}
+liver_cancer_cell_lines_total_mutation_numbers
+sum(liver_cancer_cell_lines_total_mutation_numbers)
+```
+first mutation types, then how many are deleterious
+```{r}
+mutation_types_general = table(prism.snv$Variant_Classification)
+save(mutation_types_general, file="mutation_types_general.RData")
+```
+
+```{r}
+liver_cancer_cell_lines_mutations
+```
+```{r}
+mutation_types_liver_cancer = table(liver_cancer_cell_lines_mutations$Variant_Classification)
+save(mutation_types_liver_cancer, file="mutation_types_liver_cancer.RData")
+mutation_types_liver_cancer
+```
+make a plot
+```{r}
+install.packages("ggplot2")
+
+```
+```{r}
+mutation_types_liver_cancer
+#names(mutation_types_liver_cancer)
+#as.numeric(mutation_types_liver_cancer)
+#mutation_data
+#Mutation_Type
+mutation_types_general
+```
+
+```{r}
 
 
+
+mutation_names_liver = names(mutation_types_liver_cancer)
+mutation_counts_liver = mutation_types_liver_cancer
+
+barplot(mutation_counts_liver, col = "darkred",
+        main = "Mutation types in Liver Cancer",
+      , ylab = "Counts",
+        las = 2, cex.names = 0.5, names.arg = mutation_names_liver)
+
+mutation_names_general = names(mutation_types_general)
+mutation_counts_general = mutation_types_general
+
+barplot(mutation_counts_general, col = "steelblue",
+        main = "Mutation types across the dataset",
+      , ylab = "Counts",
+        las = 2, cex.names = 0.5, names.arg = mutation_names_general)
+
+#Die Verteilung ist gleich!!!
+```
 
