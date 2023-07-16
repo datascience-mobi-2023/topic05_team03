@@ -29,35 +29,47 @@ plot(pressure)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 
-Report
+###Report
 
-Introduction:
+###Introduction:
 
 
-Methods:
+###Methods:
 Should we describe the methods?
 
-Data structuring and cleanup
+#Data structuring and cleanup
 
-Graphical representations
+#Graphical representations
 
-Performing statistical tests
+#Performing statistical tests
 
-Developing a Linear Regression Model
+#Developing a Linear Regression Model
 
 By examining the impact of drugs on cell growth at various concentrations, we have gained valuable insights into their potential as cancer treatments. Through linear regression analysis we have been able to determine the relationship between concentrations of several drugs and their effects on cell growth. We used the built-in function lm to do the training. This allows us to estimate how different concentrations may effect cell growth and identify the optimal concentration for inhibiting cancer cell growth. By combining this knowledge with information on the mechanisms of action and target sites of these drugs, we can explore potential solutions for cancer treatment. This approach enables us to identify promising drug candidates and optimize their dosage strategies, with the aim of maximizing their efficacy while minimizing adverse effects, offering new possiblities in the field of cancer therapy.
 
-Reducing the dimensionality of the data
+#Reducing the dimensionality of the data
 
-Results:
-Developing a Linear Regression Model
+###Results:
+
+#Adapting the data sets
+
+In order to successfully analyze the data sets, the matching order of the cell identificators and the gene names was ensured. In effect, five new data frames were created: new_prism.treat, new_prism.exp, new_prism.cl, new_prism.cnv and new_prism.achilles. These new data frames all adopt the same ordering of the cell lines as depicted in the original prism data frame. Additionally, the data frames providing information on genes such as prism.exp, prism.cnv and prism.achilles have all been modified to arrange the gene columns in aphabetical order. Using these new data frames, several options were facilitated, such as conserving the indices of desired elements across data frames, analyzing differences between the data frames locally and testing whether operations on the data frames bring the desired result by providing the same index input.
+
+
+
+
+
+
+#Developing a Linear Regression Model
 
 To move on with the linear regression, we determined an optimal threshold for the R^2 value which served as a criterion for assessing the reliability of linear regression analyses. Drugs that exhibited an R^2 value above this threshold were considered reliable in terms of their efficacy. For each distinct liver cancer cell line, we filtered the drugs that met the reliablitiy criterion, resulting in a subset of drugs with reliable regression models. We then examined the frequency of occurence for these reliable drugs across the different liver cancer cell lines. By identifying the most frquently occuring drug, we obtained the linear regression results with the highest consistency and reliability. In our case, for the liver cancer cell lines, our analyses resulted that the drug "BRD_K70358946_001_15_7" occur 8 times in 17 cancer cell lines which is almost the half of them.
 
 
 
 
-Discussion:
+
+
+###Discussion:
 Plotting the linear regression results for this drug allowed us to visualize its impact on cell growth in liver cancer. This integrated approach, combining regression analysis, filtering based on reliability, and examining drug frequencies, provides insights into the drugs that exhibit strong regression relationships and their potential for effective treatment in liver cancer. By predicting the most efficient concentrations for a stronger inhibition, we can have different therapy possibilities for cancer.
 
 
