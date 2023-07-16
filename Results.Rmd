@@ -122,7 +122,7 @@ pheatmap(sample_cormat_exp_ach, col = heatmap_colors,
          colorbar = TRUE, show_rownames = FALSE, show_colnames = FALSE)
 ```
 
-1. Filter out the relevant correlation values and the relevant anticorrelation values
+***1. Filter out the relevant correlation values and the relevant anticorrelation values***
 
 ```{r}
 #Set thresholds for relevance
@@ -217,7 +217,7 @@ relevant_anticorrelation_values4
 all(relevant_correlation_values == relevant_correlation_values4)
 all(relevant_anticorrelation_values == relevant_anticorrelation_values4)
 ```
-2. Select the relevant gene pairs that correspond to the afore-mentioned values
+***2. Select the relevant gene pairs that correspond to the afore-mentioned values***
 
 These are the relevant genes involved in the strong correlation/anti-correlation
 ```{r}
@@ -370,4 +370,98 @@ new_prism.achilles$CAPN3[which(new_prism.exp$SOX10 >6)[which(new_prism.achilles$
 *=> If the function of specific genes in the group is known, this model can be used to up to a certain extent to predict the functions of the unknown genes they strongly anti-correlate to in the matrix.*
 
 
+***3. Inspect the correlation and anticorrelation of the genes with each other***
 
+In order to see which gene's expression strongly correlates or anti-correlates with the cell's proliferation behaviour after their knockout, we need to consider the diagonal values of the computed correlation matrix
+```{r}
+diag_genes_cor_exp_ach = diag(correlation_matrix_exp_ach)
+diag_genes_cor_exp_ach
+```
+
+Selection of relevant values...
+```{r}
+threshold_correlation90 = 0.9 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+threshold_anticorrelation90 = 0.9 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+
+relevant_correlation_values = which(diag_genes_cor_exp_ach > threshold_correlation90)
+relevant_anticorrelation_values = which(diag_genes_cor_exp_ach< threshold_anticorrelation90)
+
+relevant_correlation_values
+relevant_anticorrelation_values
+```
+Lowering the threshold...
+```{r}
+threshold_correlation80 = 0.8 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+threshold_anticorrelation80 = 0.8 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+
+relevant_correlation_values = which(diag_genes_cor_exp_ach > threshold_correlation80)
+relevant_anticorrelation_values = which(diag_genes_cor_exp_ach< threshold_anticorrelation80)
+
+relevant_correlation_values
+relevant_anticorrelation_values
+```
+```{r}
+threshold_correlation75 = 0.75 * max(correlation_matrix_exp_ach, na.rm=TRUE)
+threshold_anticorrelation75 = 0.75 * min(correlation_matrix_exp_ach, na.rm=TRUE)
+
+relevant_correlation_values = which(diag_genes_cor_exp_ach > threshold_correlation75)
+relevant_anticorrelation_values = which(diag_genes_cor_exp_ach< threshold_anticorrelation75)
+
+relevant_correlation_values
+relevant_anticorrelation_values
+```
+ANTICORRELATION:
+
+The anti-correlation between the expression and the Achilles scores could be interpreted as following:
+
+i) GENE is under-expressed in the cancer cell line and the cancer cell line proliferates stronger when GENE is knocked out. This hints at the character of GENE to be that of a TUMOR SUPPRESSOR GENE. A tumor suppressor gene would be under-expressed in cancer cells and cancer cells would proliferate stronger if there is no tumor suppressor gene blocking their prosperity.
+
+OR:
+
+ii) GENE is overexpressed in the cancer cell line and the cancer cell line proliferates at a lower rate when GENE is knocked out. This hints at the character of GENE to be that of an ONCOGENE. Oncogenes would be over-expressed in cancer cells and cancer cells would not proliferate as well if there would be no active oncogene promoting their spread.
+
+By knowing the values of one of the two, either the gene's expression or it's Achilles score, we could predict the character of that gene:
+```{r}
+plot(new_prism.achilles$HNF1B)
+mean(new_prism.achilles$HNF1B, na.rm=TRUE)
+
+plot(new_prism.achilles$IRF4)
+mean(new_prism.achilles$IRF4, na.rm=TRUE)
+
+plot(new_prism.achilles$PAX8)
+mean(new_prism.achilles$PAX8, na.rm=TRUE)
+
+plot(new_prism.achilles$SOX10)
+mean(new_prism.achilles$SOX10, na.rm=TRUE)
+
+plot(new_prism.achilles$TP63)
+mean(new_prism.achilles$TP63, na.rm=TRUE)
+
+```
+
+Prediction: HNF1B = Oncogene
+Truth:      HNF1B = Tumor Suppressor Gene
+Lu W, Sun J, Zhou H, Wang F, Zhao C, Li K, Fan C, Ding G, Wang J. HNF1B inhibits cell proliferation via repression of SMAD6 expression in prostate cancer. J Cell Mol Med. 2020 Dec;24(24):14539-14548. doi: 10.1111/jcmm.16081. Epub 2020 Nov 10. PMID: 33174391; PMCID: PMC7754016.
+
+Prediction: IRF4 = Oncogene
+Truth:      IRF4 = Both Tumor Suppressor Gene and Oncogene
+Maffei, R., Fiorcari, S., Atene, C.G. et al. The dynamic functions of IRF4 in B cell malignancies. Clin Exp Med (2022). https://doi.org/10.1007/s10238-022-00968-0
+
+Prediction: PAX8 = Oncogene
+Truth:      PAX8 = Oncogene
+Bie LY, Li N, Deng WY, Lu XY, Guo P, Luo SX. Evaluation of PAX8 expression promotes the proliferation of stomach Cancer cells. BMC Mol Cell Biol. 2019 Dec 27;20(1):61. doi: 10.1186/s12860-019-0245-9. Retraction in: BMC Mol Cell Biol. 2021 Jun 01;22(1):31. PMID: 31881968; PMCID: PMC6935224.
+
+Prediction: SOX10 = Oncogene
+Truth:      SOX10 = Oncogene (possible)
+Cronin JC, Watkins-Chow DE, Incao A, Hasskamp JH, Schönewolf N, Aoude LG, Hayward NK, Bastian BC, Dummer R, Loftus SK, Pavan WJ. SOX10 ablation arrests cell cycle, induces senescence, and suppresses melanomagenesis. Cancer Res. 2013 Sep 15;73(18):5709-18. doi: 10.1158/0008-5472.CAN-12-4620. Epub 2013 Aug 1. PMID: 23913827; PMCID: PMC3803156.
+
+Prediction: TP63 = Tumor Suppressor Gene
+Truth:      TP63 = Tumor SUppressor Gene 
+Melino, G. p63 is a suppressor of tumorigenesis and metastasis interacting with mutant p53. Cell Death Differ 18, 1487–1499 (2011). https://doi.org/10.1038/cdd.2011.81
+
+*=> This model could predict the main function of a gene regarding cell proliferation and tumorigenesis (up to a certain extent)*
+
+CORRELATION:
+
+We see no relevant correlation bacause a correlation for the these datasets would mean contradicting effects on cell proliferation for the same genes.
+(1 gene at 70% LTO1?)
