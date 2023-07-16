@@ -7,6 +7,7 @@ date: "2023-07-12"
 Report
 
 Methods:
+
 Developing a Linear Regression Model
 
 By examining the impact of drugs on cell growth at various concentrations, we have gained valuable insights into their potential as cancer treatments. Through linear regression analysis we have been able to determine the relationship between concentrations of several drugs and their effects on cell growth. We used the built-in function lm to do the training. This allows us to estimate how different concentrations may effect cell growth and identify the optimal concentration for inhibiting cancer cell growth. By combining this knowledge with information on the mechanisms of action and target sites of these drugs, we can explore potential solutions for cancer treatment. This approach enables us to identify promising drug candidates and optimize their dosage strategies, with the aim of maximizing their efficacy while minimizing adverse effects, offering new possibilities in the field of cancer therapy.
