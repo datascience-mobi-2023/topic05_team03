@@ -56,6 +56,12 @@ By examining the impact of drugs on cell growth at various concentrations, we ha
 In order to successfully analyze the data sets, the matching order of the cell identificators and the gene names was ensured. In effect, five new data frames were created: new_prism.treat, new_prism.exp, new_prism.cl, new_prism.cnv and new_prism.achilles. These new data frames all adopt the same ordering of the cell lines as depicted in the original prism data frame. Additionally, the data frames providing information on genes such as prism.exp, prism.cnv and prism.achilles have all been modified to arrange the gene columns in aphabetical order. Using these new data frames, several options were facilitated, such as conserving the indices of desired elements across data frames, analyzing differences between the data frames locally and testing whether operations on the data frames bring the desired result by providing the same index input.
 
 
+#Description of the data set
+
+The prism table provides the sensitivity values of the cell lines to different drugs. The data frames "molecule_indeces_data_frame" and "moa_indeces_data_frame" contain all active molecules present in drugs and their respective mechanisms of action and the column positions of the drugs they are found in in the prism data frame. Below you can see a sample of these data frames
+
+*introduce head of the 2 molecule and moa data frames*
+
 
 
 
