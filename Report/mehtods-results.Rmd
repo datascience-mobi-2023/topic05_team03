@@ -1,0 +1,11 @@
+**Result: Dimensionality reduction by kmeans clustering**
+
+We have multiple approaches, on how we can reduce the dimensionality of data with kmeans clustering:
+
+-   Kmeans clustering of the drug screening: We try to cluster the cell lines by the inhibition of their growth rate for each drug, in order to find out if there are cell lines that have similar reactions to all drugs. However, no clear clusters can be defined.
+
+-   Kmeans clustering of the transcriptome of cell lines: Next, we ry to cluster the cell lines by their gen expression profile. We can hypothesize that drugs with similar gene sxpression profile could have similar results to drugs. However, no clear clusters can be defined.
+
+-   Kmeans clustering of the copy number variations of cell lines: Adittionaslly, we try to cluster the cell lines by the copy number variation of their genes, no clear clusters can be defined
+
+After that, the genes were tried to be clustered by their mean values in expression, copy number variation and their essentiality for cell survival.
