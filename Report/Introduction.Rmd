@@ -1,0 +1,19 @@
+---
+bibliography: references.bib
+---
+
+**Introduction**
+
+The development of new drugs is linked with massive costs and use of resources. This is why the development of drugs for rare diseases is financially not very attractive, as they will not serve a big group of patients. There are about 7000 rare diseases that still have no treatment. (g[ithubrepo) However, drugs that are already approved or in late stages of development, can possibly target these rare diseases. As the early stages of drug development can be skipped, the repurposing of drugs can be financially attractive and also saves time. More importantly, rare diseases can finally be treated. 
+
+Another big advantage of drug repurposing is the lower risk of wasting resources. Many drugs show side effects only in late stages of drug development after a lot of resources have been already invested. Testing drugs that are approved are already known for being tolerated by the organism that makes use of it. 
+
+The repurposing of drugs is the use of a drug for the treatment of another disease than it is used for in the first place. There are various approaches to how drug repurposing can progress. One can see for binding site complementarity of drugs or for genes that are associated with certain diseases that could serve as drug targets, just to name a few examples.  (nature reviews)
+
+Our approach was analyzing drug screenings over different cancer cell lines. The drug screening is supplemented by a CRISPR-Cas9 loss of function screen, the transcriptome of the given cancer cell lines, and information on genetic mutations and copy number variation of genes of the cell lines. 17 of these cell lines were originating from liver cancer. We can look for agents that could predict drug sensitivity and find new targets for the development of new drugs, for example for liver cancer.
+
+The drug screening that we use was performed by a method called "PRISM". It helps count the relative number of a cell line, so the proliferation of the cell line can be measured. Before treatment, the cell lines are transfected with a specific barcode, which is a nucleotide. After that, all the cell lines within the same pool were treated with one drug and a specific concentration. For each drug, eight different concentrations were tested for. There is always a control pool. After treatment, the barcodes of the cells are amplified and counted in the treatment group and the control group, so the relative number of cells can be calculated. (nature review glaub)
+
+The loss-of-function screen gives us information on the essentiality of a gene for cell survival. Each gene was knocked out by CRISPR/Cas9 in every cancer cell line. This can help identify cancer vulnerabilities that can be targets of drugs. (biorxiv)
+
+\
